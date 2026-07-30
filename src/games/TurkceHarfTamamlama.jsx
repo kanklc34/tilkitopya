@@ -1,0 +1,550 @@
+import { useState, useCallback, useRef, useEffect } from "react";
+import { Star, Trophy, RotateCcw } from "lucide-react";
+
+// ---- Oyun ayarları ----
+const ROUND_LENGTH = 5;
+// Kelime + eksik harf pozisyonu + görsel ipucu (görsel > metin ilkesi).
+// Tur ilerledikçe kelimeler uzuyor ve eksik harf sayısı artıyor.
+const WORD_BANK = [
+  { word: "KEDİ", emoji: "🐱" },
+  { word: "ELMA", emoji: "🍎" },
+  { word: "TOP", emoji: "⚽" },
+  { word: "ARABA", emoji: "🚗" },
+  { word: "BALIK", emoji: "🐟" },
+  { word: "GÜNEŞ", emoji: "☀️" },
+  { word: "KUŞ", emoji: "🐦" },
+  { word: "AY", emoji: "🌙" },
+  { word: "EV", emoji: "🏠" },
+  { word: "KİTAP", emoji: "📖" },
+  { word: "KÖPEK", emoji: "🐶" },
+  { word: "YILDIZ", emoji: "⭐" },
+  { word: "MUZ", emoji: "🍌" },
+  { word: "ÇİÇEK", emoji: "🌸" },
+  { word: "BALON", emoji: "🎈" },
+  { word: "KELEBEK", emoji: "🦋" },
+];
+const TURKISH_LETTERS = ["A","B","C","Ç","D","E","F","G","Ğ","H","I","İ","J","K","L","M","N","O","Ö","P","R","S","Ş","T","U","Ü","V","Y","Z"];
+// tur1: kelime sonunda tek harf eksik (en kolay), tur2: ortada tek harf,
+// tur3: iki harf eksik (en zor)
+const ROUNDS = [
+  { blanksCount: 1, positionMode: "end" },
+  { blanksCount: 1, positionMode: "any" },
+  { blanksCount: 2, positionMode: "any" },
+];
+const TOTAL_ROUNDS = ROUNDS.length;
+// Kelime sorularının yanına "alfabe sırası" soruları da karışıyor - MEB'in
+// "harf/ses bilgisi - sıralama" kazanımına karşılık geliyor.
+const SEQUENCE_RATIO = 0.3;
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function generateWordPuzzle(round) {
+  const { blanksCount, positionMode } = ROUNDS[round];
+  const entry = WORD_BANK[rand(0, WORD_BANK.length - 1)];
+  const letters = entry.word.split("");
+  let positions;
+  if (positionMode === "end") {
+    positions = [letters.length - 1];
+  } else {
+    positions = shuffle(letters.map((_, i) => i)).slice(0, Math.min(blanksCount, letters.length - 1));
+  }
+  return { type: "word", word: entry.word, emoji: entry.emoji, letters, blankPositions: positions };
+}
+
+function generateSequencePuzzle() {
+  // baş ve son harfleri seçmiyoruz ki her iki komşusu da alfabede olsun
+  const idx = rand(1, TURKISH_LETTERS.length - 2);
+  const seq = [TURKISH_LETTERS[idx - 1], TURKISH_LETTERS[idx], TURKISH_LETTERS[idx + 1]];
+  const blankIndex = rand(0, 2);
+  return { type: "sequence", seq, blankIndex, answer: seq[blankIndex] };
+}
+
+function generatePuzzle(round) {
+  if (Math.random() < SEQUENCE_RATIO) return generateSequencePuzzle();
+  return generateWordPuzzle(round);
+}
+
+function currentLetterOf(puzzle, filledCount) {
+  if (puzzle.type === "sequence") return puzzle.answer;
+  const pos = puzzle.blankPositions[filledCount];
+  return pos !== undefined ? puzzle.word[pos] : null;
+}
+
+function generateLetterPad(correctLetter) {
+  const pool = new Set([correctLetter]);
+  while (pool.size < 6) pool.add(TURKISH_LETTERS[rand(0, TURKISH_LETTERS.length - 1)]);
+  return shuffle(Array.from(pool));
+}
+
+
+// Basit, dosyasız sesli geri bildirim (Web Audio) - ortak desen
+function playTone(kind) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = kind === "correct" ? [523.25, 659.25, 783.99] : [220, 180];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = kind === "correct" ? "triangle" : "sine";
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.09;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.16, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.18);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.2);
+    });
+    setTimeout(() => ctx.close(), 600);
+  } catch {
+    // ses desteklenmiyorsa sessizce geç
+  }
+}
+
+export default function TurkishFillGame({ onExit } = {}) {
+  const [round, setRound] = useState(0);
+  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0));
+  const [pad, setPad] = useState(() => generateLetterPad(currentLetterOf(puzzle, 0)));
+  const [filledCount, setFilledCount] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [totalMistakes, setTotalMistakes] = useState(0);
+  const [feedback, setFeedback] = useState(null);
+  const [wrongPick, setWrongPick] = useState(null);
+  const [finished, setFinished] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const [soundOn, setSoundOn] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const [showBurst, setShowBurst] = useState(false);
+  const timeoutRef = useRef(null);
+
+  const nextPuzzle = useCallback((r) => {
+    const p = generatePuzzle(r);
+    setPuzzle(p);
+    setPad(generateLetterPad(currentLetterOf(p, 0)));
+    setFilledCount(0);
+    setFeedback(null);
+    setWrongPick(null);
+  }, []);
+
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  const currentLetter = currentLetterOf(puzzle, filledCount);
+  const totalBlanks = puzzle.type === "sequence" ? 1 : puzzle.blankPositions.length;
+
+  function handlePick(letter) {
+    if (paused || finished || feedback === "correct") return;
+
+    if (letter === currentLetter) {
+      setFeedback("correct");
+      if (soundOn) playTone("correct");
+      setShowBurst(true);
+      const nextFilled = filledCount + 1;
+
+      timeoutRef.current = setTimeout(() => {
+        if (nextFilled >= totalBlanks) {
+          const newProgress = progress + 1;
+          setProgress(newProgress);
+          if (newProgress >= ROUND_LENGTH) {
+            if (round + 1 >= TOTAL_ROUNDS) {
+              setFinished(true);
+            } else {
+              const r = round + 1;
+              setRound(r);
+              setProgress(0);
+              nextPuzzle(r);
+            }
+          } else {
+            nextPuzzle(round);
+          }
+        } else {
+          setFilledCount(nextFilled);
+          setPad(generateLetterPad(currentLetterOf(puzzle, nextFilled)));
+          setFeedback(null);
+        }
+      }, 550);
+    } else {
+      setFeedback("wrong");
+      if (soundOn) playTone("wrong");
+      setWrongPick(letter);
+      setTotalMistakes((m) => m + 1);
+      timeoutRef.current = setTimeout(() => {
+        setFeedback(null);
+        setWrongPick(null);
+      }, 600);
+    }
+  }
+
+  // patlama efektini kısa süre sonra kapat
+  useEffect(() => {
+    if (!showBurst) return;
+    const t = setTimeout(() => setShowBurst(false), 500);
+    return () => clearTimeout(t);
+  }, [showBurst]);
+
+  function restart() {
+    clearTimeout(timeoutRef.current);
+    setRound(0);
+    setProgress(0);
+    setTotalMistakes(0);
+    setFinished(false);
+    nextPuzzle(0);
+  }
+
+  const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
+
+  return (
+    <div className="word-root">
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;700;800&display=swap');
+
+        .word-root {
+          --bg: #EAF6FD;
+          --card: #FFFFFF;
+          --ink: #1F2E45;
+          --ink-soft: #5C6B85;
+          --sun: #FFC93C;
+          --grass: #6FBF73;
+          --grass-dark: #4E9F53;
+          --track-bg: #D8ECF7;
+          font-family: 'Nunito', sans-serif;
+          color: var(--ink);
+          background: var(--bg);
+          border-radius: 28px;
+          padding: 26px 22px;
+          max-width: 460px;
+          margin: 0 auto;
+          box-shadow: 0 10px 32px rgba(31,46,69,0.12);
+          position: relative;
+        }
+
+        .top-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+        .brand {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 19px;
+        }
+        .brand-emoji { font-size: 26px; }
+        .round-pill {
+          background: var(--sun);
+          color: var(--ink);
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          padding: 5px 12px;
+          border-radius: 999px;
+        }
+
+        .progress-track {
+          display: flex;
+          gap: 4px;
+          margin-bottom: 22px;
+        }
+        .progress-flag {
+          flex: 1;
+          height: 8px;
+          border-radius: 4px;
+          background: var(--track-bg);
+          transition: background 0.3s ease;
+        }
+        .progress-flag.filled { background: var(--grass-dark); }
+
+        .puzzle-card {
+          position: relative;
+          background: var(--card);
+          border-radius: 24px;
+          padding: 26px 20px;
+          text-align: center;
+          margin-bottom: 22px;
+          box-shadow: 0 6px 20px rgba(31,46,69,0.08);
+        }
+        .puzzle-card.shake { animation: shake 0.5s ease; }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          60% { transform: translateX(-6px); }
+          80% { transform: translateX(6px); }
+        }
+        .word-emoji { font-size: 46px; margin-bottom: 10px; }
+        .word-row {
+          display: flex;
+          justify-content: center;
+          gap: 6px;
+          flex-wrap: wrap;
+        }
+        .letter-slot {
+          width: 40px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 700;
+          font-size: 26px;
+          border-radius: 10px;
+        }
+        .letter-slot.is-blank {
+          background: var(--track-bg);
+          border: 3px dashed #9AB4CE;
+          color: transparent;
+        }
+        .letter-slot.is-blank.is-current {
+          border-color: var(--sun);
+        }
+        .letter-slot.is-blank.is-filled {
+          background: #E4F7E6;
+          border: 3px solid var(--grass-dark);
+          color: var(--grass-dark);
+        }
+
+        .letterpad {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 10px;
+        }
+        .pad-key {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 24px;
+          color: var(--ink);
+          background: var(--card);
+          border: none;
+          border-radius: 14px;
+          aspect-ratio: 1 / 1;
+          cursor: pointer;
+          box-shadow: 0 4px 0 rgba(31,46,69,0.12), 0 5px 10px rgba(31,46,69,0.06);
+          transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+        }
+        .pad-key:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(31,46,69,0.12); }
+        .pad-key.correct { background: var(--grass-dark); color: white; }
+        .pad-key.wrong { background: #D9534F; color: white; }
+
+        .round-overlay, .finish-overlay, .tutorial-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(31,46,69,0.93);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          border-radius: 28px;
+          gap: 8px;
+          text-align: center;
+          padding: 26px 22px;
+          z-index: 10;
+        }
+        .finish-title {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 700;
+          font-size: 24px;
+        }
+        .finish-stars { display: flex; gap: 6px; margin: 8px 0; }
+        .primary-btn {
+          margin-top: 12px;
+          background: var(--sun);
+          color: var(--ink);
+          border: none;
+          padding: 12px 24px;
+          border-radius: 999px;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 15px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+        }
+        .burst {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          pointer-events: none;
+          font-size: 40px;
+          animation: pop 0.5s ease forwards;
+          z-index: 5;
+        }
+        @keyframes pop {
+          0% { transform: scale(0.4); opacity: 0; }
+          40% { transform: scale(1.2); opacity: 1; }
+          100% { transform: scale(1); opacity: 0; }
+        }
+        .secondary-btn {
+          background: transparent;
+          border: none;
+          color: rgba(255,255,255,0.75);
+          font-family: 'Nunito', sans-serif;
+          font-weight: 700;
+          font-size: 13px;
+          margin-top: 6px;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+        .tutorial-emoji { font-size: 38px; }
+        .tutorial-steps {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin: 10px 0 4px;
+          width: 100%;
+        }
+        .tutorial-step {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(255,255,255,0.1);
+          border-radius: 14px;
+          padding: 10px 14px;
+          font-size: 14px;
+          text-align: left;
+        }
+        .tutorial-step-icon { font-size: 20px; flex-shrink: 0; }
+      `}</style>
+
+      <div className="top-row">
+        <div className="brand"><span className="brand-emoji">🦊</span> Harf Tamamla</div>
+        <div className="top-right">
+          <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
+          <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
+          <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">⏸️</button>
+        </div>
+      </div>
+
+      <div className="progress-track">
+        {Array.from({ length: ROUND_LENGTH }).map((_, i) => (
+          <div key={i} className={`progress-flag ${i < progress ? "filled" : ""}`} />
+        ))}
+      </div>
+
+      <div className={`puzzle-card ${feedback === "wrong" ? "shake" : ""}`}>
+        {showBurst && <div className="burst">⭐</div>}
+        {puzzle.type === "word" ? (
+          <>
+            <div className="word-emoji">{puzzle.emoji}</div>
+            <div className="word-row">
+              {puzzle.letters.map((l, i) => {
+                const blankOrder = puzzle.blankPositions.indexOf(i);
+                const isBlank = blankOrder !== -1;
+                const isDone = isBlank && blankOrder < filledCount;
+                const isCurrent = isBlank && blankOrder === filledCount;
+                return (
+                  <span
+                    key={i}
+                    className={`letter-slot ${isBlank ? "is-blank" : ""} ${isCurrent ? "is-current" : ""} ${isDone || (isCurrent && feedback === "correct") ? "is-filled" : ""}`}
+                  >
+                    {isBlank && !isDone && !(isCurrent && feedback === "correct") ? "" : l}
+                  </span>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="word-emoji">🔤</div>
+            <div className="word-row">
+              {puzzle.seq.map((l, i) => (
+                <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span
+                    className={`letter-slot ${puzzle.blankIndex === i ? "is-blank" : ""} ${puzzle.blankIndex === i && feedback === "correct" ? "is-filled" : ""}`}
+                  >
+                    {puzzle.blankIndex === i && feedback !== "correct" ? "" : l}
+                  </span>
+                  {i < 2 && <span style={{ fontSize: 20, color: "#9AB4CE" }}>→</span>}
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="letterpad">
+        {pad.map((letter) => {
+          let cls = "pad-key";
+          if (feedback === "correct" && letter === currentLetter) cls += " correct";
+          if (feedback === "wrong" && letter === wrongPick) cls += " wrong";
+          return (
+            <button key={letter} className={cls} onClick={() => handlePick(letter)}>
+              {letter}
+            </button>
+          );
+        })}
+      </div>
+
+      {finished && (
+        <div className="finish-overlay">
+          <Trophy size={44} color="#FFC93C" />
+          <div className="finish-title">Hepsini tamamladın!</div>
+          <div className="finish-stars">
+            {[1, 2, 3].map((i) => (
+              <Star key={i} size={28} fill={i <= stars ? "#FFC93C" : "none"} stroke="#FFC93C" />
+            ))}
+          </div>
+          <div style={{ fontFamily: "Nunito", fontSize: 14, opacity: 0.9 }}>
+            {totalMistakes === 0 ? "Hiç yanlışın yok, harikasın!" : `${totalMistakes} kere zorlandın, sorun değil!`}
+          </div>
+          <button className="primary-btn" onClick={restart}>
+            <RotateCcw size={16} /> Tekrar Oyna
+          </button>
+        </div>
+      )}
+
+      {showTutorial && (
+        <div className="tutorial-overlay">
+          <div className="tutorial-emoji">🦊</div>
+          <div className="finish-title">Nasıl Oynanır?</div>
+          <div className="tutorial-steps">
+            <div className="tutorial-step">
+              <span className="tutorial-step-icon">🖼️</span>
+              <span>Resme bak, kelimeyi düşün</span>
+            </div>
+            <div className="tutorial-step">
+              <span className="tutorial-step-icon">❓</span>
+              <span>Kesikli kutu eksik harf demek</span>
+            </div>
+            <div className="tutorial-step">
+              <span className="tutorial-step-icon">👉</span>
+              <span>Doğru harfe dokun</span>
+            </div>
+          </div>
+          <button className="primary-btn" onClick={() => setShowTutorial(false)}>
+            Başla!
+          </button>
+        </div>
+      )}
+
+      {paused && (
+        <div className="tutorial-overlay">
+          <div className="tutorial-emoji">⏸️</div>
+          <div className="finish-title">Duraklatıldı</div>
+          <button className="primary-btn" onClick={() => setPaused(false)}>
+            ▶️ Devam Et
+          </button>
+          <button className="secondary-btn" onClick={() => (onExit ? onExit() : setPaused(false))}>
+            Oyundan Çık
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
