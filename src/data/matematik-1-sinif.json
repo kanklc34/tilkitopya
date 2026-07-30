@@ -1,0 +1,2551 @@
+{
+  "meta": {
+    "ders": "Matematik",
+    "sinif": 1,
+    "kaynak_not": "MEB Türkiye Yüzyılı Maarif Modeli - Sayılar ve Nicelikler / İşlemlerden Cebirsel Düşünmeye temaları esas alınmıştır. Kazanım kodları temsilidir, üretimde resmi kod ile değiştirilmelidir.",
+    "toplam_soru": 127,
+    "not": "Tekrar eden sorular temizlendi, seviye başına soru sayısı dengelendi."
+  },
+  "sorular": [
+    {
+      "id": "MAT-1-0001",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "0 + 1 = ?",
+      "soru_gorseli": "nesne_0_artı_1.svg",
+      "ses_dosyasi": "soru_0001.mp3",
+      "secenekler": [
+        0,
+        1,
+        4
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0002",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "0 + 3 = ?",
+      "soru_gorseli": "nesne_0_artı_3.svg",
+      "ses_dosyasi": "soru_0002.mp3",
+      "secenekler": [
+        0,
+        3,
+        1
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0003",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "0 + 8 = ?",
+      "soru_gorseli": "nesne_0_artı_8.svg",
+      "ses_dosyasi": "soru_0003.mp3",
+      "secenekler": [
+        8,
+        6,
+        5
+      ],
+      "dogru_cevap": 8,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0004",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "1 + 0 = ?",
+      "soru_gorseli": "nesne_1_artı_0.svg",
+      "ses_dosyasi": "soru_0004.mp3",
+      "secenekler": [
+        2,
+        1,
+        0
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0005",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "2 + 2 = ?",
+      "soru_gorseli": "nesne_2_artı_2.svg",
+      "ses_dosyasi": "soru_0005.mp3",
+      "secenekler": [
+        3,
+        4,
+        2
+      ],
+      "dogru_cevap": 4,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0006",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "2 + 6 = ?",
+      "soru_gorseli": "nesne_2_artı_6.svg",
+      "ses_dosyasi": "soru_0006.mp3",
+      "secenekler": [
+        6,
+        8,
+        7
+      ],
+      "dogru_cevap": 8,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0007",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "2 + 7 = ?",
+      "soru_gorseli": "nesne_2_artı_7.svg",
+      "ses_dosyasi": "soru_0007.mp3",
+      "secenekler": [
+        7,
+        9,
+        12
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0008",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 + 0 = ?",
+      "soru_gorseli": "nesne_3_artı_0.svg",
+      "ses_dosyasi": "soru_0008.mp3",
+      "secenekler": [
+        5,
+        6,
+        3
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0009",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 + 1 = ?",
+      "soru_gorseli": "nesne_3_artı_1.svg",
+      "ses_dosyasi": "soru_0009.mp3",
+      "secenekler": [
+        3,
+        1,
+        4
+      ],
+      "dogru_cevap": 4,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0010",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 + 4 = ?",
+      "soru_gorseli": "nesne_3_artı_4.svg",
+      "ses_dosyasi": "soru_0010.mp3",
+      "secenekler": [
+        7,
+        10,
+        8
+      ],
+      "dogru_cevap": 7,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0011",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 + 6 = ?",
+      "soru_gorseli": "nesne_3_artı_6.svg",
+      "ses_dosyasi": "soru_0011.mp3",
+      "secenekler": [
+        9,
+        11,
+        10
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0012",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "4 + 2 = ?",
+      "soru_gorseli": "nesne_4_artı_2.svg",
+      "ses_dosyasi": "soru_0012.mp3",
+      "secenekler": [
+        6,
+        3,
+        4
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0013",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "4 + 3 = ?",
+      "soru_gorseli": "nesne_4_artı_3.svg",
+      "ses_dosyasi": "soru_0013.mp3",
+      "secenekler": [
+        9,
+        7,
+        8
+      ],
+      "dogru_cevap": 7,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0014",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "4 + 5 = ?",
+      "soru_gorseli": "nesne_4_artı_5.svg",
+      "ses_dosyasi": "soru_0014.mp3",
+      "secenekler": [
+        9,
+        6,
+        12
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0015",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 + 1 = ?",
+      "soru_gorseli": "nesne_5_artı_1.svg",
+      "ses_dosyasi": "soru_0015.mp3",
+      "secenekler": [
+        4,
+        6,
+        7
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0016",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 + 2 = ?",
+      "soru_gorseli": "nesne_5_artı_2.svg",
+      "ses_dosyasi": "soru_0016.mp3",
+      "secenekler": [
+        5,
+        9,
+        7
+      ],
+      "dogru_cevap": 7,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0017",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 + 0 = ?",
+      "soru_gorseli": "nesne_6_artı_0.svg",
+      "ses_dosyasi": "soru_0017.mp3",
+      "secenekler": [
+        6,
+        4,
+        5
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0018",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 + 1 = ?",
+      "soru_gorseli": "nesne_6_artı_1.svg",
+      "ses_dosyasi": "soru_0018.mp3",
+      "secenekler": [
+        8,
+        7,
+        6
+      ],
+      "dogru_cevap": 7,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0019",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 + 3 = ?",
+      "soru_gorseli": "nesne_6_artı_3.svg",
+      "ses_dosyasi": "soru_0019.mp3",
+      "secenekler": [
+        9,
+        6,
+        7
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0020",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "7 + 1 = ?",
+      "soru_gorseli": "nesne_7_artı_1.svg",
+      "ses_dosyasi": "soru_0020.mp3",
+      "secenekler": [
+        10,
+        6,
+        8
+      ],
+      "dogru_cevap": 8,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0021",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "7 + 2 = ?",
+      "soru_gorseli": "nesne_7_artı_2.svg",
+      "ses_dosyasi": "soru_0021.mp3",
+      "secenekler": [
+        9,
+        11,
+        10
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "Parmaklarınla ya da nesnelerle say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0022",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 - 1 = ?",
+      "soru_gorseli": "nesne_3_eksi_1.svg",
+      "ses_dosyasi": "soru_0022.mp3",
+      "secenekler": [
+        2,
+        1,
+        4
+      ],
+      "dogru_cevap": 2,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0023",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "3 - 3 = ?",
+      "soru_gorseli": "nesne_3_eksi_3.svg",
+      "ses_dosyasi": "soru_0023.mp3",
+      "secenekler": [
+        2,
+        3,
+        0
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0024",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "4 - 2 = ?",
+      "soru_gorseli": "nesne_4_eksi_2.svg",
+      "ses_dosyasi": "soru_0024.mp3",
+      "secenekler": [
+        0,
+        2,
+        3
+      ],
+      "dogru_cevap": 2,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0025",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 - 0 = ?",
+      "soru_gorseli": "nesne_5_eksi_0.svg",
+      "ses_dosyasi": "soru_0025.mp3",
+      "secenekler": [
+        8,
+        2,
+        5
+      ],
+      "dogru_cevap": 5,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0026",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 - 1 = ?",
+      "soru_gorseli": "nesne_5_eksi_1.svg",
+      "ses_dosyasi": "soru_0026.mp3",
+      "secenekler": [
+        4,
+        6,
+        2
+      ],
+      "dogru_cevap": 4,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0027",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 - 2 = ?",
+      "soru_gorseli": "nesne_5_eksi_2.svg",
+      "ses_dosyasi": "soru_0027.mp3",
+      "secenekler": [
+        3,
+        0,
+        4
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0028",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "5 - 5 = ?",
+      "soru_gorseli": "nesne_5_eksi_5.svg",
+      "ses_dosyasi": "soru_0028.mp3",
+      "secenekler": [
+        0,
+        1,
+        3
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0029",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 - 1 = ?",
+      "soru_gorseli": "nesne_6_eksi_1.svg",
+      "ses_dosyasi": "soru_0029.mp3",
+      "secenekler": [
+        5,
+        4,
+        3
+      ],
+      "dogru_cevap": 5,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0030",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 - 3 = ?",
+      "soru_gorseli": "nesne_6_eksi_3.svg",
+      "ses_dosyasi": "soru_0030.mp3",
+      "secenekler": [
+        3,
+        4,
+        5
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0031",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "6 - 5 = ?",
+      "soru_gorseli": "nesne_6_eksi_5.svg",
+      "ses_dosyasi": "soru_0031.mp3",
+      "secenekler": [
+        4,
+        3,
+        1
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0032",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "7 - 1 = ?",
+      "soru_gorseli": "nesne_7_eksi_1.svg",
+      "ses_dosyasi": "soru_0032.mp3",
+      "secenekler": [
+        6,
+        7,
+        3
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0033",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "7 - 6 = ?",
+      "soru_gorseli": "nesne_7_eksi_6.svg",
+      "ses_dosyasi": "soru_0033.mp3",
+      "secenekler": [
+        0,
+        4,
+        1
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0034",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "7 - 7 = ?",
+      "soru_gorseli": "nesne_7_eksi_7.svg",
+      "ses_dosyasi": "soru_0034.mp3",
+      "secenekler": [
+        0,
+        2,
+        1
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0035",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "8 - 2 = ?",
+      "soru_gorseli": "nesne_8_eksi_2.svg",
+      "ses_dosyasi": "soru_0035.mp3",
+      "secenekler": [
+        5,
+        6,
+        8
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0036",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "8 - 6 = ?",
+      "soru_gorseli": "nesne_8_eksi_6.svg",
+      "ses_dosyasi": "soru_0036.mp3",
+      "secenekler": [
+        1,
+        4,
+        2
+      ],
+      "dogru_cevap": 2,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0037",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "9 - 2 = ?",
+      "soru_gorseli": "nesne_9_eksi_2.svg",
+      "ses_dosyasi": "soru_0037.mp3",
+      "secenekler": [
+        10,
+        7,
+        8
+      ],
+      "dogru_cevap": 7,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0038",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "9 - 3 = ?",
+      "soru_gorseli": "nesne_9_eksi_3.svg",
+      "ses_dosyasi": "soru_0038.mp3",
+      "secenekler": [
+        6,
+        5,
+        4
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0039",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "9 - 4 = ?",
+      "soru_gorseli": "nesne_9_eksi_4.svg",
+      "ses_dosyasi": "soru_0039.mp3",
+      "secenekler": [
+        2,
+        5,
+        8
+      ],
+      "dogru_cevap": 5,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0040",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "9 - 6 = ?",
+      "soru_gorseli": "nesne_9_eksi_6.svg",
+      "ses_dosyasi": "soru_0040.mp3",
+      "secenekler": [
+        0,
+        3,
+        1
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0041",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "9 - 9 = ?",
+      "soru_gorseli": "nesne_9_eksi_9.svg",
+      "ses_dosyasi": "soru_0041.mp3",
+      "secenekler": [
+        3,
+        0,
+        2
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0042",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "10 - 0 = ?",
+      "soru_gorseli": "nesne_10_eksi_0.svg",
+      "ses_dosyasi": "soru_0042.mp3",
+      "secenekler": [
+        8,
+        10,
+        11
+      ],
+      "dogru_cevap": 10,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0043",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "10 - 7 = ?",
+      "soru_gorseli": "nesne_10_eksi_7.svg",
+      "ses_dosyasi": "soru_0043.mp3",
+      "secenekler": [
+        0,
+        3,
+        4
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0044",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (10'a kadar)",
+      "seviye": 1,
+      "oyun_tipi": "arac_yarisi",
+      "soru_metni": "10 - 10 = ?",
+      "soru_gorseli": "nesne_10_eksi_10.svg",
+      "ses_dosyasi": "soru_0044.mp3",
+      "secenekler": [
+        1,
+        3,
+        0
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "Elinde kaç tane kaldığını say",
+      "zorluk_puani": 1,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0045",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "0 + 6 = ?",
+      "soru_gorseli": "nesne_0_artı_6.svg",
+      "ses_dosyasi": "soru_0045.mp3",
+      "secenekler": [
+        6,
+        4,
+        5
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0046",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "0 + 12 = ?",
+      "soru_gorseli": "nesne_0_artı_12.svg",
+      "ses_dosyasi": "soru_0046.mp3",
+      "secenekler": [
+        12,
+        10,
+        14
+      ],
+      "dogru_cevap": 12,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0047",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "1 + 4 = ?",
+      "soru_gorseli": "nesne_1_artı_4.svg",
+      "ses_dosyasi": "soru_0047.mp3",
+      "secenekler": [
+        5,
+        8,
+        4
+      ],
+      "dogru_cevap": 5,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0048",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "3 + 7 = ?",
+      "soru_gorseli": "nesne_3_artı_7.svg",
+      "ses_dosyasi": "soru_0048.mp3",
+      "secenekler": [
+        10,
+        8,
+        13
+      ],
+      "dogru_cevap": 10,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0049",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "3 + 8 = ?",
+      "soru_gorseli": "nesne_3_artı_8.svg",
+      "ses_dosyasi": "soru_0049.mp3",
+      "secenekler": [
+        13,
+        11,
+        12
+      ],
+      "dogru_cevap": 11,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0051",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "4 + 7 = ?",
+      "soru_gorseli": "nesne_4_artı_7.svg",
+      "ses_dosyasi": "soru_0051.mp3",
+      "secenekler": [
+        11,
+        9,
+        12
+      ],
+      "dogru_cevap": 11,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0052",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "6 + 4 = ?",
+      "soru_gorseli": "nesne_6_artı_4.svg",
+      "ses_dosyasi": "soru_0052.mp3",
+      "secenekler": [
+        8,
+        9,
+        10
+      ],
+      "dogru_cevap": 10,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0053",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "6 + 5 = ?",
+      "soru_gorseli": "nesne_6_artı_5.svg",
+      "ses_dosyasi": "soru_0053.mp3",
+      "secenekler": [
+        11,
+        9,
+        12
+      ],
+      "dogru_cevap": 11,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0054",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "8 + 0 = ?",
+      "soru_gorseli": "nesne_8_artı_0.svg",
+      "ses_dosyasi": "soru_0054.mp3",
+      "secenekler": [
+        8,
+        9,
+        7
+      ],
+      "dogru_cevap": 8,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0055",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "9 + 0 = ?",
+      "soru_gorseli": "nesne_9_artı_0.svg",
+      "ses_dosyasi": "soru_0055.mp3",
+      "secenekler": [
+        9,
+        12,
+        8
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0056",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "9 + 2 = ?",
+      "soru_gorseli": "nesne_9_artı_2.svg",
+      "ses_dosyasi": "soru_0056.mp3",
+      "secenekler": [
+        13,
+        11,
+        8
+      ],
+      "dogru_cevap": 11,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0057",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "9 + 3 = ?",
+      "soru_gorseli": "nesne_9_artı_3.svg",
+      "ses_dosyasi": "soru_0057.mp3",
+      "secenekler": [
+        13,
+        12,
+        10
+      ],
+      "dogru_cevap": 12,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0058",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "11 + 3 = ?",
+      "soru_gorseli": "nesne_11_artı_3.svg",
+      "ses_dosyasi": "soru_0058.mp3",
+      "secenekler": [
+        12,
+        14,
+        13
+      ],
+      "dogru_cevap": 14,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0059",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "0 - 0 = ?",
+      "soru_gorseli": "nesne_0_eksi_0.svg",
+      "ses_dosyasi": "soru_0059.mp3",
+      "secenekler": [
+        1,
+        0,
+        3
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0060",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "6 - 4 = ?",
+      "soru_gorseli": "nesne_6_eksi_4.svg",
+      "ses_dosyasi": "soru_0060.mp3",
+      "secenekler": [
+        4,
+        2,
+        3
+      ],
+      "dogru_cevap": 2,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0062",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "8 - 3 = ?",
+      "soru_gorseli": "nesne_8_eksi_3.svg",
+      "ses_dosyasi": "soru_0062.mp3",
+      "secenekler": [
+        6,
+        5,
+        3
+      ],
+      "dogru_cevap": 5,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0063",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "10 - 4 = ?",
+      "soru_gorseli": "nesne_10_eksi_4.svg",
+      "ses_dosyasi": "soru_0063.mp3",
+      "secenekler": [
+        5,
+        4,
+        6
+      ],
+      "dogru_cevap": 6,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0064",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "12 - 9 = ?",
+      "soru_gorseli": "nesne_12_eksi_9.svg",
+      "ses_dosyasi": "soru_0064.mp3",
+      "secenekler": [
+        0,
+        3,
+        5
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0065",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "12 - 11 = ?",
+      "soru_gorseli": "nesne_12_eksi_11.svg",
+      "ses_dosyasi": "soru_0065.mp3",
+      "secenekler": [
+        1,
+        3,
+        0
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0066",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "12 - 12 = ?",
+      "soru_gorseli": "nesne_12_eksi_12.svg",
+      "ses_dosyasi": "soru_0066.mp3",
+      "secenekler": [
+        2,
+        0,
+        1
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0067",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "13 - 3 = ?",
+      "soru_gorseli": "nesne_13_eksi_3.svg",
+      "ses_dosyasi": "soru_0067.mp3",
+      "secenekler": [
+        11,
+        12,
+        10
+      ],
+      "dogru_cevap": 10,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0068",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "13 - 10 = ?",
+      "soru_gorseli": "nesne_13_eksi_10.svg",
+      "ses_dosyasi": "soru_0068.mp3",
+      "secenekler": [
+        6,
+        3,
+        0
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0069",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "14 - 0 = ?",
+      "soru_gorseli": "nesne_14_eksi_0.svg",
+      "ses_dosyasi": "soru_0069.mp3",
+      "secenekler": [
+        14,
+        11,
+        15
+      ],
+      "dogru_cevap": 14,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0070",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "15 - 1 = ?",
+      "soru_gorseli": "nesne_15_eksi_1.svg",
+      "ses_dosyasi": "soru_0070.mp3",
+      "secenekler": [
+        12,
+        13,
+        14
+      ],
+      "dogru_cevap": 14,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0071",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_metni": "15 - 13 = ?",
+      "soru_gorseli": "nesne_15_eksi_13.svg",
+      "ses_dosyasi": "soru_0071.mp3",
+      "secenekler": [
+        5,
+        0,
+        2
+      ],
+      "dogru_cevap": 2,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0073",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "4 + 11 = ?",
+      "soru_gorseli": "nesne_4_artı_11.svg",
+      "ses_dosyasi": "soru_0073.mp3",
+      "secenekler": [
+        15,
+        16,
+        18
+      ],
+      "dogru_cevap": 15,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0074",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "5 + 0 = ?",
+      "soru_gorseli": "nesne_5_artı_0.svg",
+      "ses_dosyasi": "soru_0074.mp3",
+      "secenekler": [
+        5,
+        4,
+        7
+      ],
+      "dogru_cevap": 5,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0076",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "7 + 0 = ?",
+      "soru_gorseli": "nesne_7_artı_0.svg",
+      "ses_dosyasi": "soru_0076.mp3",
+      "secenekler": [
+        7,
+        4,
+        6
+      ],
+      "dogru_cevap": 7,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0077",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "8 + 5 = ?",
+      "soru_gorseli": "nesne_8_artı_5.svg",
+      "ses_dosyasi": "soru_0077.mp3",
+      "secenekler": [
+        12,
+        13,
+        15
+      ],
+      "dogru_cevap": 13,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0079",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "9 + 5 = ?",
+      "soru_gorseli": "nesne_9_artı_5.svg",
+      "ses_dosyasi": "soru_0079.mp3",
+      "secenekler": [
+        14,
+        16,
+        17
+      ],
+      "dogru_cevap": 14,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0080",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "14 + 4 = ?",
+      "soru_gorseli": "nesne_14_artı_4.svg",
+      "ses_dosyasi": "soru_0080.mp3",
+      "secenekler": [
+        20,
+        18,
+        15
+      ],
+      "dogru_cevap": 18,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0081",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "15 + 4 = ?",
+      "soru_gorseli": "nesne_15_artı_4.svg",
+      "ses_dosyasi": "soru_0081.mp3",
+      "secenekler": [
+        19,
+        21,
+        18
+      ],
+      "dogru_cevap": 19,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0083",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "7 - 2 = ?",
+      "soru_gorseli": "nesne_7_eksi_2.svg",
+      "ses_dosyasi": "soru_0083.mp3",
+      "secenekler": [
+        5,
+        4,
+        3
+      ],
+      "dogru_cevap": 5,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0084",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "9 - 5 = ?",
+      "soru_gorseli": "nesne_9_eksi_5.svg",
+      "ses_dosyasi": "soru_0084.mp3",
+      "secenekler": [
+        4,
+        1,
+        3
+      ],
+      "dogru_cevap": 4,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0085",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "10 - 8 = ?",
+      "soru_gorseli": "nesne_10_eksi_8.svg",
+      "ses_dosyasi": "soru_0085.mp3",
+      "secenekler": [
+        3,
+        2,
+        5
+      ],
+      "dogru_cevap": 2,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0086",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "13 - 9 = ?",
+      "soru_gorseli": "nesne_13_eksi_9.svg",
+      "ses_dosyasi": "soru_0086.mp3",
+      "secenekler": [
+        6,
+        3,
+        4
+      ],
+      "dogru_cevap": 4,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0087",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "13 - 13 = ?",
+      "soru_gorseli": "nesne_13_eksi_13.svg",
+      "ses_dosyasi": "soru_0087.mp3",
+      "secenekler": [
+        0,
+        2,
+        3
+      ],
+      "dogru_cevap": 0,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0088",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "14 - 13 = ?",
+      "soru_gorseli": "nesne_14_eksi_13.svg",
+      "ses_dosyasi": "soru_0088.mp3",
+      "secenekler": [
+        1,
+        0,
+        4
+      ],
+      "dogru_cevap": 1,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0089",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "16 - 1 = ?",
+      "soru_gorseli": "nesne_16_eksi_1.svg",
+      "ses_dosyasi": "soru_0089.mp3",
+      "secenekler": [
+        14,
+        12,
+        15
+      ],
+      "dogru_cevap": 15,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0090",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "16 - 13 = ?",
+      "soru_gorseli": "nesne_16_eksi_13.svg",
+      "ses_dosyasi": "soru_0090.mp3",
+      "secenekler": [
+        3,
+        2,
+        1
+      ],
+      "dogru_cevap": 3,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0091",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "20 - 11 = ?",
+      "soru_gorseli": "nesne_20_eksi_11.svg",
+      "ses_dosyasi": "soru_0091.mp3",
+      "secenekler": [
+        9,
+        8,
+        6
+      ],
+      "dogru_cevap": 9,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0092",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'ye kadar)",
+      "seviye": 3,
+      "oyun_tipi": "eslestirme",
+      "soru_metni": "20 - 17 = ?",
+      "soru_gorseli": "nesne_20_eksi_17.svg",
+      "ses_dosyasi": "soru_0092.mp3",
+      "secenekler": [
+        5,
+        3,
+        6
+      ],
+      "dogru_cevap": 3,
+      "ipucu": null,
+      "zorluk_puani": 3,
+      "soru_tipi": "denklem"
+    },
+    {
+      "id": "MAT-1-0093",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 1 → 2",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        0,
+        2,
+        1
+      ],
+      "dogru_cevap": 0,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0094",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 2 → 3",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        2,
+        0,
+        1
+      ],
+      "dogru_cevap": 1,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0095",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "2 → 3 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        4,
+        5,
+        6
+      ],
+      "dogru_cevap": 4,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0096",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "3 → 4 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        7,
+        3,
+        5
+      ],
+      "dogru_cevap": 5,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0097",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "4 → 5 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        8,
+        4,
+        6
+      ],
+      "dogru_cevap": 6,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0098",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 6 → 7",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        5,
+        4,
+        6
+      ],
+      "dogru_cevap": 5,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0099",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 1,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 8 → 9",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        10,
+        8,
+        7
+      ],
+      "dogru_cevap": 7,
+      "ipucu": null,
+      "zorluk_puani": 1
+    },
+    {
+      "id": "MAT-1-0100",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "0 → 1 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        1,
+        0,
+        2
+      ],
+      "dogru_cevap": 2,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0104",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 7 → 8",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        5,
+        6,
+        8
+      ],
+      "dogru_cevap": 6,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0106",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "12 → 13 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        14,
+        11,
+        15
+      ],
+      "dogru_cevap": 14,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0108",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 10 → 11",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        6,
+        11,
+        9
+      ],
+      "dogru_cevap": 9,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0110",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "13 → ? → 15",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        11,
+        13,
+        14
+      ],
+      "dogru_cevap": 14,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0111",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 17 → 18",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        14,
+        17,
+        16
+      ],
+      "dogru_cevap": 16,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0112",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "17 → ? → 19",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        17,
+        18,
+        16
+      ],
+      "dogru_cevap": 18,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0113",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "18 → ? → 20",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        19,
+        21,
+        20
+      ],
+      "dogru_cevap": 19,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0114",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "12 - 3 = ?",
+      "soru_gorseli": "nesne_12_-_3.svg",
+      "ses_dosyasi": "soru_0114.mp3",
+      "secenekler": [
+        9,
+        7,
+        11
+      ],
+      "dogru_cevap": 9,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0115",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "12 + 3 = ?",
+      "soru_gorseli": "nesne_12_+_3.svg",
+      "ses_dosyasi": "soru_0115.mp3",
+      "secenekler": [
+        13,
+        16,
+        15
+      ],
+      "dogru_cevap": 15,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0116",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "11 - 10 = ?",
+      "soru_gorseli": "nesne_11_-_10.svg",
+      "ses_dosyasi": "soru_0116.mp3",
+      "secenekler": [
+        1,
+        2,
+        4
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0117",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "2 - 1 = ?",
+      "soru_gorseli": "nesne_2_-_1.svg",
+      "ses_dosyasi": "soru_0117.mp3",
+      "secenekler": [
+        1,
+        2,
+        0
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0118",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "2 - 2 = ?",
+      "soru_gorseli": "nesne_2_-_2.svg",
+      "ses_dosyasi": "soru_0118.mp3",
+      "secenekler": [
+        0,
+        2,
+        1
+      ],
+      "dogru_cevap": 0,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0119",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "5 - 4 = ?",
+      "soru_gorseli": "nesne_5_-_4.svg",
+      "ses_dosyasi": "soru_0119.mp3",
+      "secenekler": [
+        4,
+        1,
+        3
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0120",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "13 + 1 = ?",
+      "soru_gorseli": "nesne_13_+_1.svg",
+      "ses_dosyasi": "soru_0120.mp3",
+      "secenekler": [
+        17,
+        14,
+        11
+      ],
+      "dogru_cevap": 14,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0121",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "4 - 1 = ?",
+      "soru_gorseli": "nesne_4_-_1.svg",
+      "ses_dosyasi": "soru_0121.mp3",
+      "secenekler": [
+        0,
+        6,
+        3
+      ],
+      "dogru_cevap": 3,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0122",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (15'a kadar)",
+      "seviye": 2,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "4 - 3 = ?",
+      "soru_gorseli": "nesne_4_-_3.svg",
+      "ses_dosyasi": "soru_0122.mp3",
+      "secenekler": [
+        4,
+        3,
+        1
+      ],
+      "dogru_cevap": 1,
+      "ipucu": "İstersen görsel ipucunu aç",
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0123",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "3 + 3 = ?",
+      "soru_gorseli": "nesne_3_+_3.svg",
+      "ses_dosyasi": "soru_0123.mp3",
+      "secenekler": [
+        6,
+        4,
+        5
+      ],
+      "dogru_cevap": 6,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0124",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "6 - 6 = ?",
+      "soru_gorseli": "nesne_6_-_6.svg",
+      "ses_dosyasi": "soru_0124.mp3",
+      "secenekler": [
+        1,
+        3,
+        0
+      ],
+      "dogru_cevap": 0,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0125",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "1 - 0 = ?",
+      "soru_gorseli": "nesne_1_-_0.svg",
+      "ses_dosyasi": "soru_0125.mp3",
+      "secenekler": [
+        2,
+        1,
+        0
+      ],
+      "dogru_cevap": 1,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0126",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "11 + 2 = ?",
+      "soru_gorseli": "nesne_11_+_2.svg",
+      "ses_dosyasi": "soru_0126.mp3",
+      "secenekler": [
+        12,
+        13,
+        10
+      ],
+      "dogru_cevap": 13,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0127",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "9 + 10 = ?",
+      "soru_gorseli": "nesne_9_+_10.svg",
+      "ses_dosyasi": "soru_0127.mp3",
+      "secenekler": [
+        18,
+        19,
+        22
+      ],
+      "dogru_cevap": 19,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0128",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "7 - 4 = ?",
+      "soru_gorseli": "nesne_7_-_4.svg",
+      "ses_dosyasi": "soru_0128.mp3",
+      "secenekler": [
+        4,
+        0,
+        3
+      ],
+      "dogru_cevap": 3,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0129",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "5 - 3 = ?",
+      "soru_gorseli": "nesne_5_-_3.svg",
+      "ses_dosyasi": "soru_0129.mp3",
+      "secenekler": [
+        5,
+        2,
+        4
+      ],
+      "dogru_cevap": 2,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0130",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "6 - 2 = ?",
+      "soru_gorseli": "nesne_6_-_2.svg",
+      "ses_dosyasi": "soru_0130.mp3",
+      "secenekler": [
+        2,
+        4,
+        3
+      ],
+      "dogru_cevap": 4,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0131",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.2 Toplama işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "6 + 12 = ?",
+      "soru_gorseli": "nesne_6_+_12.svg",
+      "ses_dosyasi": "soru_0131.mp3",
+      "secenekler": [
+        17,
+        21,
+        18
+      ],
+      "dogru_cevap": 18,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0132",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "7 - 5 = ?",
+      "soru_gorseli": "nesne_7_-_5.svg",
+      "ses_dosyasi": "soru_0132.mp3",
+      "secenekler": [
+        3,
+        2,
+        5
+      ],
+      "dogru_cevap": 2,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0133",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.3 Çıkarma işlemi yapar (20'a kadar)",
+      "seviye": 3,
+      "oyun_tipi": "arac_yarisi",
+      "soru_tipi": "denklem",
+      "soru_metni": "16 - 5 = ?",
+      "soru_gorseli": "nesne_16_-_5.svg",
+      "ses_dosyasi": "soru_0133.mp3",
+      "secenekler": [
+        13,
+        11,
+        12
+      ],
+      "dogru_cevap": 11,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0134",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 5 → 6",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        6,
+        2,
+        4
+      ],
+      "dogru_cevap": 4,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0135",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "? → 12 → 13",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        14,
+        13,
+        11
+      ],
+      "dogru_cevap": 11,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0136",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "5 → 6 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        9,
+        7,
+        6
+      ],
+      "dogru_cevap": 7,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0137",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 2,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "13 → 14 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        15,
+        16,
+        17
+      ],
+      "dogru_cevap": 15,
+      "ipucu": null,
+      "zorluk_puani": 2
+    },
+    {
+      "id": "MAT-1-0138",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "15 → 16 → ?",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        15,
+        19,
+        17
+      ],
+      "dogru_cevap": 17,
+      "ipucu": null,
+      "zorluk_puani": 3
+    },
+    {
+      "id": "MAT-1-0139",
+      "ders": "Matematik",
+      "sinif": 1,
+      "kazanim": "M.1.1.1 Sayıları sıralar, önce/sonra gelen sayıyı bulur",
+      "seviye": 3,
+      "oyun_tipi": "bosluk_doldurma",
+      "soru_tipi": "sira",
+      "soru_metni": "12 → ? → 14",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        11,
+        15,
+        13
+      ],
+      "dogru_cevap": 13,
+      "ipucu": null,
+      "zorluk_puani": 3
+    }
+  ]
+}
