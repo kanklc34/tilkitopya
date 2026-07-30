@@ -1,4 +1,4 @@
-# İlkokul Platformu — 1. Sınıf (Vite + React)
+# Tilkitopya — İlkokul Platformu (1. Sınıf)
 
 ## Yerel geliştirme
 
@@ -9,15 +9,21 @@ npm run dev
 
 Tarayıcıda `http://localhost:5173` açılır.
 
-## Canlıya alma (ücretsiz)
+## Canlıya alma — GitHub Pages (bu repo için hazır)
 
-Bu proje tamamen istemci tarafı (sunucu gerektirmez). En kolay seçenekler:
+Repo zaten yapılandırıldı: `vite.config.js` içindeki `base: '/tilkitopya/'` ve
+`.github/workflows/deploy.yml` otomatik deploy için hazır. Tek yapman gereken:
 
-1. **Vercel**: `vercel.com` üzerinden GitHub reposunu bağla, otomatik deploy eder. Ücretsiz katman bu ölçek için fazlasıyla yeterli.
-2. **Netlify**: Aynı mantık, `netlify.com`.
-3. **Cloudflare Pages**: Aynı mantık, sınırsız bant genişliği ile ücretsiz.
+1. Bu klasörü push et:
+   ```bash
+   git push -u origin main
+   ```
+2. GitHub'da repo sayfasına git → **Settings → Pages**
+3. "Build and deployment" → **Source** kısmını **"GitHub Actions"** olarak seç (tek seferlik, manuel bir adım)
+4. Push sonrası Actions sekmesinde deploy otomatik başlar (~1 dakika sürer)
+5. Site şu adreste yayında olur: **https://kanklc34.github.io/tilkitopya/**
 
-Herhangi birinde: `npm run build` komutu `dist/` klasörünü üretir, o klasörü deploy edersin.
+Bundan sonra `main` branch'ine her push'ta site otomatik güncellenir.
 
 ## Proje Yapısı
 
@@ -26,11 +32,12 @@ src/
   App.jsx              -> Ana menü + oyun yönlendirme (tek kayıt noktası)
   games/                -> Her oyun kendi dosyasında, bağımsız bileşen
   data/                 -> Soru bankaları (JSON) - tek veri katmanı kaynağı
+.github/workflows/      -> Otomatik GitHub Pages dağıtımı
 ```
 
 ## Yeni bir oyun eklemek
 
-1. `src/games/` içine yeni `.jsx` dosyası ekle (mevcutlardan birini örnek al — hepsi aynı tasarım dilini paylaşıyor: CSS değişkenleri, Fredoka/Nunito fontları, tilki maskotu).
+1. `src/games/` içine yeni `.jsx` dosyası ekle (mevcutlardan birini örnek al — hepsi aynı tasarım dilini paylaşıyor: CSS değişkenleri, Fredoka/Nunito fontları, tilki maskotu, ses geri bildirimi, duraklatma kontrolü).
 2. `src/App.jsx` içindeki `GAMES` dizisine bir satır ekle.
 
 ## Yeni sorular eklemek / güncellemek
@@ -45,5 +52,6 @@ Pratik Modu'ndaki gibi) sıradaki mimari iyileştirme.
 - Türkçe/İngilizce/Hayat Bilgisi oyunlarını da `src/data/*.json` dosyalarına bağlamak (tek veri katmanı).
 - 2-4. sınıf içeriklerinin eklenmesi.
 - Maskot için özgün görsel tasarım (şu an 🦊 emoji yer tutucu).
-- Gerçek öğretmen/pedagog gözden geçirmesi (soru içerikleri kural tabanlı üretildi).
+- Gerçek öğretmen/pedagog gözden geçirmesi (soru içerikleri kural tabanlı üretildi, henüz pedagojik doğrulamadan geçmedi).
+- Erişilebilirlik denetimi (ekran okuyucu, klavye navigasyonu henüz ele alınmadı).
 - Seviye haritası / ilerleme sistemi (ayrı bir tasarım kararı olarak planlandı).
