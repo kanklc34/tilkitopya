@@ -122,6 +122,7 @@ export default function TurkishFillGame({ onExit } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [finished, setFinished] = useState(false);
+  const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const [paused, setPaused] = useState(false);
@@ -143,7 +144,7 @@ export default function TurkishFillGame({ onExit } = {}) {
   const totalBlanks = puzzle.type === "sequence" ? 1 : puzzle.blankPositions.length;
 
   function handlePick(letter) {
-    if (paused || finished || feedback === "correct") return;
+    if (paused || finished || roundDone || feedback === "correct") return;
 
     if (letter === currentLetter) {
       setFeedback("correct");
@@ -159,10 +160,7 @@ export default function TurkishFillGame({ onExit } = {}) {
             if (round + 1 >= TOTAL_ROUNDS) {
               setFinished(true);
             } else {
-              const r = round + 1;
-              setRound(r);
-              setProgress(0);
-              nextPuzzle(r);
+              setRoundDone(true);
             }
           } else {
             nextPuzzle(round);
@@ -185,6 +183,14 @@ export default function TurkishFillGame({ onExit } = {}) {
     }
   }
 
+  function nextRound() {
+    const r = round + 1;
+    setRound(r);
+    setProgress(0);
+    setRoundDone(false);
+    nextPuzzle(r);
+  }
+
   // patlama efektini kısa süre sonra kapat
   useEffect(() => {
     if (!showBurst) return;
@@ -198,6 +204,7 @@ export default function TurkishFillGame({ onExit } = {}) {
     setProgress(0);
     setTotalMistakes(0);
     setFinished(false);
+    setRoundDone(false);
     nextPuzzle(0);
   }
 
@@ -304,16 +311,41 @@ export default function TurkishFillGame({ onExit } = {}) {
         }
         .letter-slot.is-blank {
           background: var(--track-bg);
-          border: 3px dashed #9AB4CE;
+          border: 3px dashed #C4D3E3;
           color: transparent;
+          opacity: 0.55;
         }
         .letter-slot.is-blank.is-current {
           border-color: var(--sun);
+          border-style: solid;
+          opacity: 1;
+          background: #FFF7E0;
+          animation: pulseBlank 1s ease-in-out infinite;
+          position: relative;
+        }
+        .letter-slot.is-blank.is-current::after {
+          content: '👇';
+          position: absolute;
+          top: -26px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 16px;
+          animation: bounceArrow 0.9s ease-in-out infinite;
+        }
+        @keyframes pulseBlank {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,201,60,0.5); }
+          50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(255,201,60,0); }
+        }
+        @keyframes bounceArrow {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50% { transform: translateX(-50%) translateY(-4px); }
         }
         .letter-slot.is-blank.is-filled {
           background: #E4F7E6;
           border: 3px solid var(--grass-dark);
           color: var(--grass-dark);
+          opacity: 1;
+          animation: none;
         }
 
         .letterpad {
@@ -490,6 +522,16 @@ export default function TurkishFillGame({ onExit } = {}) {
           );
         })}
       </div>
+
+      {roundDone && (
+        <div className="round-overlay">
+          <Trophy size={40} color="#FFC93C" />
+          <div className="finish-title">Tur {round + 1} tamam!</div>
+          <button className="primary-btn" onClick={nextRound}>
+            Sonraki Tur
+          </button>
+        </div>
+      )}
 
       {finished && (
         <div className="finish-overlay">

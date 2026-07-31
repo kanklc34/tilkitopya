@@ -110,6 +110,7 @@ export default function FillBlankGame({ onExit } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [finished, setFinished] = useState(false);
+  const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const [paused, setPaused] = useState(false);
@@ -131,7 +132,7 @@ export default function FillBlankGame({ onExit } = {}) {
   );
 
   function handlePick(val) {
-    if (feedback === "correct" || finished) return;
+    if (feedback === "correct" || finished || roundDone) return;
 
     if (val === puzzle.answer) {
       setFeedback("correct");
@@ -145,10 +146,7 @@ export default function FillBlankGame({ onExit } = {}) {
           if (round + 1 >= TOTAL_ROUNDS) {
             setFinished(true);
           } else {
-            const r = round + 1;
-            setRound(r);
-            setProgress(0);
-            nextPuzzle(r);
+            setRoundDone(true);
           }
         } else {
           nextPuzzle(round);
@@ -173,12 +171,21 @@ export default function FillBlankGame({ onExit } = {}) {
     return () => clearTimeout(t);
   }, [showBurst]);
 
+  function nextRound() {
+    const r = round + 1;
+    setRound(r);
+    setProgress(0);
+    setRoundDone(false);
+    nextPuzzle(r);
+  }
+
   function restart() {
     clearTimeout(timeoutRef.current);
     setRound(0);
     setProgress(0);
     setTotalMistakes(0);
     setFinished(false);
+    setRoundDone(false);
     nextPuzzle(0);
   }
 
@@ -461,6 +468,16 @@ export default function FillBlankGame({ onExit } = {}) {
           );
         })}
       </div>
+
+      {roundDone && (
+        <div className="round-overlay">
+          <Trophy size={40} color="#FFC93C" />
+          <div className="finish-title">Tur {round + 1} tamam!</div>
+          <button className="primary-btn" onClick={nextRound}>
+            Sonraki Tur
+          </button>
+        </div>
+      )}
 
       {finished && (
         <div className="finish-overlay">
