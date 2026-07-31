@@ -1,2 +1,2 @@
 * { box-sizing: border-box; }
-body { margin: 0; }
+html, body { margin: 0; overflow-x: hidden; max-width: 100%; }
