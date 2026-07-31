@@ -25,6 +25,25 @@ Repo zaten yapılandırıldı: `vite.config.js` içindeki `base: '/tilkitopya/'`
 
 Bundan sonra `main` branch'ine her push'ta site otomatik güncellenir.
 
+## Uygulama olarak yükleme (PWA)
+
+Site artık bir PWA (Progressive Web App). Telefonda tarayıcıda açıp:
+- **Android/Chrome**: adres çubuğunda "Yükle" ikonu çıkar, ya da menüden "Ana ekrana ekle"
+- **iPhone/Safari**: Paylaş butonu → "Ana Ekrana Ekle"
+
+Böylece gerçek bir uygulama gibi ikonla ana ekrana yüklenir, tarayıcı çubuğu olmadan tam ekran açılır,
+ve son ziyaret edilen sayfalar çevrimdışı da (internet olmadan) önbellekten yüklenir.
+
+Not: Bu, App Store/Play Store'a koymanın yerini almaz ama ücretsizdir ve anında yayınlanır. İleride
+gerçekten mağazaya koymak istenirse, aynı kod tabanı Capacitor gibi bir araçla native kabuğa sarılabilir.
+
+## Bilinen küçük bir güvenlik notu
+
+`vite-plugin-pwa`'nın (sadece build sırasında çalışan, kullanıcıya hiç ulaşmayan) bir alt bağımlılığında
+düşük riskli bir `npm audit` uyarısı var (brace-expansion DoS, workbox-build üzerinden geliyor). Üretilen
+siteyi etkilemiyor, geliştirici makinesinde/CI'da build sırasında teorik bir risk. `npm audit fix --force`
+ile düzeltilebilir ama bu, `vite-plugin-pwa`'yı breaking-change içeren bir sürüme yükseltiyor.
+
 ## Proje Yapısı
 
 ```
