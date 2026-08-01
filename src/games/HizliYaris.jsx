@@ -5,7 +5,17 @@ import { Star, HelpCircle, Trophy, RotateCcw } from "lucide-react";
 const RACE_LENGTH = 10;
 const LAP_SIZE = 4;
 const OPTION_COLORS = ["#5AB4E0", "#FF9F5A", "#8FCB6B"]; // sabit, cevap doğruluğuyla ilgisiz - sadece görsel çeşitlilik
-const OBJECT_POOL = ["🍎", "⭐", "⚽", "🚗", "🎈", "🐟"];
+
+// Tema havuzu: her tema kısa bağlam cümlesi + eşleşen emoji taşıyor.
+// Sıfır durumunda işlemi (özellikle çıkarmayı) gizlememek için toplama/
+// çıkarma ayrı şablonlara sahip (bkz. soru bankası üretimindeki aynı ders).
+const THEMES = [
+  { ad: "hayvanlar", emoji: "🐦", add: "{a} kuş vardı, {b} kuş daha geldi.", sub: "{a} kuş vardı, {b} kuş uçtu gitti.", addZero: "{a} kuş vardı, hiç kuş gelmedi.", subZero: "{a} kuş vardı, hiç kuş uçup gitmedi." },
+  { ad: "doga", emoji: "🌸", add: "{a} çiçek vardı, {b} çiçek daha açtı.", sub: "{a} çiçek vardı, {b} tanesi soldu.", addZero: "{a} çiçek vardı, hiç çiçek açmadı.", subZero: "{a} çiçek vardı, hiç çiçek solmadı." },
+  { ad: "oyuncaklar", emoji: "🎈", add: "{a} balon vardı, {b} balon daha eklendi.", sub: "{a} balon vardı, {b} tanesi uçtu.", addZero: "{a} balon vardı, hiç balon eklenmedi.", subZero: "{a} balon vardı, hiç balon uçmadı." },
+  { ad: "yiyecek", emoji: "🍎", add: "{a} elma vardı, {b} elma daha kondu.", sub: "{a} elma vardı, {b} elma yendi.", addZero: "{a} elma vardı, hiç elma konmadı.", subZero: "{a} elma vardı, hiç elma yenmedi." },
+  { ad: "okul", emoji: "📖", add: "{a} kitap vardı, {b} kitap daha kondu.", sub: "{a} kitap vardı, {b} kitap verildi.", addZero: "{a} kitap vardı, hiç kitap konmadı.", subZero: "{a} kitap vardı, hiç kitap verilmedi." },
+];
 
 function ObjectGroup({ n, crossed = 0, emoji }) {
   if (n === 0) {
@@ -33,7 +43,7 @@ function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateQuestion(maxNumber) {
+function generateQuestion(maxNumber, withContext) {
   const op = Math.random() < 0.5 ? "+" : "-";
   let a, b, answer;
   if (op === "+") {
@@ -45,8 +55,18 @@ function generateQuestion(maxNumber) {
     b = rand(0, a);
     answer = a - b;
   }
-  const emoji = OBJECT_POOL[rand(0, OBJECT_POOL.length - 1)];
-  return { a, b, op, answer, emoji };
+  const theme = THEMES[rand(0, THEMES.length - 1)];
+  const emoji = theme.emoji;
+
+  let baglamMetni = null;
+  if (withContext) {
+    let tpl;
+    if (b === 0) tpl = op === "+" ? theme.addZero : theme.subZero;
+    else tpl = op === "+" ? theme.add : theme.sub;
+    baglamMetni = tpl.replace("{a}", a).replace("{b}", b);
+  }
+
+  return { a, b, op, answer, emoji, baglamMetni };
 }
 
 function generateOptions(answer, maxNumber) {
@@ -99,7 +119,7 @@ function playTone(kind) {
 export default function MathRaceGame({ onExit } = {}) {
   const [lap, setLap] = useState(1);
   const [maxNumber, setMaxNumber] = useState(5);
-  const [question, setQuestion] = useState(() => generateQuestion(5));
+  const [question, setQuestion] = useState(() => generateQuestion(5, true));
   const [options, setOptions] = useState(() => generateOptions(question.answer, 5));
   const [progress, setProgress] = useState(0);
   const [totalMistakes, setTotalMistakes] = useState(0);
@@ -114,7 +134,8 @@ export default function MathRaceGame({ onExit } = {}) {
 
   const nextQuestion = useCallback((newMax) => {
     const m = newMax ?? maxNumber;
-    const q = generateQuestion(m);
+    const withContext = m <= 10; // lap<=2 ile eşdeğer eşik
+    const q = generateQuestion(m, withContext);
     setQuestion(q);
     setOptions(generateOptions(q.answer, m));
     setShowHint(false);
@@ -351,6 +372,18 @@ export default function MathRaceGame({ onExit } = {}) {
         .object-op {
           font-size: 20px;
         }
+        .context-text {
+          font-family: 'Nunito', sans-serif;
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--ink-soft);
+          background: var(--track-bg);
+          border-radius: 12px;
+          padding: 7px 12px;
+          margin-bottom: 10px;
+          line-height: 1.4;
+        }
+        .context-emoji { font-size: 15px; }
         .question-text {
           font-family: 'Fredoka', sans-serif;
           font-weight: 700;
@@ -528,6 +561,12 @@ export default function MathRaceGame({ onExit } = {}) {
       </div>
 
       <div className={`question-card ${feedback === "wrong" ? "shake" : ""}`}>
+        {question.baglamMetni && (
+          <div className="context-text">
+            <span className="context-emoji">{question.emoji}</span> {question.baglamMetni}
+          </div>
+        )}
+
         {objectsVisible && (
           <div className="object-row">
             {question.op === "+" ? (
