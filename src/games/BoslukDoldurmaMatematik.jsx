@@ -15,6 +15,18 @@ const TOTAL_ROUNDS = ROUNDS.length;
 // bu, MEB'in "Sayılar ve Nicelikler: sıralama" kazanımına karşılık geliyor.
 const SEQUENCE_RATIO = 0.35;
 
+// Tema havuzu: sadece "sonuç eksik" (a op b = ?) sorularında bağlam cümlesi
+// anlamlı okunuyor - "eksik toplama" (3 + ? = 5) türünde doğal bir cümle
+// kurmak zorlaşıyor, o yüzden orada tema kullanmıyoruz (zaten daha soyut
+// bir aşama - concreteness fading ile uyumlu).
+const THEMES = [
+  { emoji: "🐦", add: "{a} kuş vardı, {b} kuş daha geldi.", sub: "{a} kuş vardı, {b} kuş uçtu gitti.", addZero: "{a} kuş vardı, hiç kuş gelmedi.", subZero: "{a} kuş vardı, hiç kuş uçup gitmedi." },
+  { emoji: "🌸", add: "{a} çiçek vardı, {b} çiçek daha açtı.", sub: "{a} çiçek vardı, {b} tanesi soldu.", addZero: "{a} çiçek vardı, hiç çiçek açmadı.", subZero: "{a} çiçek vardı, hiç çiçek solmadı." },
+  { emoji: "🎈", add: "{a} balon vardı, {b} balon daha eklendi.", sub: "{a} balon vardı, {b} tanesi uçtu.", addZero: "{a} balon vardı, hiç balon eklenmedi.", subZero: "{a} balon vardı, hiç balon uçmadı." },
+  { emoji: "🍎", add: "{a} elma vardı, {b} elma daha kondu.", sub: "{a} elma vardı, {b} elma yendi.", addZero: "{a} elma vardı, hiç elma konmadı.", subZero: "{a} elma vardı, hiç elma yenmedi." },
+  { emoji: "📖", add: "{a} kitap vardı, {b} kitap daha kondu.", sub: "{a} kitap vardı, {b} kitap verildi.", addZero: "{a} kitap vardı, hiç kitap konmadı.", subZero: "{a} kitap vardı, hiç kitap verilmedi." },
+];
+
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -53,7 +65,19 @@ function generateEquationPuzzle(max, blankPositions) {
   }
   const blank = blankPositions[rand(0, blankPositions.length - 1)];
   const answer = blank === "result" ? c : blank === "second" ? b : a;
-  return { type: "equation", a, b, c, op, blank, answer };
+
+  let baglamMetni = null;
+  let emoji = null;
+  if (blank === "result") {
+    const theme = THEMES[rand(0, THEMES.length - 1)];
+    emoji = theme.emoji;
+    let tpl;
+    if (b === 0) tpl = op === "+" ? theme.addZero : theme.subZero;
+    else tpl = op === "+" ? theme.add : theme.sub;
+    baglamMetni = tpl.replace("{a}", a).replace("{b}", b);
+  }
+
+  return { type: "equation", a, b, c, op, blank, answer, baglamMetni, emoji };
 }
 
 function generateSequencePuzzle(max) {
@@ -287,6 +311,18 @@ export default function FillBlankGame({ onExit } = {}) {
           80% { transform: translateX(6px); }
         }
 
+        .context-text {
+          font-family: 'Nunito', sans-serif;
+          font-weight: 700;
+          font-size: 14px;
+          color: var(--ink-soft);
+          background: var(--track-bg);
+          border-radius: 12px;
+          padding: 7px 12px;
+          margin-bottom: 12px;
+          line-height: 1.4;
+        }
+        .context-emoji { font-size: 15px; }
         .equation-row {
           display: flex;
           align-items: center;
@@ -437,6 +473,11 @@ export default function FillBlankGame({ onExit } = {}) {
 
       <div className={`puzzle-card ${feedback === "wrong" ? "shake" : ""}`}>
         {showBurst && <div className="burst">⭐</div>}
+        {puzzle.baglamMetni && (
+          <div className="context-text">
+            <span className="context-emoji">{puzzle.emoji}</span> {puzzle.baglamMetni}
+          </div>
+        )}
         {puzzle.type === "equation" ? (
           <div className="equation-row">
             <Slot value={puzzle.a} isBlank={puzzle.blank === "first"} filled={feedback === "correct" && puzzle.blank === "first"} />
