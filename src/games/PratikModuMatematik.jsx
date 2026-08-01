@@ -11,6 +11,8 @@ const QUESTIONS = matematikBankasi.sorular.map((q) => ({
   seviye: q.seviye,
   soru_tipi: q.soru_tipi,
   soru_metni: q.soru_metni,
+  baglam_metni: q.baglam_metni,
+  tema_emoji: q.tema_emoji,
   secenekler: q.secenekler,
   dogru_cevap: q.dogru_cevap,
   ipucu: q.ipucu,
@@ -267,6 +269,18 @@ export default function PratikModuMatematik({ onExit } = {}) {
           60% { transform: translateX(-6px); }
           80% { transform: translateX(6px); }
         }
+        .context-text {
+          font-family: 'Nunito', sans-serif;
+          font-weight: 700;
+          font-size: 15px;
+          color: var(--ink-soft);
+          background: var(--track-bg);
+          border-radius: 12px;
+          padding: 8px 14px;
+          margin-bottom: 12px;
+          line-height: 1.4;
+        }
+        .context-emoji { font-size: 16px; }
         .question-text {
           font-family: 'Fredoka', sans-serif;
           font-weight: 700;
@@ -433,6 +447,11 @@ export default function PratikModuMatematik({ onExit } = {}) {
       <div className={`question-card ${feedback === "wrong" ? "shake" : ""}`}>
         {levelUpFlash === "up" && <div className="level-up-badge">🎉 Seviye atladın!</div>}
         {levelUpFlash === "down" && <div className="level-up-badge level-down-badge">💪 Biraz kolaylaştıralım</div>}
+        {current.baglam_metni && (
+          <div className="context-text">
+            <span className="context-emoji">{current.tema_emoji}</span> {current.baglam_metni}
+          </div>
+        )}
         <div className="question-text">{current.soru_metni}</div>
         {!showHint && current.ipucu ? (
           <button className="hint-btn" onClick={() => setShowHint(true)}>
