@@ -4,30 +4,35 @@ import { Star, Trophy, RotateCcw } from "lucide-react";
 // ---- Oyun ayarları ----
 // Aynı eşleştirme motoru, içerik İngilizce kelime <-> görsel.
 // Tur ilerledikçe çift sayısı artıyor (3x2 -> 4x2 -> 3x4), yeni kelimeler geliyor.
+// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı.
 const WORD_BANK = [
-  { word: "CAT", emoji: "🐱" },
-  { word: "DOG", emoji: "🐶" },
-  { word: "APPLE", emoji: "🍎" },
-  { word: "SUN", emoji: "☀️" },
-  { word: "STAR", emoji: "⭐" },
-  { word: "CAR", emoji: "🚗" },
-  { word: "FISH", emoji: "🐟" },
-  { word: "BALL", emoji: "⚽" },
-  { word: "BOOK", emoji: "📖" },
-  { word: "MOON", emoji: "🌙" },
-  { word: "HOUSE", emoji: "🏠" },
-  { word: "BIRD", emoji: "🐦" },
-  { word: "BANANA", emoji: "🍌" },
-  { word: "FLOWER", emoji: "🌸" },
-  { word: "BALLOON", emoji: "🎈" },
-  { word: "BUTTERFLY", emoji: "🦋" },
+  { word: "CAT", emoji: "🐱", tema: "hayvanlar" },
+  { word: "DOG", emoji: "🐶", tema: "hayvanlar" },
+  { word: "FISH", emoji: "🐟", tema: "hayvanlar" },
+  { word: "BIRD", emoji: "🐦", tema: "hayvanlar" },
+  { word: "SUN", emoji: "☀️", tema: "doga" },
+  { word: "MOON", emoji: "🌙", tema: "doga" },
+  { word: "STAR", emoji: "⭐", tema: "doga" },
+  { word: "FLOWER", emoji: "🌸", tema: "doga" },
+  { word: "CAR", emoji: "🚗", tema: "oyuncaklar" },
+  { word: "BALL", emoji: "⚽", tema: "oyuncaklar" },
+  { word: "BALLOON", emoji: "🎈", tema: "oyuncaklar" },
+  { word: "HOUSE", emoji: "🏠", tema: "ev_aile" },
+  { word: "APPLE", emoji: "🍎", tema: "yiyecek" },
+  { word: "BANANA", emoji: "🍌", tema: "yiyecek" },
+  { word: "BOOK", emoji: "📖", tema: "okul" },
 ];
+const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ROUNDS = [
   { pairs: 3, columns: 3 }, // 3x2 - basit başlangıç
   { pairs: 4, columns: 4 }, // 4x2
   { pairs: 6, columns: 3 }, // 3x4 - en zor tur
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -40,7 +45,11 @@ function shuffle(arr) {
 
 function buildDeck(round) {
   const { pairs } = ROUNDS[round];
-  const entries = shuffle(WORD_BANK).slice(0, pairs);
+  // Son tur (en zor) tam karışık havuzdan geliyor - erken turlar tek bir
+  // temaya bağlı kalıyor (concreteness fading ile aynı mantık).
+  const eligible = THEMES.filter((t) => WORD_BANK.filter((w) => w.tema === t).length >= pairs);
+  const pool = eligible.length > 0 ? WORD_BANK.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : WORD_BANK;
+  const entries = shuffle(pool).slice(0, pairs);
   const cards = [];
   entries.forEach((entry, idx) => {
     const pairId = `p${idx}`;

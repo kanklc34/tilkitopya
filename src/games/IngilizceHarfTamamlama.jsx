@@ -4,22 +4,30 @@ import { Star, Trophy, RotateCcw } from "lucide-react";
 // ---- Oyun ayarları ----
 // Türkçe harf tamamlama motorunun aynısı, içerik + alfabe İngilizce.
 const ROUND_LENGTH = 5;
+// Kelimeler Türkçe motordaki 6 temayla aynı - her tur tek bir temaya
+// bağlı kalıyor, karışık kelime akışı yerine tutarlı bir tur hissi verir.
 const WORD_BANK = [
-  { word: "CAT", emoji: "🐱" },
-  { word: "DOG", emoji: "🐶" },
-  { word: "SUN", emoji: "☀️" },
-  { word: "CAR", emoji: "🚗" },
-  { word: "FISH", emoji: "🐟" },
-  { word: "STAR", emoji: "⭐" },
-  { word: "BALL", emoji: "⚽" },
-  { word: "BOOK", emoji: "📖" },
-  { word: "MOON", emoji: "🌙" },
-  { word: "BIRD", emoji: "🐦" },
-  { word: "APPLE", emoji: "🍎" },
-  { word: "HOUSE", emoji: "🏠" },
-  { word: "BANANA", emoji: "🍌" },
-  { word: "FLOWER", emoji: "🌸" },
+  { word: "CAT", emoji: "🐱", tema: "hayvanlar" },
+  { word: "DOG", emoji: "🐶", tema: "hayvanlar" },
+  { word: "FISH", emoji: "🐟", tema: "hayvanlar" },
+  { word: "BIRD", emoji: "🐦", tema: "hayvanlar" },
+  { word: "SUN", emoji: "☀️", tema: "doga" },
+  { word: "MOON", emoji: "🌙", tema: "doga" },
+  { word: "STAR", emoji: "⭐", tema: "doga" },
+  { word: "FLOWER", emoji: "🌸", tema: "doga" },
+  { word: "CAR", emoji: "🚗", tema: "oyuncaklar" },
+  { word: "BALL", emoji: "⚽", tema: "oyuncaklar" },
+  { word: "KITE", emoji: "🪁", tema: "oyuncaklar" },
+  { word: "HOUSE", emoji: "🏠", tema: "ev_aile" },
+  { word: "MOM", emoji: "👩", tema: "ev_aile" },
+  { word: "DAD", emoji: "👨", tema: "ev_aile" },
+  { word: "APPLE", emoji: "🍎", tema: "yiyecek" },
+  { word: "BANANA", emoji: "🍌", tema: "yiyecek" },
+  { word: "MILK", emoji: "🥛", tema: "yiyecek" },
+  { word: "BOOK", emoji: "📖", tema: "okul" },
+  { word: "BAG", emoji: "🎒", tema: "okul" },
 ];
+const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ENGLISH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROUNDS = [
   { blanksCount: 1, positionMode: "end" },
@@ -41,9 +49,10 @@ function shuffle(arr) {
   return a;
 }
 
-function generateWordPuzzle(round) {
+function generateWordPuzzle(round, theme) {
   const { blanksCount, positionMode } = ROUNDS[round];
-  const entry = WORD_BANK[rand(0, WORD_BANK.length - 1)];
+  const pool = WORD_BANK.filter((w) => w.tema === theme);
+  const entry = pool[rand(0, pool.length - 1)];
   const letters = entry.word.split("");
   let positions;
   if (positionMode === "end") {
@@ -61,9 +70,9 @@ function generateSequencePuzzle() {
   return { type: "sequence", seq, blankIndex, answer: seq[blankIndex] };
 }
 
-function generatePuzzle(round) {
+function generatePuzzle(round, theme) {
   if (Math.random() < SEQUENCE_RATIO) return generateSequencePuzzle();
-  return generateWordPuzzle(round);
+  return generateWordPuzzle(round, theme);
 }
 
 function currentLetterOf(puzzle, filledCount) {
@@ -106,7 +115,8 @@ function playTone(kind) {
 
 export default function EnglishFillGame({ onExit } = {}) {
   const [round, setRound] = useState(0);
-  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0));
+  const [currentTheme, setCurrentTheme] = useState(() => THEMES[rand(0, THEMES.length - 1)]);
+  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0, currentTheme));
   const [pad, setPad] = useState(() => generateLetterPad(currentLetterOf(puzzle, 0)));
   const [filledCount, setFilledCount] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -121,8 +131,8 @@ export default function EnglishFillGame({ onExit } = {}) {
   const [showBurst, setShowBurst] = useState(false);
   const timeoutRef = useRef(null);
 
-  const nextPuzzle = useCallback((r) => {
-    const p = generatePuzzle(r);
+  const nextPuzzle = useCallback((r, theme) => {
+    const p = generatePuzzle(r, theme);
     setPuzzle(p);
     setPad(generateLetterPad(currentLetterOf(p, 0)));
     setFilledCount(0);
@@ -155,7 +165,7 @@ export default function EnglishFillGame({ onExit } = {}) {
               setRoundDone(true);
             }
           } else {
-            nextPuzzle(round);
+            nextPuzzle(round, currentTheme);
           }
         } else {
           setFilledCount(nextFilled);
@@ -177,10 +187,12 @@ export default function EnglishFillGame({ onExit } = {}) {
 
   function nextRound() {
     const r = round + 1;
+    const theme = THEMES[rand(0, THEMES.length - 1)];
     setRound(r);
+    setCurrentTheme(theme);
     setProgress(0);
     setRoundDone(false);
-    nextPuzzle(r);
+    nextPuzzle(r, theme);
   }
 
   // patlama efektini kısa süre sonra kapat
@@ -192,12 +204,14 @@ export default function EnglishFillGame({ onExit } = {}) {
 
   function restart() {
     clearTimeout(timeoutRef.current);
+    const theme = THEMES[rand(0, THEMES.length - 1)];
     setRound(0);
+    setCurrentTheme(theme);
     setProgress(0);
     setTotalMistakes(0);
     setFinished(false);
     setRoundDone(false);
-    nextPuzzle(0);
+    nextPuzzle(0, theme);
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
