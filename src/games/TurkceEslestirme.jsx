@@ -3,30 +3,36 @@ import { Star, Trophy, RotateCcw } from "lucide-react";
 
 // ---- Oyun ayarları ----
 // İngilizce Word Match ile aynı motor, içerik Türkçe kelime <-> görsel.
+// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı.
 const WORD_BANK = [
-  { word: "KEDİ", emoji: "🐱" },
-  { word: "KÖPEK", emoji: "🐶" },
-  { word: "ELMA", emoji: "🍎" },
-  { word: "GÜNEŞ", emoji: "☀️" },
-  { word: "YILDIZ", emoji: "⭐" },
-  { word: "ARABA", emoji: "🚗" },
-  { word: "BALIK", emoji: "🐟" },
-  { word: "TOP", emoji: "⚽" },
-  { word: "KİTAP", emoji: "📖" },
-  { word: "AY", emoji: "🌙" },
-  { word: "EV", emoji: "🏠" },
-  { word: "KUŞ", emoji: "🐦" },
-  { word: "MUZ", emoji: "🍌" },
-  { word: "ÇİÇEK", emoji: "🌸" },
-  { word: "BALON", emoji: "🎈" },
-  { word: "KELEBEK", emoji: "🦋" },
+  { word: "KEDİ", emoji: "🐱", tema: "hayvanlar" },
+  { word: "KÖPEK", emoji: "🐶", tema: "hayvanlar" },
+  { word: "KUŞ", emoji: "🐦", tema: "hayvanlar" },
+  { word: "BALIK", emoji: "🐟", tema: "hayvanlar" },
+  { word: "KELEBEK", emoji: "🦋", tema: "hayvanlar" },
+  { word: "GÜNEŞ", emoji: "☀️", tema: "doga" },
+  { word: "AY", emoji: "🌙", tema: "doga" },
+  { word: "YILDIZ", emoji: "⭐", tema: "doga" },
+  { word: "ÇİÇEK", emoji: "🌸", tema: "doga" },
+  { word: "TOP", emoji: "⚽", tema: "oyuncaklar" },
+  { word: "ARABA", emoji: "🚗", tema: "oyuncaklar" },
+  { word: "BALON", emoji: "🎈", tema: "oyuncaklar" },
+  { word: "EV", emoji: "🏠", tema: "ev_aile" },
+  { word: "ELMA", emoji: "🍎", tema: "yiyecek" },
+  { word: "MUZ", emoji: "🍌", tema: "yiyecek" },
+  { word: "KİTAP", emoji: "📖", tema: "okul" },
 ];
+const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ROUNDS = [
   { pairs: 3, columns: 3 },
   { pairs: 4, columns: 4 },
   { pairs: 6, columns: 3 },
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
+
+function rand(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -39,7 +45,12 @@ function shuffle(arr) {
 
 function buildDeck(round) {
   const { pairs } = ROUNDS[round];
-  const entries = shuffle(WORD_BANK).slice(0, pairs);
+  // Son tur (en zor) tam karışık havuzdan geliyor - erken turlar tek bir
+  // temaya bağlı kalıyor (concreteness fading ile aynı mantık: destek
+  // ustalık seviyesinde kalkıyor). Yeterli kelimesi olmayan temalar elenir.
+  const eligible = THEMES.filter((t) => WORD_BANK.filter((w) => w.tema === t).length >= pairs);
+  const pool = eligible.length > 0 ? WORD_BANK.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : WORD_BANK;
+  const entries = shuffle(pool).slice(0, pairs);
   const cards = [];
   entries.forEach((entry, idx) => {
     const pairId = `p${idx}`;
