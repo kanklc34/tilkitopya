@@ -246,6 +246,7 @@ export default function MathRaceGame({ onExit } = {}) {
           color: var(--ink);
         }
         .brand-emoji { font-size: 26px; }
+        .brand-emoji-img { width: 26px; height: 26px; }
         .top-right {
           display: flex;
           align-items: center;
@@ -496,6 +497,7 @@ export default function MathRaceGame({ onExit } = {}) {
           z-index: 10;
         }
         .tutorial-emoji { font-size: 40px; }
+        .tutorial-emoji-img { width: 46px; height: 46px; }
         .tutorial-title {
           font-family: 'Fredoka', sans-serif;
           font-weight: 700;
@@ -540,7 +542,7 @@ export default function MathRaceGame({ onExit } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><span className="brand-emoji">🦊</span> Hızlı Yarış</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Hızlı Yarış</div>
         <div className="top-right">
           <span className="lap-pill">Tur {lap}</span>
           <button className="sound-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">
@@ -636,7 +638,7 @@ export default function MathRaceGame({ onExit } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <div className="tutorial-emoji">🦊</div>
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="tutorial-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

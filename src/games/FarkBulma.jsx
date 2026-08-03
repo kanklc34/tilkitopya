@@ -169,6 +169,7 @@ export default function OddOneOutGame({ onExit } = {}) {
           font-size: 19px;
         }
         .brand-emoji { font-size: 26px; }
+        .brand-emoji-img { width: 26px; height: 26px; }
         .round-pill {
           background: var(--sun);
           color: var(--ink);
@@ -297,6 +298,7 @@ export default function OddOneOutGame({ onExit } = {}) {
           text-decoration: underline;
         }
         .tutorial-emoji { font-size: 38px; }
+        .tutorial-emoji-img { width: 44px; height: 44px; }
         .tutorial-steps {
           display: flex;
           flex-direction: column;
@@ -318,7 +320,7 @@ export default function OddOneOutGame({ onExit } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><span className="brand-emoji">🦊</span> Farklı Olan</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Farklı Olan</div>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
@@ -366,7 +368,7 @@ export default function OddOneOutGame({ onExit } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <div className="tutorial-emoji">🦊</div>
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="finish-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

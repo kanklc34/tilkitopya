@@ -215,6 +215,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
           font-size: 19px;
         }
         .brand-emoji { font-size: 26px; }
+        .brand-emoji-img { width: 26px; height: 26px; }
         .top-right { display: flex; align-items: center; gap: 8px; }
         .icon-btn {
           border: none;
@@ -284,6 +285,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
           box-shadow: 0 4px 0 rgba(0,0,0,0.15);
         }
         .card-back-icon { font-size: 24px; position: relative; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15)); }
+        .card-back-icon-img { width: 26px; height: 26px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15)) brightness(0) invert(1); }
         .burst {
           position: absolute;
           inset: 0;
@@ -367,6 +369,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
           text-decoration: underline;
         }
         .tutorial-emoji { font-size: 38px; }
+        .tutorial-emoji-img { width: 44px; height: 44px; }
         .tutorial-steps {
           display: flex;
           flex-direction: column;
@@ -388,7 +391,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><span className="brand-emoji">🦊</span> Word Match</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Word Match</div>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <span className="moves-pill"><Star size={14} fill="#FFC93C" stroke="#FFC93C" /> {moves}</span>
@@ -413,7 +416,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
             >
               <div className="card-inner">
                 <div className="card-face card-back">
-                  <span className="card-back-icon">🦊</span>
+                  <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="card-back-icon-img" alt="Tilki" />
                 </div>
                 <div className="card-face card-front">
                   <CardFace card={card} />
@@ -456,7 +459,7 @@ export default function EnglishMatchGame({ onExit } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <div className="tutorial-emoji">🦊</div>
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="finish-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

@@ -90,9 +90,11 @@ function HomeScreen({ onSelect }) {
           margin-bottom: 18px;
         }
         .mascot-big {
-          font-size: 64px;
+          width: 96px;
+          height: 96px;
           animation: mascotBob 2.2s ease-in-out infinite;
           display: inline-block;
+          filter: drop-shadow(0 6px 10px rgba(31,46,69,0.15));
         }
         @keyframes mascotBob {
           0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -175,7 +177,7 @@ function HomeScreen({ onSelect }) {
 
       <div className="home-header">
         <div className="mascot-greeting">
-          <span className="mascot-big">🦊</span>
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="mascot-big" alt="Tilki maskot" />
           <div className="mascot-bubble">Merhaba! Bugün ne oynamak istersin?</div>
         </div>
         <div className="home-title">İlkokul Platformu</div>
