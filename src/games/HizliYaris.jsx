@@ -261,17 +261,17 @@ export default function MathRaceGame({ onExit } = {}) {
           padding: 5px 12px;
           border-radius: 999px;
         }
-        .sound-btn {
+        .icon-btn {
           border: none;
           background: var(--card);
-          width: 34px;
-          height: 34px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          font-size: 15px;
+          font-size: 14px;
           box-shadow: 0 2px 6px rgba(31,46,69,0.1);
         }
 
@@ -465,7 +465,7 @@ export default function MathRaceGame({ onExit } = {}) {
           font-size: 26px;
         }
         .finish-stars { display: flex; gap: 6px; margin: 8px 0; }
-        .replay-btn {
+        .primary-btn {
           margin-top: 14px;
           background: var(--sun);
           color: var(--ink);
@@ -528,7 +528,7 @@ export default function MathRaceGame({ onExit } = {}) {
           margin-top: 4px;
           max-width: 280px;
         }
-        .pause-exit-btn {
+        .secondary-btn {
           background: transparent;
           border: none;
           color: rgba(255,255,255,0.75);
@@ -545,10 +545,10 @@ export default function MathRaceGame({ onExit } = {}) {
         <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Hızlı Yarış</div>
         <div className="top-right">
           <span className="lap-pill">Tur {lap}</span>
-          <button className="sound-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">
+          <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">
             {soundOn ? "🔊" : "🔇"}
           </button>
-          <button className="sound-btn" onClick={() => setPaused(true)} aria-label="Duraklat">
+          <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">
             ⏸️
           </button>
         </div>
@@ -630,7 +630,7 @@ export default function MathRaceGame({ onExit } = {}) {
           <div style={{ fontFamily: "Nunito", fontSize: 14, opacity: 0.9 }}>
             {totalMistakes === 0 ? "Hiç yanlışın yok, harikasın!" : `${totalMistakes} kere zorlandın, sorun değil!`}
           </div>
-          <button className="replay-btn" onClick={restart}>
+          <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
         </div>
@@ -655,7 +655,7 @@ export default function MathRaceGame({ onExit } = {}) {
             </div>
           </div>
           <div className="tutorial-note">(Veliye not: Görsel yardım için "İpucu" düğmesi kullanılabilir.)</div>
-          <button className="replay-btn" onClick={() => setShowTutorial(false)}>
+          <button className="primary-btn" onClick={() => setShowTutorial(false)}>
             Başla!
           </button>
         </div>
@@ -665,10 +665,10 @@ export default function MathRaceGame({ onExit } = {}) {
         <div className="tutorial-overlay">
           <div className="tutorial-emoji">⏸️</div>
           <div className="tutorial-title">Duraklatıldı</div>
-          <button className="replay-btn" onClick={() => setPaused(false)}>
+          <button className="primary-btn" onClick={() => setPaused(false)}>
             ▶️ Devam Et
           </button>
-          <button className="pause-exit-btn" onClick={() => (onExit ? onExit() : setPaused(false))}>
+          <button className="secondary-btn" onClick={() => (onExit ? onExit() : setPaused(false))}>
             Oyundan Çık
           </button>
           <div className="tutorial-note">(Üretimde: çıkış öncesi veli onayı/PIN istenebilir.)</div>
