@@ -10,12 +10,14 @@ import {
 // ---- Ebeveyn Kapısı ----
 // Çocuğun yanlışlıkla girip kafasının karışmaması için basit bir
 // "ebeveyn kapısı" deseni (pek çok çocuk uygulamasında standart).
-// KVKK/hassas veri toplanmadığı için PIN yerine, çocuğun bu yaşta
-// çözemeyeceği bir işlem yeterli - ekstra hatırlanacak bir şey yok.
+// KVKK/hassas veri toplanmadığı için PIN yerine bir işlem yeterli.
+// Çarpma kullanılıyor çünkü MEB müfredatında 1. sınıfta çarpma hiç
+// yok (2-3. sınıfta başlıyor) - çıkarmanın aksine, sayılar ne olursa
+// olsun tutarlı şekilde çocuğun bilgisi dışında kalıyor.
 function rastgeleSoru() {
-  const a = Math.floor(Math.random() * 40) + 20; // 20-59
-  const b = Math.floor(Math.random() * 15) + 5; // 5-19
-  return { a, b, cevap: a - b };
+  const a = Math.floor(Math.random() * 6) + 4; // 4-9
+  const b = Math.floor(Math.random() * 6) + 4; // 4-9
+  return { a, b, cevap: a * b };
 }
 
 function EbeveynKapisi({ onBasarili, onKapat }) {
@@ -43,7 +45,7 @@ function EbeveynKapisi({ onBasarili, onKapat }) {
         <div className="ep-gate-title">Ebeveyn Alanı</div>
         <div className="ep-gate-sub">Devam etmek için işlemi çöz:</div>
         <div className="ep-gate-question">
-          {soru.a} − {soru.b} = ?
+          {soru.a} × {soru.b} = ?
         </div>
         <input
           className={`ep-gate-input ${hata ? "ep-gate-input-error" : ""}`}
