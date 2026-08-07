@@ -434,7 +434,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Pratik Modu</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Pratik Modu</div>
         <div className="top-right">
           <span className="seviye-pill">{seviyeLabel}</span>
           <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">⏸️</button>
@@ -507,7 +507,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="finish-title">Pratik Modu</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

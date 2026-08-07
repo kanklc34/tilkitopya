@@ -355,7 +355,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Günler Sırası</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Günler Sırası</div>
         <div className="top-right">
           <span className="round-pill">{progress}/{ROUND_LENGTH}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
@@ -417,7 +417,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="finish-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

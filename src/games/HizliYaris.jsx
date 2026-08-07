@@ -551,7 +551,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Hızlı Yarış</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Hızlı Yarış</div>
         <div className="top-right">
           <span className="lap-pill">Tur {lap}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">
@@ -648,7 +648,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="tutorial-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

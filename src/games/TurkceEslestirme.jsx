@@ -390,7 +390,7 @@ export default function TurkishMatchGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="brand-emoji-img" alt="Tilki" /> Kelime Eşleştir</div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Kelime Eşleştir</div>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <span className="moves-pill"><Star size={14} fill="#FFC93C" stroke="#FFC93C" /> {moves}</span>
@@ -414,7 +414,7 @@ export default function TurkishMatchGame({ onExit, onComplete } = {}) {
               onClick={() => handleFlip(card)}
             >
               <div className="card-inner">
-                <div className="card-face card-back"><img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="card-back-icon-img" alt="Tilki" /></div>
+                <div className="card-face card-back"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="card-back-icon-img" alt="Tilki" /></div>
                 <div className="card-face card-front"><CardFace card={card} /></div>
               </div>
               {burstPairId === card.pairId && <div className="burst">✨</div>}
@@ -455,7 +455,7 @@ export default function TurkishMatchGame({ onExit, onComplete } = {}) {
 
       {showTutorial && (
         <div className="tutorial-overlay">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="tutorial-emoji-img" alt="Tilki" />
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="tutorial-emoji-img" alt="Tilki" />
           <div className="finish-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">

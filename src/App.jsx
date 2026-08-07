@@ -307,7 +307,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
 
       <div className="home-header">
         <div className="mascot-greeting">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.svg`} className="mascot-big" alt="Tilki maskot" />
+          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="mascot-big" alt="Tilki maskot" />
           <div className="mascot-bubble">Merhaba! Bugün ne oynamak istersin?</div>
         </div>
         <div className="home-title">İlkokul Platformu</div>
