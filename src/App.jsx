@@ -69,10 +69,14 @@ const GAMES = [
   },
 ];
 
-function HomeScreen({ onSelect, ilerleme, onEbeveynAc }) {
+function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
   const bugunGorevleri = gununGorevleri(ilerleme.aktifGun);
   const bugunKayit = ilerleme.gunler[ilerleme.aktifGun];
   const tamamlananSayisi = bugunGorevleri.filter((g) => bugunKayit?.gorevler?.[g.id]).length;
+  const tumOyunlarAcik = ilerleme.ayarlar.tumOyunlarSekmesiAcik;
+  // Ebeveyn "Tüm Oyunlar" sekmesini kapattıysa çocuk her zaman görevler
+  // ekranında kalır - sekme çubuğu bile gösterilmez, seçim şansı olmaz.
+  const gosterilenSekme = tumOyunlarAcik ? sekme : "gorevler";
 
   return (
     <div className="home-root">
@@ -267,6 +271,34 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc }) {
           color: #4E9F53;
           padding: 6px 0;
         }
+
+        .tab-bar {
+          max-width: 720px;
+          margin: 0 auto 22px;
+          display: flex;
+          gap: 8px;
+          background: white;
+          padding: 5px;
+          border-radius: 999px;
+          box-shadow: 0 3px 10px rgba(31,46,69,0.08);
+        }
+        .tab-btn {
+          flex: 1;
+          border: none;
+          background: transparent;
+          padding: 10px 14px;
+          border-radius: 999px;
+          cursor: pointer;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          color: #9AA6BC;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+        .tab-btn.tab-active {
+          background: #5AB4E0;
+          color: white;
+        }
       `}</style>
 
       <button className="parent-btn" onClick={onEbeveynAc} aria-label="Ebeveyn Alanı">
@@ -282,48 +314,67 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc }) {
         <div className="home-subtitle">1. Sınıf</div>
       </div>
 
-      <div className="today-block">
-        <div className="today-title-row">
-          <span className="today-title">🗓️ Bugünün Görevi</span>
-          <span className="today-count">{tamamlananSayisi}/{bugunGorevleri.length}</span>
+      {tumOyunlarAcik && (
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${gosterilenSekme === "gorevler" ? "tab-active" : ""}`}
+            onClick={() => setSekme("gorevler")}
+          >
+            🗓️ Görevler
+          </button>
+          <button
+            className={`tab-btn ${gosterilenSekme === "tumOyunlar" ? "tab-active" : ""}`}
+            onClick={() => setSekme("tumOyunlar")}
+          >
+            🎮 Tüm Oyunlar
+          </button>
         </div>
-        {tamamlananSayisi === bugunGorevleri.length ? (
-          <div className="today-complete-msg">🎉 Bugünü tamamladın, harikasın!</div>
-        ) : null}
-        <div className="today-row">
-          {bugunGorevleri.map((gorev) => {
-            const yapildi = !!bugunKayit?.gorevler?.[gorev.id];
-            return (
-              <button
-                key={gorev.id}
-                className={`today-item ${yapildi ? "today-done" : ""}`}
-                onClick={() => onSelect(gorev.id)}
-              >
-                <span className="today-item-emoji">{gorev.emoji}</span>
-                <span className="today-item-ad">{gorev.ad}</span>
-                {yapildi && <span className="today-item-check">✓</span>}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      )}
 
-      {GAMES.map((grup) => (
-        <div className="ders-block" key={grup.ders}>
-          <div className="ders-title" style={{ color: grup.renk }}>
-            <span className="ders-icon" style={{ background: grup.renk }}>{grup.dersIkon}</span>
-            {grup.ders}
+      {gosterilenSekme === "gorevler" ? (
+        <div className="today-block">
+          <div className="today-title-row">
+            <span className="today-title">🗓️ Bugünün Görevi</span>
+            <span className="today-count">{tamamlananSayisi}/{bugunGorevleri.length}</span>
           </div>
-          <div className="game-grid">
-            {grup.items.map((oyun) => (
-              <button key={oyun.id} className="game-card" onClick={() => onSelect(oyun.id)}>
-                <span className="game-card-emoji">{oyun.emoji}</span>
-                <span className="game-card-title">{oyun.ad}</span>
-              </button>
-            ))}
+          {tamamlananSayisi === bugunGorevleri.length ? (
+            <div className="today-complete-msg">🎉 Bugünü tamamladın, harikasın!</div>
+          ) : null}
+          <div className="today-row">
+            {bugunGorevleri.map((gorev) => {
+              const yapildi = !!bugunKayit?.gorevler?.[gorev.id];
+              return (
+                <button
+                  key={gorev.id}
+                  className={`today-item ${yapildi ? "today-done" : ""}`}
+                  onClick={() => onSelect(gorev.id)}
+                >
+                  <span className="today-item-emoji">{gorev.emoji}</span>
+                  <span className="today-item-ad">{gorev.ad}</span>
+                  {yapildi && <span className="today-item-check">✓</span>}
+                </button>
+              );
+            })}
           </div>
         </div>
-      ))}
+      ) : (
+        GAMES.map((grup) => (
+          <div className="ders-block" key={grup.ders}>
+            <div className="ders-title" style={{ color: grup.renk }}>
+              <span className="ders-icon" style={{ background: grup.renk }}>{grup.dersIkon}</span>
+              {grup.ders}
+            </div>
+            <div className="game-grid">
+              {grup.items.map((oyun) => (
+                <button key={oyun.id} className="game-card" onClick={() => onSelect(oyun.id)}>
+                  <span className="game-card-emoji">{oyun.emoji}</span>
+                  <span className="game-card-title">{oyun.ad}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }
@@ -332,9 +383,11 @@ export default function App() {
   const [activeId, setActiveId] = useState(null);
   const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
   const [ebeveynAcik, setEbeveynAcik] = useState(false);
+  const [sekme, setSekme] = useState("gorevler");
 
-  // Ebeveyn panelinden ilerleme sıfırlanabildiği için, panel kapanınca
-  // en güncel veriyi tekrar okuyup ana ekranı tazeliyoruz.
+  // Ebeveyn panelinden ilerleme sıfırlanabildiği ve ayarlar
+  // değiştirilebildiği için, panel kapanınca en güncel veriyi tekrar
+  // okuyup ana ekranı tazeliyoruz.
   useEffect(() => {
     if (!ebeveynAcik) setIlerleme(ilerlemeyiOku());
   }, [ebeveynAcik]);
@@ -347,7 +400,13 @@ export default function App() {
   if (!activeId) {
     return (
       <>
-        <HomeScreen onSelect={setActiveId} ilerleme={ilerleme} onEbeveynAc={() => setEbeveynAcik(true)} />
+        <HomeScreen
+          onSelect={setActiveId}
+          ilerleme={ilerleme}
+          onEbeveynAc={() => setEbeveynAcik(true)}
+          sekme={sekme}
+          setSekme={setSekme}
+        />
         {ebeveynAcik && <EbeveynPaneli onKapat={() => setEbeveynAcik(false)} />}
       </>
     );

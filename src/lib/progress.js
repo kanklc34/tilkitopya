@@ -60,6 +60,11 @@ function bosIlerleme() {
     aktifGun: 1, // çocuğun şu an üzerinde çalıştığı gün numarası
     gunler: {}, // { [gunNo]: { tamamlandi, tamamlanmaTarihi, gorevler: { [gameId]: { stars, tarih } } } }
     oturumSayisi: 0,
+    ayarlar: {
+      // Ebeveyn kapatırsa çocuk sadece "Görevler" sekmesini görür,
+      // istediği oyunu özgürce seçemez. Varsayılan: açık (esnek).
+      tumOyunlarSekmesiAcik: true,
+    },
   };
 }
 
@@ -68,7 +73,8 @@ export function ilerlemeyiOku() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return bosIlerleme();
     const parsed = JSON.parse(raw);
-    return { ...bosIlerleme(), ...parsed };
+    const varsayilan = bosIlerleme();
+    return { ...varsayilan, ...parsed, ayarlar: { ...varsayilan.ayarlar, ...parsed.ayarlar } };
   } catch {
     // localStorage okunamıyorsa (gizli mod, devre dışı vb.) sıfırdan başla -
     // uygulama ilerleme takibi olmadan da normal çalışmaya devam etmeli
@@ -161,4 +167,13 @@ export function dersOzetiHesapla(ilerleme) {
 export function ilerlemeyiSifirla() {
   ilerlemeyiYaz(bosIlerleme());
   return bosIlerleme();
+}
+
+// Ebeveyn panelinden ayar değiştirmek için (örn. "Tüm Oyunlar" sekmesini
+// açma/kapatma). İlerleme verisini sıfırlamadan sadece ayarları günceller.
+export function ayarKaydet(patch) {
+  const ilerleme = ilerlemeyiOku();
+  ilerleme.ayarlar = { ...ilerleme.ayarlar, ...patch };
+  ilerlemeyiYaz(ilerleme);
+  return ilerleme;
 }

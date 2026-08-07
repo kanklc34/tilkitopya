@@ -5,6 +5,7 @@ import {
   dersOzetiHesapla,
   gununGorevleri,
   ilerlemeyiSifirla,
+  ayarKaydet,
 } from "../lib/progress.js";
 
 // ---- Ebeveyn Kapısı ----
@@ -81,6 +82,11 @@ function EbeveynPaneliIcerik({ onKapat }) {
     setSifirlaOnay(false);
   }
 
+  function tumOyunlarToggle() {
+    const yeni = ayarKaydet({ tumOyunlarSekmesiAcik: !ilerleme.ayarlar.tumOyunlarSekmesiAcik });
+    setIlerleme(yeni);
+  }
+
   return (
     <div className="ep-overlay">
       <div className="ep-panel-card">
@@ -101,6 +107,24 @@ function EbeveynPaneliIcerik({ onKapat }) {
             <span className="ep-stat-label">toplam oturum</span>
           </div>
         </div>
+
+        <div className="ep-section-title">Erişim ayarı</div>
+        <label className="ep-toggle-row">
+          <div>
+            <div className="ep-toggle-label">Çocuk "Tüm Oyunlar" sekmesini görsün</div>
+            <div className="ep-toggle-sub">
+              {ilerleme.ayarlar.tumOyunlarSekmesiAcik
+                ? "Açık: istediği oyunu özgürce seçebilir."
+                : "Kapalı: sadece günlük görevleri görür, sekme çubuğu gizlenir."}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            className="ep-toggle-switch"
+            checked={ilerleme.ayarlar.tumOyunlarSekmesiAcik}
+            onChange={tumOyunlarToggle}
+          />
+        </label>
 
         <div className="ep-section-title">Bugünkü görevler (Gün {ilerleme.aktifGun})</div>
         <div className="ep-today-list">
@@ -345,6 +369,36 @@ export default function EbeveynPaneli({ onKapat }) {
           border-radius: 999px;
           width: 100%;
         }
+        .ep-toggle-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          background: #F5F8FC;
+          border-radius: 14px;
+          padding: 12px 14px;
+          cursor: pointer;
+          margin-bottom: 6px;
+        }
+        .ep-toggle-label {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          color: #1F2E45;
+        }
+        .ep-toggle-sub {
+          font-size: 11px;
+          color: #9AA6BC;
+          margin-top: 2px;
+        }
+        .ep-toggle-switch {
+          flex-shrink: 0;
+          width: 40px;
+          height: 24px;
+          cursor: pointer;
+          accent-color: #5AB4E0;
+        }
+
         .ep-reset-row { margin-top: 22px; text-align: center; }
         .ep-reset-btn {
           background: none;

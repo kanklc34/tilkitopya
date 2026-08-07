@@ -501,6 +501,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Yeni Oturum
           </button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 
