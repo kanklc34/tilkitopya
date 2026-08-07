@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, Settings } from "lucide-react";
+
+import EbeveynPaneli from "./components/EbeveynPaneli.jsx";
+import { ilerlemeyiOku, oyunTamamlandi, gununGorevleri } from "./lib/progress.js";
 
 import HizliYaris from "./games/HizliYaris.jsx";
 import MatematikEslestirme from "./games/MatematikEslestirme.jsx";
@@ -66,7 +69,11 @@ const GAMES = [
   },
 ];
 
-function HomeScreen({ onSelect }) {
+function HomeScreen({ onSelect, ilerleme, onEbeveynAc }) {
+  const bugunGorevleri = gununGorevleri(ilerleme.aktifGun);
+  const bugunKayit = ilerleme.gunler[ilerleme.aktifGun];
+  const tamamlananSayisi = bugunGorevleri.filter((g) => bugunKayit?.gorevler?.[g.id]).length;
+
   return (
     <div className="home-root">
       <style>{`
@@ -173,7 +180,98 @@ function HomeScreen({ onSelect }) {
           color: #1F2E45;
           text-align: center;
         }
+
+        .parent-btn {
+          position: fixed;
+          top: 14px;
+          right: 14px;
+          border: none;
+          background: white;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #9AA6BC;
+          box-shadow: 0 3px 10px rgba(31,46,69,0.12);
+          z-index: 20;
+        }
+
+        .today-block {
+          max-width: 720px;
+          margin: 0 auto 28px;
+          background: white;
+          border-radius: 20px;
+          padding: 18px 20px;
+          box-shadow: 0 4px 14px rgba(31,46,69,0.08);
+        }
+        .today-title-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 12px;
+        }
+        .today-title {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 16px;
+          color: #1F2E45;
+        }
+        .today-count {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          color: #5C6B85;
+          background: #EAF6FD;
+          padding: 4px 10px;
+          border-radius: 999px;
+        }
+        .today-row {
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+          padding-bottom: 2px;
+        }
+        .today-item {
+          flex: 0 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+          background: #F5F8FC;
+          border: none;
+          border-radius: 16px;
+          padding: 10px 14px;
+          cursor: pointer;
+          min-width: 72px;
+        }
+        .today-item.today-done {
+          background: #E4F7E6;
+        }
+        .today-item-emoji { font-size: 24px; }
+        .today-item-ad {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 11px;
+          color: #1F2E45;
+          text-align: center;
+        }
+        .today-item-check { font-size: 12px; color: #4E9F53; }
+        .today-complete-msg {
+          text-align: center;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          color: #4E9F53;
+          padding: 6px 0;
+        }
       `}</style>
+
+      <button className="parent-btn" onClick={onEbeveynAc} aria-label="Ebeveyn Alanı">
+        <Settings size={17} />
+      </button>
 
       <div className="home-header">
         <div className="mascot-greeting">
@@ -182,6 +280,32 @@ function HomeScreen({ onSelect }) {
         </div>
         <div className="home-title">İlkokul Platformu</div>
         <div className="home-subtitle">1. Sınıf</div>
+      </div>
+
+      <div className="today-block">
+        <div className="today-title-row">
+          <span className="today-title">🗓️ Bugünün Görevi</span>
+          <span className="today-count">{tamamlananSayisi}/{bugunGorevleri.length}</span>
+        </div>
+        {tamamlananSayisi === bugunGorevleri.length ? (
+          <div className="today-complete-msg">🎉 Bugünü tamamladın, harikasın!</div>
+        ) : null}
+        <div className="today-row">
+          {bugunGorevleri.map((gorev) => {
+            const yapildi = !!bugunKayit?.gorevler?.[gorev.id];
+            return (
+              <button
+                key={gorev.id}
+                className={`today-item ${yapildi ? "today-done" : ""}`}
+                onClick={() => onSelect(gorev.id)}
+              >
+                <span className="today-item-emoji">{gorev.emoji}</span>
+                <span className="today-item-ad">{gorev.ad}</span>
+                {yapildi && <span className="today-item-check">✓</span>}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {GAMES.map((grup) => (
@@ -206,9 +330,27 @@ function HomeScreen({ onSelect }) {
 
 export default function App() {
   const [activeId, setActiveId] = useState(null);
+  const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
+  const [ebeveynAcik, setEbeveynAcik] = useState(false);
+
+  // Ebeveyn panelinden ilerleme sıfırlanabildiği için, panel kapanınca
+  // en güncel veriyi tekrar okuyup ana ekranı tazeliyoruz.
+  useEffect(() => {
+    if (!ebeveynAcik) setIlerleme(ilerlemeyiOku());
+  }, [ebeveynAcik]);
+
+  function handleGameComplete(stars) {
+    const guncel = oyunTamamlandi(activeId, stars);
+    setIlerleme(guncel);
+  }
 
   if (!activeId) {
-    return <HomeScreen onSelect={setActiveId} />;
+    return (
+      <>
+        <HomeScreen onSelect={setActiveId} ilerleme={ilerleme} onEbeveynAc={() => setEbeveynAcik(true)} />
+        {ebeveynAcik && <EbeveynPaneli onKapat={() => setEbeveynAcik(false)} />}
+      </>
+    );
   }
 
   const allItems = GAMES.flatMap((g) => g.items);
@@ -239,7 +381,7 @@ export default function App() {
       >
         <ArrowLeft size={16} /> Menüye Dön
       </button>
-      <ActiveComponent key={activeId} onExit={() => setActiveId(null)} />
+      <ActiveComponent key={activeId} onExit={() => setActiveId(null)} onComplete={handleGameComplete} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
 
 // ---- Oyun ayarları ----
@@ -65,7 +65,7 @@ function playTone(kind) {
   }
 }
 
-export default function OddOneOutGame({ onExit } = {}) {
+export default function OddOneOutGame({ onExit, onComplete } = {}) {
   const [round, setRound] = useState(0);
   const [puzzleInRound, setPuzzleInRound] = useState(0);
   const [grid, setGrid] = useState(() => buildGrid(0));
@@ -125,6 +125,15 @@ export default function OddOneOutGame({ onExit } = {}) {
   }
 
   const stars = mistakes === 0 ? 3 : mistakes <= 3 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
+
   const totalPuzzles = TOTAL_ROUNDS * PUZZLES_PER_ROUND;
   const solvedCount = round * PUZZLES_PER_ROUND + puzzleInRound;
 

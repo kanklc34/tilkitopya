@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
 
 // ---- Oyun ayarları ----
@@ -91,7 +91,7 @@ function playTone(kind) {
   }
 }
 
-export default function EnglishMatchGame({ onExit } = {}) {
+export default function EnglishMatchGame({ onExit, onComplete } = {}) {
   const [round, setRound] = useState(0);
   const [deck, setDeck] = useState(() => buildDeck(0));
   const [flipped, setFlipped] = useState([]);
@@ -173,6 +173,14 @@ export default function EnglishMatchGame({ onExit } = {}) {
   }
 
   const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (allDone && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [allDone, stars, onComplete]);
 
   return (
     <div className="match-root">

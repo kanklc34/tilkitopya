@@ -41,7 +41,7 @@ function pickQuestion(seviye, askedIds) {
   return usable[Math.floor(Math.random() * usable.length)];
 }
 
-export default function PratikModuMatematik({ onExit } = {}) {
+export default function PratikModuMatematik({ onExit, onComplete } = {}) {
   const [seviye, setSeviye] = useState(1);
   const [streak, setStreak] = useState(0);
   const [wrongStreak, setWrongStreak] = useState(0);
@@ -143,6 +143,14 @@ export default function PratikModuMatematik({ onExit } = {}) {
 
   const stars = correctCount >= BATCH_SIZE ? 3 : correctCount >= BATCH_SIZE - 2 ? 2 : 1;
   const seviyeLabel = { 1: "Tanışma", 2: "Pekiştirme", 3: "Ustalık" }[seviye];
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (batchDone && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [batchDone, stars, onComplete]);
 
   return (
     <div className="pratik-root">

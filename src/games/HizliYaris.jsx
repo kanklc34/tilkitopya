@@ -116,7 +116,7 @@ function playTone(kind) {
   }
 }
 
-export default function MathRaceGame({ onExit } = {}) {
+export default function MathRaceGame({ onExit, onComplete } = {}) {
   const [lap, setLap] = useState(1);
   const [maxNumber, setMaxNumber] = useState(5);
   const [question, setQuestion] = useState(() => generateQuestion(5, true));
@@ -192,6 +192,15 @@ export default function MathRaceGame({ onExit } = {}) {
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
+
   const trackFill = (progress / RACE_LENGTH) * 100;
 
   // Rakam HER ZAMAN görünür (planımızdaki ilkeye uygun); sadece görsel

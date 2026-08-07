@@ -121,7 +121,7 @@ function playTone(kind) {
   }
 }
 
-export default function TurkishFillGame({ onExit } = {}) {
+export default function TurkishFillGame({ onExit, onComplete } = {}) {
   const [currentTheme, setCurrentTheme] = useState(() => THEMES[rand(0, THEMES.length - 1)]);
   const [round, setRound] = useState(0);
   const [puzzle, setPuzzle] = useState(() => generatePuzzle(0, currentTheme));
@@ -223,6 +223,14 @@ export default function TurkishFillGame({ onExit } = {}) {
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
 
   return (
     <div className="word-root">

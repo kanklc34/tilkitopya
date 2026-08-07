@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
 
 // ---- Oyun ayarları ----
@@ -86,7 +86,7 @@ function playTone(kind) {
   }
 }
 
-export default function FindHiddenGame({ onExit } = {}) {
+export default function FindHiddenGame({ onExit, onComplete } = {}) {
   const [round, setRound] = useState(0);
   const [scene, setScene] = useState(() => buildScene(0));
   const [foundIds, setFoundIds] = useState(new Set());
@@ -143,6 +143,14 @@ export default function FindHiddenGame({ onExit } = {}) {
   }
 
   const stars = mistakes === 0 ? 3 : mistakes <= 4 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
 
   return (
     <div className="find-root">

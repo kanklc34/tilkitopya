@@ -58,7 +58,7 @@ function playTone(kind) {
   }
 }
 
-export default function WeekdayOrderGame({ onExit } = {}) {
+export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
   const [puzzle, setPuzzle] = useState(() => generatePuzzle());
   const [pad, setPad] = useState(() => generateDayPad(puzzle.answer));
   const [progress, setProgress] = useState(0);
@@ -126,6 +126,14 @@ export default function WeekdayOrderGame({ onExit } = {}) {
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
+
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
 
   return (
     <div className="days-root">

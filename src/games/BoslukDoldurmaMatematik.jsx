@@ -126,7 +126,7 @@ function playTone(kind) {
   }
 }
 
-export default function FillBlankGame({ onExit } = {}) {
+export default function FillBlankGame({ onExit, onComplete } = {}) {
   const [round, setRound] = useState(0);
   const [puzzle, setPuzzle] = useState(() => generatePuzzle(0));
   const [progress, setProgress] = useState(0);
@@ -214,6 +214,15 @@ export default function FillBlankGame({ onExit } = {}) {
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
+
+  // Oturum bittiğinde merkezi ilerleme sistemine bir kez bildir
+  const reportedRef = useRef(false);
+  useEffect(() => {
+    if (finished && !reportedRef.current) {
+      reportedRef.current = true;
+      onComplete?.(stars);
+    }
+  }, [finished, stars, onComplete]);
 
   return (
     <div className="fill-root">
