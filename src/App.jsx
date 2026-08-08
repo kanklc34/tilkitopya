@@ -123,7 +123,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           flex-direction: column;
           align-items: center;
           gap: 10px;
-          margin-bottom: 18px;
+          margin: 0 auto 18px;
           cursor: pointer;
           border: none;
           background: none;
