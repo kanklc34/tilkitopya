@@ -79,11 +79,29 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
   // ekranında kalır - sekme çubuğu bile gösterilmez, seçim şansı olmaz.
   const gosterilenSekme = tumOyunlarAcik ? sekme : "gorevler";
   const [mesajYenile, setMesajYenile] = useState(0);
+  const [zipliyorMu, setZipliyorMu] = useState(false);
   const mesaj = useMemo(
     () => anaEkranMesajiSec({ tamamlananSayisi, toplamGorev: bugunGorevleri.length }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tamamlananSayisi, bugunGorevleri.length, mesajYenile]
   );
+
+  // Maskot tamamen sabit kalmasın ama sürekli aynı ritimde de sallanmasın -
+  // sakin bir "nefes alma" varsayılan, arada bir (rastgele aralıklarla)
+  // daha belirgin bir zıplama ile doğal/canlı bir his veriyor.
+  useEffect(() => {
+    let zamanlayici;
+    function planla() {
+      const gecikme = 4500 + Math.random() * 4000;
+      zamanlayici = setTimeout(() => {
+        setZipliyorMu(true);
+        setTimeout(() => setZipliyorMu(false), 700);
+        planla();
+      }, gecikme);
+    }
+    planla();
+    return () => clearTimeout(zamanlayici);
+  }, []);
 
   return (
     <div className="home-root">
@@ -108,22 +126,38 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           margin-bottom: 18px;
           cursor: pointer;
         }
+        .mascot-mount-wrap {
+          display: inline-block;
+          animation: mascotMountPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
         .mascot-big {
           width: 96px;
           height: 96px;
-          animation: mascotPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), mascotBob 2.2s ease-in-out 0.45s infinite;
           display: inline-block;
           filter: drop-shadow(0 6px 10px rgba(31,46,69,0.15));
         }
-        .mascot-greeting:active .mascot-big { transform: scale(0.92); }
-        @keyframes mascotPop {
-          0% { transform: scale(0.4) translateY(20px); opacity: 0; }
-          70% { transform: scale(1.08) translateY(-4px); opacity: 1; }
-          100% { transform: scale(1) translateY(0); }
+        .mascot-big.mascot-idle {
+          animation: mascotBreath 3.6s ease-in-out infinite;
         }
-        @keyframes mascotBob {
-          0%, 100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-6px) rotate(-3deg); }
+        .mascot-big.mascot-hop {
+          animation: mascotHop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .mascot-greeting:active .mascot-big { transform: scale(0.92); }
+        @keyframes mascotMountPop {
+          0% { transform: scale(0.4); opacity: 0; }
+          70% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); }
+        }
+        @keyframes mascotBreath {
+          0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+          50% { transform: translateY(-2px) scale(1.015) rotate(0deg); }
+        }
+        @keyframes mascotHop {
+          0% { transform: translateY(0) rotate(0deg); }
+          30% { transform: translateY(-16px) rotate(-8deg); }
+          55% { transform: translateY(0) rotate(6deg); }
+          78% { transform: translateY(-5px) rotate(-3deg); }
+          100% { transform: translateY(0) rotate(0deg); }
         }
         .mascot-bubble {
           background: white;
@@ -327,13 +361,21 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
       </button>
 
       <div className="home-header">
-        <div className="mascot-greeting" onClick={() => setMesajYenile((n) => n + 1)}>
-          <img
-            key={mesajYenile}
-            src={`${import.meta.env.BASE_URL}fox-mascot.png`}
-            className="mascot-big mascot-pop"
-            alt="Tilki maskot"
-          />
+        <div
+          className="mascot-greeting"
+          onClick={() => {
+            setMesajYenile((n) => n + 1);
+            setZipliyorMu(true);
+            setTimeout(() => setZipliyorMu(false), 700);
+          }}
+        >
+          <div className="mascot-mount-wrap" key={mesajYenile}>
+            <img
+              src={`${import.meta.env.BASE_URL}fox-mascot.png`}
+              className={`mascot-big ${zipliyorMu ? "mascot-hop" : "mascot-idle"}`}
+              alt="Tilki maskot"
+            />
+          </div>
           <div key={`b-${mesajYenile}`} className="mascot-bubble mascot-bubble-pop">{mesaj}</div>
         </div>
         <div className="home-title">İlkokul Platformu</div>
