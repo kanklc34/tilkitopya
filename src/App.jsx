@@ -125,6 +125,15 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           gap: 10px;
           margin-bottom: 18px;
           cursor: pointer;
+          border: none;
+          background: none;
+          padding: 0;
+          font: inherit;
+        }
+        .mascot-greeting:focus-visible {
+          outline: 3px solid #5AB4E0;
+          outline-offset: 4px;
+          border-radius: 16px;
         }
         .mascot-mount-wrap {
           display: inline-block;
@@ -181,6 +190,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           font-weight: 700;
           font-size: 24px;
           color: #1F2E45;
+          margin: 0;
         }
         .home-subtitle {
           color: #5C6B85;
@@ -253,7 +263,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          color: #9AA6BC;
+          color: #5C6B85;
           box-shadow: 0 3px 10px rgba(31,46,69,0.12);
           z-index: 20;
         }
@@ -347,12 +357,13 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           font-family: 'Fredoka', sans-serif;
           font-weight: 600;
           font-size: 13px;
-          color: #9AA6BC;
+          color: #5C6B85;
           transition: background 0.15s ease, color 0.15s ease;
         }
         .tab-btn.tab-active {
           background: #5AB4E0;
-          color: white;
+          color: #1F2E45;
+          font-weight: 700;
         }
       `}</style>
 
@@ -361,8 +372,10 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
       </button>
 
       <div className="home-header">
-        <div
+        <button
+          type="button"
           className="mascot-greeting"
+          aria-label="Maskota dokun, yeni bir mesaj göster"
           onClick={() => {
             setMesajYenile((n) => n + 1);
             setZipliyorMu(true);
@@ -377,8 +390,8 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
             />
           </div>
           <div key={`b-${mesajYenile}`} className="mascot-bubble mascot-bubble-pop">{mesaj}</div>
-        </div>
-        <div className="home-title">İlkokul Platformu</div>
+        </button>
+        <h1 className="home-title">İlkokul Platformu</h1>
         <div className="home-subtitle">1. Sınıf</div>
       </div>
 

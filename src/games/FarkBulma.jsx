@@ -186,6 +186,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
         }
         .brand {
           display: flex;
+          margin: 0;
           align-items: center;
           gap: 8px;
           font-family: 'Fredoka', sans-serif;
@@ -248,6 +249,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
         .cell {
           aspect-ratio: 1 / 1;
           background: var(--card);
+          border: none;
           border-radius: 16px;
           display: flex;
           align-items: center;
@@ -255,6 +257,13 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
           cursor: pointer;
           box-shadow: 0 4px 0 rgba(31,46,69,0.1), 0 5px 12px rgba(31,46,69,0.08);
           transition: transform 0.1s ease, box-shadow 0.15s ease;
+          font: inherit;
+          padding: 0;
+          width: 100%;
+        }
+        .cell:focus-visible {
+          outline: 3px solid #5AB4E0;
+          outline-offset: 2px;
         }
         .cell:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(31,46,69,0.1); }
         .cell-emoji { font-size: 30px; }
@@ -344,7 +353,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Farklı Olan</div>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Farklı Olan</h1>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
@@ -362,13 +371,15 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
 
       <div className="grid" style={{ gridTemplateColumns: `repeat(${ROUNDS[round].columns}, 1fr)` }}>
         {grid.map((cell) => (
-          <div
+          <button
+            type="button"
             key={cell.id}
             className={`cell ${wrongId === cell.id ? "is-wrong" : ""} ${correctId === cell.id ? "is-correct" : ""}`}
             onClick={() => handleTap(cell)}
+            aria-label={`Seçenek: ${cell.emoji}`}
           >
             <span className="cell-emoji">{cell.emoji}</span>
-          </div>
+          </button>
         ))}
       </div>
 

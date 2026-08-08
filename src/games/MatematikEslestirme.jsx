@@ -208,6 +208,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
         }
         .brand {
           display: flex;
+          margin: 0;
           align-items: center;
           gap: 8px;
           font-family: 'Fredoka', sans-serif;
@@ -269,6 +270,15 @@ export default function MatchGame({ onExit, onComplete } = {}) {
           perspective: 800px;
           aspect-ratio: 1 / 1;
           position: relative;
+        border: none;
+        background: none;
+        padding: 0;
+        font: inherit;
+        width: 100%;
+        }
+        .card-slot:focus-visible {
+          outline: 3px solid #5AB4E0;
+          outline-offset: 3px;
         }
         .card-inner {
           position: relative;
@@ -426,7 +436,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Eşleştirme</div>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Eşleştirme</h1>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <span className="moves-pill"><Star size={14} fill="#FFC93C" stroke="#FFC93C" /> {moves}</span>
@@ -453,10 +463,12 @@ export default function MatchGame({ onExit, onComplete } = {}) {
           const isFlipped = flipped.includes(card.id);
           const isMatched = matched.has(card.pairId);
           return (
-            <div
+            <button
+              type="button"
               key={card.id}
               className={`card-slot ${isFlipped || isMatched ? "is-flipped" : ""} ${isMatched ? "is-matched" : ""}`}
               onClick={() => handleFlip(card)}
+              aria-label="Kart"
             >
               <div className="card-inner">
                 <div className="card-face card-back">
@@ -467,7 +479,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
                 </div>
               </div>
               {burstPairId === card.pairId && <div className="burst">✨</div>}
-            </div>
+            </button>
           );
         })}
       </div>

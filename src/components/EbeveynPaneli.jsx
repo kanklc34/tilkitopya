@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { X, TrendingUp, Calendar, RotateCcw } from "lucide-react";
 import {
   ilerlemeyiOku,
@@ -9,67 +9,134 @@ import {
 } from "../lib/progress.js";
 
 // ---- Ebeveyn Kapısı ----
-// Çocuğun yanlışlıkla girip kafasının karışmaması için basit bir
-// "ebeveyn kapısı" deseni (pek çok çocuk uygulamasında standart).
-// KVKK/hassas veri toplanmadığı için PIN yerine bir işlem yeterli.
-// Çarpma kullanılıyor çünkü MEB müfredatında 1. sınıfta çarpma hiç
-// yok (2-3. sınıfta başlıyor) - çıkarmanın aksine, sayılar ne olursa
-// olsun tutarlı şekilde çocuğun bilgisi dışında kalıyor.
-function rastgeleSoru() {
-  const a = Math.floor(Math.random() * 6) + 4; // 4-9
-  const b = Math.floor(Math.random() * 6) + 4; // 4-9
-  return { a, b, cevap: a * b };
+// Çocuğun yanlışlıkla girip kafasının karışmaması için bir "ebeveyn
+// kapısı" deseni. Okuma/rakam bilmeyen ebeveynleri de dışlamamak için
+// matematik sorusu yerine basılı tutma (long-press) kullanılıyor:
+// hatırlanacak hiçbir şey yok, sadece "parmağını 3 saniye çekme"
+// gibi fiziksel bir eylem. Küçük çocuklar sabırsız dokunduğu için
+// doğal bir engel oluşturuyor, yetişkin için ise zahmetsiz.
+const BASILI_TUTMA_SURESI_MS = 2800;
+
+// Modal/overlay bileşenlerinde ortak davranış: Escape tuşuyla kapatma.
+// Klavye kullanıcıları fareye/dokunmaya gerek kalmadan çıkabilsin diye.
+function useEscKapat(onKapat) {
+  useEffect(() => {
+    function handler(e) {
+      if (e.key === "Escape") onKapat();
+    }
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [onKapat]);
 }
 
 function EbeveynKapisi({ onBasarili, onKapat }) {
-  const soru = useMemo(rastgeleSoru, []);
-  const [deger, setDeger] = useState("");
-  const [hata, setHata] = useState(false);
+  useEscKapat(onKapat);
+  const [yuzde, setYuzde] = useState(0);
+  const basiliMi = useRef(false);
+  const baslangicRef = useRef(null);
+  const rafRef = useRef(null);
 
-  function kontrolEt(e) {
-    e.preventDefault();
-    if (parseInt(deger, 10) === soru.cevap) {
+  function dongu(ts) {
+    if (!basiliMi.current) return;
+    if (baslangicRef.current === null) baslangicRef.current = ts;
+    const gecen = ts - baslangicRef.current;
+    const yeniYuzde = Math.min(100, (gecen / BASILI_TUTMA_SURESI_MS) * 100);
+    setYuzde(yeniYuzde);
+    if (yeniYuzde >= 100) {
+      basiliMi.current = false;
       onBasarili();
-    } else {
-      setHata(true);
-      setDeger("");
-      setTimeout(() => setHata(false), 1200);
+      return;
     }
+    rafRef.current = requestAnimationFrame(dongu);
   }
+
+  function basla(e) {
+    e.preventDefault();
+    basiliMi.current = true;
+    baslangicRef.current = null;
+    rafRef.current = requestAnimationFrame(dongu);
+  }
+
+  function birak() {
+    basiliMi.current = false;
+    baslangicRef.current = null;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setYuzde(0);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const CEVRE = 2 * Math.PI * 54;
+  const dashOffset = CEVRE - (yuzde / 100) * CEVRE;
+  const kapatBtnRef = useRef(null);
+  useEffect(() => {
+    kapatBtnRef.current?.focus();
+  }, []);
 
   return (
     <div className="ep-overlay">
-      <form className="ep-gate-card" onSubmit={kontrolEt}>
-        <button type="button" className="ep-close" onClick={onKapat} aria-label="Kapat">
+      <div className="ep-gate-card" role="dialog" aria-modal="true" aria-label="Ebeveyn kapısı">
+        <button type="button" ref={kapatBtnRef} className="ep-close" onClick={onKapat} aria-label="Kapat">
           <X size={18} />
         </button>
-        <div className="ep-gate-title">Ebeveyn Alanı</div>
-        <div className="ep-gate-sub">Devam etmek için işlemi çöz:</div>
-        <div className="ep-gate-question">
-          {soru.a} × {soru.b} = ?
+        <h2 className="ep-gate-title">Ebeveyn Alanı</h2>
+        <div className="ep-gate-sub">Parmağınızı basılı tutun</div>
+        <div
+          className="ep-hold-circle"
+          role="button"
+          tabIndex={0}
+          aria-label="3 saniye basılı tutarak ebeveyn alanını aç"
+          onPointerDown={basla}
+          onPointerUp={birak}
+          onPointerLeave={birak}
+          onPointerCancel={birak}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && !e.repeat) {
+              e.preventDefault();
+              basla(e);
+            }
+          }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter" || e.key === " ") birak();
+          }}
+        >
+          <svg width="130" height="130" viewBox="0 0 130 130">
+            <circle cx="65" cy="65" r="54" fill="#EAF6FD" stroke="#D8ECF7" strokeWidth="10" />
+            <circle
+              cx="65"
+              cy="65"
+              r="54"
+              fill="none"
+              stroke="#5AB4E0"
+              strokeWidth="10"
+              strokeDasharray={CEVRE}
+              strokeDashoffset={dashOffset}
+              strokeLinecap="round"
+              transform="rotate(-90 65 65)"
+            />
+          </svg>
+          <span className="ep-hold-icon">🔒</span>
         </div>
-        <input
-          className={`ep-gate-input ${hata ? "ep-gate-input-error" : ""}`}
-          type="number"
-          inputMode="numeric"
-          autoFocus
-          value={deger}
-          onChange={(e) => setDeger(e.target.value)}
-          placeholder="Cevap"
-        />
-        {hata && <div className="ep-gate-error">Tekrar dene</div>}
-        <button type="submit" className="ep-gate-btn">
-          Onayla
-        </button>
-      </form>
+        <div className="ep-gate-hint">3 saniye basılı tutun</div>
+      </div>
     </div>
   );
 }
 
 // ---- Ebeveyn Paneli (kapıdan sonra gösterilen içerik) ----
 function EbeveynPaneliIcerik({ onKapat }) {
+  useEscKapat(onKapat);
   const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
   const [sifirlaOnay, setSifirlaOnay] = useState(false);
+  const kapatBtnRef = useRef(null);
+
+  useEffect(() => {
+    kapatBtnRef.current?.focus();
+  }, []);
 
   const dersOzeti = useMemo(() => dersOzetiHesapla(ilerleme), [ilerleme]);
   const tamamlananGunSayisi = Object.values(ilerleme.gunler).filter((g) => g.tamamlandi).length;
@@ -89,11 +156,11 @@ function EbeveynPaneliIcerik({ onKapat }) {
 
   return (
     <div className="ep-overlay">
-      <div className="ep-panel-card">
-        <button className="ep-close" onClick={onKapat} aria-label="Kapat">
+      <div className="ep-panel-card" role="dialog" aria-modal="true" aria-label="Ebeveyn paneli">
+        <button type="button" ref={kapatBtnRef} className="ep-close" onClick={onKapat} aria-label="Kapat">
           <X size={18} />
         </button>
-        <div className="ep-panel-title">Ebeveyn Paneli</div>
+        <h2 className="ep-panel-title">Ebeveyn Paneli</h2>
 
         <div className="ep-stat-row">
           <div className="ep-stat">
@@ -223,6 +290,7 @@ export default function EbeveynPaneli({ onKapat }) {
           font-weight: 700;
           font-size: 19px;
           color: #1F2E45;
+          margin: 0;
         }
         .ep-gate-sub {
           color: #5C6B85;
@@ -236,37 +304,32 @@ export default function EbeveynPaneli({ onKapat }) {
           color: #1F2E45;
           margin: 18px 0 12px;
         }
-        .ep-gate-input {
-          width: 100%;
-          box-sizing: border-box;
-          border: 2px solid #D8ECF7;
-          border-radius: 14px;
-          padding: 10px 14px;
-          font-size: 18px;
-          font-family: 'Fredoka', sans-serif;
-          text-align: center;
-          outline: none;
-        }
-        .ep-gate-input:focus { border-color: #5AB4E0; }
-        .ep-gate-input-error { border-color: #D9534F; animation: epShake 0.4s ease; }
-        @keyframes epShake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-6px); }
-          75% { transform: translateX(6px); }
-        }
-        .ep-gate-error { color: #D9534F; font-size: 12px; margin-top: 6px; font-weight: 700; }
-        .ep-gate-btn {
-          margin-top: 16px;
-          width: 100%;
-          background: #FFC93C;
-          color: #1F2E45;
-          border: none;
-          padding: 12px;
-          border-radius: 999px;
-          font-family: 'Fredoka', sans-serif;
-          font-weight: 600;
-          font-size: 15px;
+        .ep-hold-circle {
+          position: relative;
+          width: 130px;
+          height: 130px;
+          margin: 20px auto 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
+          touch-action: none;
+          -webkit-user-select: none;
+          user-select: none;
+          -webkit-touch-callout: none;
+          border-radius: 50%;
+        }
+        .ep-hold-circle:focus-visible {
+          outline: 3px solid #FFC93C;
+          outline-offset: 4px;
+        }
+        .ep-hold-circle svg { position: absolute; top: 0; left: 0; }
+        .ep-hold-circle svg circle:nth-child(2) { transition: stroke-dashoffset 0.05s linear; }
+        .ep-hold-icon { font-size: 34px; pointer-events: none; }
+        .ep-gate-hint {
+          color: #5C6B85;
+          font-size: 12px;
+          margin-top: 4px;
         }
 
         .ep-panel-card {
@@ -285,7 +348,7 @@ export default function EbeveynPaneli({ onKapat }) {
           font-weight: 700;
           font-size: 20px;
           color: #1F2E45;
-          margin-bottom: 16px;
+          margin: 0 0 16px 0;
         }
         .ep-stat-row {
           display: flex;
@@ -341,7 +404,7 @@ export default function EbeveynPaneli({ onKapat }) {
         .ep-today-ad { font-weight: 700; flex: 1; }
         .ep-today-ders { font-size: 11px; opacity: 0.7; }
         .ep-today-check { color: #4E9F53; font-weight: 700; }
-        .ep-empty { color: #9AA6BC; font-size: 13px; }
+        .ep-empty { color: #5C6B85; font-size: 13px; }
         .ep-subject-list {
           display: flex;
           flex-direction: column;
@@ -358,7 +421,7 @@ export default function EbeveynPaneli({ onKapat }) {
           flex-wrap: wrap;
         }
         .ep-subject-name { font-weight: 700; color: #1F2E45; flex: 1; }
-        .ep-subject-sessions { color: #9AA6BC; font-size: 11px; }
+        .ep-subject-sessions { color: #5C6B85; font-size: 11px; }
         .ep-subject-stars { font-size: 11px; }
         .ep-warn-badge {
           background: #FFF3D6;
@@ -388,7 +451,7 @@ export default function EbeveynPaneli({ onKapat }) {
         }
         .ep-toggle-sub {
           font-size: 11px;
-          color: #9AA6BC;
+          color: #5C6B85;
           margin-top: 2px;
         }
         .ep-toggle-switch {
@@ -403,7 +466,7 @@ export default function EbeveynPaneli({ onKapat }) {
         .ep-reset-btn {
           background: none;
           border: none;
-          color: #9AA6BC;
+          color: #5C6B85;
           font-size: 12px;
           text-decoration: underline;
           cursor: pointer;

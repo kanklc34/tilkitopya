@@ -198,6 +198,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
         }
         .brand {
           display: flex;
+          margin: 0;
           align-items: center;
           gap: 8px;
           font-family: 'Fredoka', sans-serif;
@@ -457,7 +458,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Pratik Modu</div>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Pratik Modu</h1>
         <div className="top-right">
           <span className="seviye-pill">{seviyeLabel}</span>
           <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">⏸️</button>

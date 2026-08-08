@@ -208,6 +208,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
         }
         .brand {
           display: flex;
+          margin: 0;
           align-items: center;
           gap: 8px;
           font-family: 'Fredoka', sans-serif;
@@ -378,7 +379,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <div className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Gizli Nesne</div>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Gizli Nesne</h1>
         <div className="top-right">
           <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
