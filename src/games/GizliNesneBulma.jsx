@@ -92,17 +92,22 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
   const [foundIds, setFoundIds] = useState(new Set());
   const [wrongPulseId, setWrongPulseId] = useState(null);
   const [mistakes, setMistakes] = useState(0);
+  const [pesPeseYanlis, setPesPeseYanlis] = useState(0);
+  const [ipucuHedefId, setIpucuHedefId] = useState(null);
   const [roundDone, setRoundDone] = useState(false);
   const [finished, setFinished] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const [paused, setPaused] = useState(false);
   const wrongTimeout = useRef(null);
+  const ipucuTimeout = useRef(null);
 
   const startRound = useCallback((r) => {
     setScene(buildScene(r));
     setFoundIds(new Set());
     setRoundDone(false);
+    setPesPeseYanlis(0);
+    setIpucuHedefId(null);
   }, []);
 
   function handleTap(item) {
@@ -113,6 +118,8 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       const next = new Set(foundIds);
       next.add(item.id);
       setFoundIds(next);
+      setPesPeseYanlis(0);
+      setIpucuHedefId(null);
       if (next.size >= scene.targetCount) {
         setTimeout(() => setRoundDone(true), 500);
       }
@@ -122,6 +129,22 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       setWrongPulseId(item.id);
       clearTimeout(wrongTimeout.current);
       wrongTimeout.current = setTimeout(() => setWrongPulseId(null), 350);
+
+      const yeniDeneme = pesPeseYanlis + 1;
+      setPesPeseYanlis(yeniDeneme);
+
+      // Peş peşe çok yanlış denemede kalan hedeflerden birini kısa süre
+      // parlat - çocuk sonsuza dek gözle taramaya devam etmesin.
+      if (yeniDeneme >= 4) {
+        const kalanHedefler = scene.items.filter((it) => it.isTarget && !foundIds.has(it.id));
+        if (kalanHedefler.length > 0) {
+          const secilen = kalanHedefler[Math.floor(Math.random() * kalanHedefler.length)];
+          setIpucuHedefId(secilen.id);
+          clearTimeout(ipucuTimeout.current);
+          ipucuTimeout.current = setTimeout(() => setIpucuHedefId(null), 1500);
+        }
+        setPesPeseYanlis(0);
+      }
     }
   }
 
@@ -272,6 +295,14 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
         .scene-item.is-wrong {
           animation: pulseWrong 0.35s ease;
         }
+        .scene-item.is-hint {
+          animation: pulseHint 0.6s ease infinite;
+          filter: drop-shadow(0 0 8px #FFC93C);
+        }
+        @keyframes pulseHint {
+          0%, 100% { transform: translate(-50%, -50%) scale(1); }
+          50% { transform: translate(-50%, -50%) scale(1.25); }
+        }
         @keyframes pulseWrong {
           0%, 100% { transform: translate(-50%, -50%) scale(1); }
           50% { transform: translate(-50%, -50%) scale(0.8); }
@@ -369,7 +400,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
         {scene.items.map((item) => (
           <button
             key={item.id}
-            className={`scene-item ${foundIds.has(item.id) ? "is-found" : ""} ${wrongPulseId === item.id ? "is-wrong" : ""}`}
+            className={`scene-item ${foundIds.has(item.id) ? "is-found" : ""} ${wrongPulseId === item.id ? "is-wrong" : ""} ${ipucuHedefId === item.id ? "is-hint" : ""}`}
             style={{ left: `${item.x}%`, top: `${item.y}%`, transform: `translate(-50%, -50%) rotate(${item.rotate}deg)` }}
             onClick={() => handleTap(item)}
           >

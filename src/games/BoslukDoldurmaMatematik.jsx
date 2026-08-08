@@ -93,6 +93,16 @@ function generatePuzzle(round) {
   return generateEquationPuzzle(max, blankPositions);
 }
 
+// Bu oyun soru bankasından değil, anlık üretilen bulmacalardan besleniyor
+// (ipucu alanı yok) - o yüzden puzzle tipine göre basit bir strateji
+// ipucu üretiyoruz.
+function puzzleIpucu(puzzle) {
+  if (puzzle.type === "sequence") {
+    return "Sayıları sırayla say: bir öncesi ve bir sonrası";
+  }
+  return "Parmaklarınla ya da nesnelerle say";
+}
+
 function Slot({ filled, value, isBlank }) {
   if (isBlank) {
     return <span className={`slot slot-blank ${filled ? "slot-filled" : ""}`}>{filled ? value : "?"}</span>;
@@ -133,6 +143,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
+  const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
   const [finished, setFinished] = useState(false);
   const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -146,6 +157,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
     setPuzzle(p);
     setFeedback(null);
     setWrongPick(null);
+    setAyniSoruDenemeSayisi(0);
   }, []);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
@@ -154,6 +166,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
     () => generatePadOptions(puzzle.answer, ROUNDS[round].max),
     [puzzle, round]
   );
+  const cevapAcikMi = feedback === "correct" || (feedback === "wrong" && ayniSoruDenemeSayisi >= 2);
 
   function handlePick(val) {
     if (feedback === "correct" || finished || roundDone) return;
@@ -181,10 +194,21 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
       if (soundOn) playTone("wrong");
       setWrongPick(val);
       setTotalMistakes((m) => m + 1);
-      timeoutRef.current = setTimeout(() => {
-        setFeedback(null);
-        setWrongPick(null);
-      }, 650);
+      const yeniDenemeSayisi = ayniSoruDenemeSayisi + 1;
+      setAyniSoruDenemeSayisi(yeniDenemeSayisi);
+
+      if (yeniDenemeSayisi >= 2) {
+        // Çocuk sonsuza dek karanlıkta denemesin - doğru cevabı göster,
+        // biraz bekleyip sonraki bulmacaya geç.
+        timeoutRef.current = setTimeout(() => {
+          nextPuzzle(round);
+        }, 2200);
+      } else {
+        timeoutRef.current = setTimeout(() => {
+          setFeedback(null);
+          setWrongPick(null);
+        }, 650);
+      }
     }
   }
 
@@ -333,6 +357,22 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
           line-height: 1.4;
         }
         .context-emoji { font-size: 15px; }
+        .hint-text {
+          margin-top: 10px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: var(--ink-soft);
+        }
+        .correct-reveal {
+          margin-top: 8px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #E4F7E6;
+          border-radius: 10px;
+          padding: 6px 12px;
+          display: inline-block;
+        }
         .equation-row {
           display: flex;
           align-items: center;
@@ -491,20 +531,26 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
         )}
         {puzzle.type === "equation" ? (
           <div className="equation-row">
-            <Slot value={puzzle.a} isBlank={puzzle.blank === "first"} filled={feedback === "correct" && puzzle.blank === "first"} />
+            <Slot value={puzzle.a} isBlank={puzzle.blank === "first"} filled={cevapAcikMi && puzzle.blank === "first"} />
             <span>{puzzle.op}</span>
-            <Slot value={puzzle.b} isBlank={puzzle.blank === "second"} filled={feedback === "correct" && puzzle.blank === "second"} />
+            <Slot value={puzzle.b} isBlank={puzzle.blank === "second"} filled={cevapAcikMi && puzzle.blank === "second"} />
             <span>=</span>
-            <Slot value={puzzle.c} isBlank={puzzle.blank === "result"} filled={feedback === "correct" && puzzle.blank === "result"} />
+            <Slot value={puzzle.c} isBlank={puzzle.blank === "result"} filled={cevapAcikMi && puzzle.blank === "result"} />
           </div>
         ) : (
           <div className="equation-row">
-            <Slot value={puzzle.seq[0]} isBlank={puzzle.blankIndex === 0} filled={feedback === "correct" && puzzle.blankIndex === 0} />
+            <Slot value={puzzle.seq[0]} isBlank={puzzle.blankIndex === 0} filled={cevapAcikMi && puzzle.blankIndex === 0} />
             <span>→</span>
-            <Slot value={puzzle.seq[1]} isBlank={puzzle.blankIndex === 1} filled={feedback === "correct" && puzzle.blankIndex === 1} />
+            <Slot value={puzzle.seq[1]} isBlank={puzzle.blankIndex === 1} filled={cevapAcikMi && puzzle.blankIndex === 1} />
             <span>→</span>
-            <Slot value={puzzle.seq[2]} isBlank={puzzle.blankIndex === 2} filled={feedback === "correct" && puzzle.blankIndex === 2} />
+            <Slot value={puzzle.seq[2]} isBlank={puzzle.blankIndex === 2} filled={cevapAcikMi && puzzle.blankIndex === 2} />
           </div>
+        )}
+        {feedback === "wrong" && (
+          <div className="hint-text">💡 {puzzleIpucu(puzzle)}</div>
+        )}
+        {cevapAcikMi && (
+          <div className="correct-reveal">Doğru cevap: <strong>{puzzle.answer}</strong></div>
         )}
       </div>
 
@@ -513,6 +559,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
           let cls = "pad-key";
           if (feedback === "correct" && n === puzzle.answer) cls += " correct";
           if (feedback === "wrong" && n === wrongPick) cls += " wrong";
+          if (cevapAcikMi && n === puzzle.answer) cls += " correct";
           return (
             <button key={n} className={cls} onClick={() => handlePick(n)}>
               {n}

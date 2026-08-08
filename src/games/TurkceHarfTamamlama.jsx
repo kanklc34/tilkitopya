@@ -131,6 +131,7 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
+  const [ayniHarfDenemeSayisi, setAyniHarfDenemeSayisi] = useState(0);
   const [finished, setFinished] = useState(false);
   const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -146,12 +147,36 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
     setFilledCount(0);
     setFeedback(null);
     setWrongPick(null);
+    setAyniHarfDenemeSayisi(0);
   }, []);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   const currentLetter = currentLetterOf(puzzle, filledCount);
   const totalBlanks = puzzle.type === "sequence" ? 1 : puzzle.blankPositions.length;
+  const harfAcikMi = feedback === "correct" || (feedback === "wrong" && ayniHarfDenemeSayisi >= 2);
+
+  function harfiIlerlet(nextFilled) {
+    setAyniHarfDenemeSayisi(0);
+    if (nextFilled >= totalBlanks) {
+      const newProgress = progress + 1;
+      setProgress(newProgress);
+      if (newProgress >= ROUND_LENGTH) {
+        if (round + 1 >= TOTAL_ROUNDS) {
+          setFinished(true);
+        } else {
+          setRoundDone(true);
+        }
+      } else {
+        nextPuzzle(round, currentTheme);
+      }
+    } else {
+      setFilledCount(nextFilled);
+      setPad(generateLetterPad(currentLetterOf(puzzle, nextFilled)));
+      setFeedback(null);
+      setWrongPick(null);
+    }
+  }
 
   function handlePick(letter) {
     if (paused || finished || roundDone || feedback === "correct") return;
@@ -162,34 +187,25 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
       setShowBurst(true);
       const nextFilled = filledCount + 1;
 
-      timeoutRef.current = setTimeout(() => {
-        if (nextFilled >= totalBlanks) {
-          const newProgress = progress + 1;
-          setProgress(newProgress);
-          if (newProgress >= ROUND_LENGTH) {
-            if (round + 1 >= TOTAL_ROUNDS) {
-              setFinished(true);
-            } else {
-              setRoundDone(true);
-            }
-          } else {
-            nextPuzzle(round, currentTheme);
-          }
-        } else {
-          setFilledCount(nextFilled);
-          setPad(generateLetterPad(currentLetterOf(puzzle, nextFilled)));
-          setFeedback(null);
-        }
-      }, 550);
+      timeoutRef.current = setTimeout(() => harfiIlerlet(nextFilled), 550);
     } else {
       setFeedback("wrong");
       if (soundOn) playTone("wrong");
       setWrongPick(letter);
       setTotalMistakes((m) => m + 1);
-      timeoutRef.current = setTimeout(() => {
-        setFeedback(null);
-        setWrongPick(null);
-      }, 600);
+      const yeniDeneme = ayniHarfDenemeSayisi + 1;
+      setAyniHarfDenemeSayisi(yeniDeneme);
+
+      if (yeniDeneme >= 2) {
+        // Çocuk aynı harfte sonsuza dek denemesin - doğru harfi göster,
+        // biraz bekleyip devam et.
+        timeoutRef.current = setTimeout(() => harfiIlerlet(filledCount + 1), 1800);
+      } else {
+        timeoutRef.current = setTimeout(() => {
+          setFeedback(null);
+          setWrongPick(null);
+        }, 600);
+      }
     }
   }
 
@@ -315,6 +331,22 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
           80% { transform: translateX(6px); }
         }
         .word-emoji { font-size: 46px; margin-bottom: 10px; }
+        .hint-text {
+          margin-top: 10px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: var(--ink-soft);
+        }
+        .correct-reveal {
+          margin-top: 8px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #E4F7E6;
+          border-radius: 10px;
+          padding: 6px 12px;
+          display: inline-block;
+        }
         .word-row {
           display: flex;
           justify-content: center;
@@ -507,9 +539,9 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
                 return (
                   <span
                     key={i}
-                    className={`letter-slot ${isBlank ? "is-blank" : ""} ${isCurrent ? "is-current" : ""} ${isDone || (isCurrent && feedback === "correct") ? "is-filled" : ""}`}
+                    className={`letter-slot ${isBlank ? "is-blank" : ""} ${isCurrent ? "is-current" : ""} ${isDone || (isCurrent && harfAcikMi) ? "is-filled" : ""}`}
                   >
-                    {isBlank && !isDone && !(isCurrent && feedback === "correct") ? "" : l}
+                    {isBlank && !isDone && !(isCurrent && harfAcikMi) ? "" : l}
                   </span>
                 );
               })}
@@ -522,15 +554,21 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
               {puzzle.seq.map((l, i) => (
                 <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <span
-                    className={`letter-slot ${puzzle.blankIndex === i ? "is-blank" : ""} ${puzzle.blankIndex === i && feedback === "correct" ? "is-filled" : ""}`}
+                    className={`letter-slot ${puzzle.blankIndex === i ? "is-blank" : ""} ${puzzle.blankIndex === i && harfAcikMi ? "is-filled" : ""}`}
                   >
-                    {puzzle.blankIndex === i && feedback !== "correct" ? "" : l}
+                    {puzzle.blankIndex === i && !harfAcikMi ? "" : l}
                   </span>
                   {i < 2 && <span style={{ fontSize: 20, color: "#9AB4CE" }}>→</span>}
                 </span>
               ))}
             </div>
           </>
+        )}
+        {feedback === "wrong" && puzzle.type === "word" && (
+          <div className="hint-text">💡 {puzzle.emoji} resmine bak</div>
+        )}
+        {feedback === "wrong" && ayniHarfDenemeSayisi >= 2 && (
+          <div className="correct-reveal">Doğru harf: <strong>{currentLetter}</strong></div>
         )}
       </div>
 
@@ -539,6 +577,7 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
           let cls = "pad-key";
           if (feedback === "correct" && letter === currentLetter) cls += " correct";
           if (feedback === "wrong" && letter === wrongPick) cls += " wrong";
+          if (feedback === "wrong" && ayniHarfDenemeSayisi >= 2 && letter === currentLetter) cls += " correct";
           return (
             <button key={letter} className={cls} onClick={() => handlePick(letter)}>
               {letter}

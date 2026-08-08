@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw, HelpCircle, BookOpen } from "lucide-react";
 import matematikBankasi from "../data/matematik-1-sinif.json";
+import { ipucuGetir } from "../lib/ipucuUret.js";
 
 // ---- GERÇEK SORU BANKASI ----
 // Gömülü/statik veri değil - src/data/matematik-1-sinif.json dosyasından
@@ -52,6 +53,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
   const [levelUpFlash, setLevelUpFlash] = useState(null); // 'up' | 'down' | null
   const [batchDone, setBatchDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -68,6 +70,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
     setFeedback(null);
     setWrongPick(null);
     setShowHint(false);
+    setAyniSoruDenemeSayisi(0);
   }
 
   function handlePick(val) {
@@ -110,6 +113,12 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
       setShowHint(true);
       const newWrongStreak = wrongStreak + 1;
       setWrongStreak(newWrongStreak);
+      const yeniDenemeSayisi = ayniSoruDenemeSayisi + 1;
+      setAyniSoruDenemeSayisi(yeniDenemeSayisi);
+
+      // Aynı soruda 2. yanlıştan sonra doğru cevabı açıkça göster -
+      // çocuk sonsuza dek karanlıkta denemesin, öğrenerek ilerlesin.
+      const cevapGosterilsinMi = yeniDenemeSayisi >= 2;
 
       if (newWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && seviye > 1) {
         const demotedSeviye = seviye - 1;
@@ -119,7 +128,11 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
         timeoutRef.current = setTimeout(() => {
           setLevelUpFlash(null);
           nextQuestion(demotedSeviye, newAskedIds);
-        }, 900);
+        }, cevapGosterilsinMi ? 2200 : 900);
+      } else if (cevapGosterilsinMi) {
+        timeoutRef.current = setTimeout(() => {
+          nextQuestion(seviye, newAskedIds);
+        }, 2200);
       } else {
         timeoutRef.current = setTimeout(() => {
           setFeedback(null);
@@ -374,6 +387,16 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
         .option-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(31,46,69,0.15); }
         .option-btn.correct { background: var(--grass-dark); color: white; }
         .option-btn.wrong { background: #D9534F; color: white; }
+        .correct-reveal {
+          margin-top: 8px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #E4F7E6;
+          border-radius: 10px;
+          padding: 6px 12px;
+          display: inline-block;
+        }
 
         .finish-overlay, .tutorial-overlay {
           position: absolute;
@@ -467,9 +490,12 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
           <button className="hint-btn" onClick={() => setShowHint(true)}>
             <HelpCircle size={14} /> İpucu göster
           </button>
-        ) : showHint && current.ipucu ? (
-          <div className="hint-text">💡 {current.ipucu}</div>
+        ) : showHint ? (
+          <div className="hint-text">💡 {ipucuGetir(current)}</div>
         ) : null}
+        {feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && (
+          <div className="correct-reveal">Doğru cevap: <strong>{current.dogru_cevap}</strong></div>
+        )}
         {/* Kazanım kodu bilerek gösterilmiyor - teknik/idari bilgi, çocuk ekranına ait değil */}
       </div>
 
@@ -478,6 +504,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
           let cls = "option-btn";
           if (feedback === "correct" && opt === current.dogru_cevap) cls += " correct";
           if (feedback === "wrong" && opt === wrongPick) cls += " wrong";
+          if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && opt === current.dogru_cevap) cls += " correct";
           return (
             <button key={opt} className={cls} onClick={() => handlePick(opt)}>
               {opt}

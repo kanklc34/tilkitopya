@@ -99,6 +99,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
   const [locked, setLocked] = useState(false);
   const [moves, setMoves] = useState(0);
   const [mistakes, setMistakes] = useState(0);
+  const [pesPeseYanlis, setPesPeseYanlis] = useState(0);
   const [roundDone, setRoundDone] = useState(false);
   const [allDone, setAllDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -113,6 +114,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
     setLocked(false);
     setMoves(0);
     setMistakes(0);
+    setPesPeseYanlis(0);
     setRoundDone(false);
   }, []);
 
@@ -138,6 +140,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
 
       if (first.pairId === second.pairId) {
         if (soundOn) playTone("match");
+        setPesPeseYanlis(0);
         setBurstPairId(first.pairId);
         setTimeout(() => {
           setMatched((prev) => new Set(prev).add(first.pairId));
@@ -148,6 +151,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
       } else {
         if (soundOn) playTone("wrong");
         setMistakes((m) => m + 1);
+        setPesPeseYanlis((p) => p + 1);
         setTimeout(() => {
           setFlipped([]);
           setLocked(false);
@@ -237,6 +241,16 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
           cursor: pointer;
           font-size: 14px;
           box-shadow: 0 2px 6px rgba(31,46,69,0.1);
+        }
+        .strategy-tip {
+          text-align: center;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #FFF3D6;
+          border-radius: 12px;
+          padding: 8px 14px;
+          margin-bottom: 12px;
         }
         .round-pill {
           background: var(--sun);
@@ -411,6 +425,15 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
           </button>
         </div>
       </div>
+
+
+      {pesPeseYanlis >= 3 && (
+
+
+        <div className="strategy-tip">💡 Kartların yerini hatırlamaya çalış, aceleye gerek yok</div>
+
+
+      )}
 
       <div className="board" style={{ gridTemplateColumns: `repeat(${ROUNDS[round].columns}, 1fr)` }}>
         {deck.map((card) => {

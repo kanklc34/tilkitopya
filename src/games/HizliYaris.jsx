@@ -126,6 +126,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [showHint, setShowHint] = useState(false);
+  const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
   const [finished, setFinished] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -141,6 +142,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
     setShowHint(false);
     setFeedback(null);
     setWrongPick(null);
+    setAyniSoruDenemeSayisi(0);
   }, [maxNumber]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
@@ -174,10 +176,19 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
       setWrongPick(val);
       setTotalMistakes((n) => n + 1);
       setShowHint(true);
-      timeoutRef.current = setTimeout(() => {
-        setFeedback(null);
-        setWrongPick(null);
-      }, 650);
+      const yeniDeneme = ayniSoruDenemeSayisi + 1;
+      setAyniSoruDenemeSayisi(yeniDeneme);
+
+      if (yeniDeneme >= 2) {
+        timeoutRef.current = setTimeout(() => {
+          nextQuestion(maxNumber);
+        }, 2200);
+      } else {
+        timeoutRef.current = setTimeout(() => {
+          setFeedback(null);
+          setWrongPick(null);
+        }, 650);
+      }
     }
   }
 
@@ -400,6 +411,16 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
           font-size: 40px;
           color: var(--ink);
         }
+        .correct-reveal {
+          margin-top: 8px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #E4F7E6;
+          border-radius: 10px;
+          padding: 6px 12px;
+          display: inline-block;
+        }
         .hint-btn {
           margin-top: 12px;
           background: transparent;
@@ -607,6 +628,9 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
           </button>
         )}
         {!objectsAvailable && showHint && <Dots n={question.a} />}
+        {feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && (
+          <div className="correct-reveal">Doğru cevap: <strong>{question.answer}</strong></div>
+        )}
       </div>
 
       <div className="options-row">
@@ -614,6 +638,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
           let cls = "option-btn";
           if (feedback === "correct" && opt === question.answer) cls += " correct";
           if (feedback === "wrong" && opt === wrongPick) cls += " wrong";
+          if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && opt === question.answer) cls += " correct";
           return (
             <button
               key={opt}

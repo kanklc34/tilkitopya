@@ -73,6 +73,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
   const [correctId, setCorrectId] = useState(null);
   const [locked, setLocked] = useState(false);
   const [mistakes, setMistakes] = useState(0);
+  const [ayniPuzzleDenemeSayisi, setAyniPuzzleDenemeSayisi] = useState(0);
   const [finished, setFinished] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -83,7 +84,25 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
     setWrongId(null);
     setCorrectId(null);
     setLocked(false);
+    setAyniPuzzleDenemeSayisi(0);
   }, []);
+
+  function ilerle() {
+    if (puzzleInRound + 1 >= PUZZLES_PER_ROUND) {
+      if (round + 1 >= TOTAL_ROUNDS) {
+        setFinished(true);
+      } else {
+        const r = round + 1;
+        setRound(r);
+        setPuzzleInRound(0);
+        nextPuzzle(r, 0);
+      }
+    } else {
+      const p = puzzleInRound + 1;
+      setPuzzleInRound(p);
+      nextPuzzle(round, p);
+    }
+  }
 
   function handleTap(cell) {
     if (locked || paused || finished) return;
@@ -92,27 +111,23 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
       setLocked(true);
       setCorrectId(cell.id);
       if (soundOn) playTone("correct");
-      setTimeout(() => {
-        if (puzzleInRound + 1 >= PUZZLES_PER_ROUND) {
-          if (round + 1 >= TOTAL_ROUNDS) {
-            setFinished(true);
-          } else {
-            const r = round + 1;
-            setRound(r);
-            setPuzzleInRound(0);
-            nextPuzzle(r, 0);
-          }
-        } else {
-          const p = puzzleInRound + 1;
-          setPuzzleInRound(p);
-          nextPuzzle(round, p);
-        }
-      }, 700);
+      setTimeout(ilerle, 700);
     } else {
       setWrongId(cell.id);
       setMistakes((m) => m + 1);
       if (soundOn) playTone("wrong");
-      setTimeout(() => setWrongId(null), 450);
+      const yeniDeneme = ayniPuzzleDenemeSayisi + 1;
+      setAyniPuzzleDenemeSayisi(yeniDeneme);
+
+      if (yeniDeneme >= 2) {
+        // Çocuk sonsuza dek karanlıkta denemesin - doğru hücreyi göster.
+        setLocked(true);
+        const oddCell = grid.find((c) => c.isOdd);
+        if (oddCell) setCorrectId(oddCell.id);
+        setTimeout(ilerle, 1800);
+      } else {
+        setTimeout(() => setWrongId(null), 450);
+      }
     }
   }
 

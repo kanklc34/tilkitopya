@@ -65,6 +65,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
+  const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
   const [finished, setFinished] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -78,9 +79,11 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
     setPad(generateDayPad(p.answer));
     setFeedback(null);
     setWrongPick(null);
+    setAyniSoruDenemeSayisi(0);
   }, []);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
+  const cevapAcikMi = feedback === "correct" || (feedback === "wrong" && ayniSoruDenemeSayisi >= 2);
 
   function handlePick(day) {
     if (paused || finished || feedback === "correct") return;
@@ -103,10 +106,19 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
       if (soundOn) playTone("wrong");
       setWrongPick(day);
       setTotalMistakes((m) => m + 1);
-      timeoutRef.current = setTimeout(() => {
-        setFeedback(null);
-        setWrongPick(null);
-      }, 650);
+      const yeniDeneme = ayniSoruDenemeSayisi + 1;
+      setAyniSoruDenemeSayisi(yeniDeneme);
+
+      if (yeniDeneme >= 2) {
+        timeoutRef.current = setTimeout(() => {
+          nextPuzzle();
+        }, 2200);
+      } else {
+        timeoutRef.current = setTimeout(() => {
+          setFeedback(null);
+          setWrongPick(null);
+        }, 650);
+      }
     }
   }
 
@@ -246,6 +258,16 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
           color: var(--grass-dark);
         }
         .seq-arrow { font-size: 18px; color: #9AB4CE; }
+        .correct-reveal {
+          margin-top: 8px;
+          font-family: 'Nunito', sans-serif;
+          font-size: 13px;
+          color: #1F2E45;
+          background: #E4F7E6;
+          border-radius: 10px;
+          padding: 6px 12px;
+          display: inline-block;
+        }
 
         .daypad {
           display: grid;
@@ -374,13 +396,16 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
         <div className="seq-row">
           {puzzle.seq.map((day, i) => (
             <span key={i} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span className={`day-slot ${puzzle.blankIndex === i ? "is-blank" : ""} ${puzzle.blankIndex === i && feedback === "correct" ? "is-filled" : ""}`}>
-                {puzzle.blankIndex === i && feedback !== "correct" ? "?" : day}
+              <span className={`day-slot ${puzzle.blankIndex === i ? "is-blank" : ""} ${puzzle.blankIndex === i && cevapAcikMi ? "is-filled" : ""}`}>
+                {puzzle.blankIndex === i && !cevapAcikMi ? "?" : day}
               </span>
               {i < 2 && <span className="seq-arrow">→</span>}
             </span>
           ))}
         </div>
+        {cevapAcikMi && feedback === "wrong" && (
+          <div className="correct-reveal">Doğru cevap: <strong>{puzzle.answer}</strong></div>
+        )}
       </div>
 
       <div className="daypad">
@@ -388,6 +413,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
           let cls = "pad-key";
           if (feedback === "correct" && day === puzzle.answer) cls += " correct";
           if (feedback === "wrong" && day === wrongPick) cls += " wrong";
+          if (cevapAcikMi && feedback === "wrong" && day === puzzle.answer) cls += " correct";
           return (
             <button key={day} className={cls} onClick={() => handlePick(day)}>
               {day}
