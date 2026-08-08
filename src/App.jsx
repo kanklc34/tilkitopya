@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Settings } from "lucide-react";
 
 import EbeveynPaneli from "./components/EbeveynPaneli.jsx";
 import { ilerlemeyiOku, oyunTamamlandi, gununGorevleri } from "./lib/progress.js";
+import { anaEkranMesajiSec } from "./lib/maskotMesajlari.js";
 
 import HizliYaris from "./games/HizliYaris.jsx";
 import MatematikEslestirme from "./games/MatematikEslestirme.jsx";
@@ -77,6 +78,12 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
   // Ebeveyn "Tüm Oyunlar" sekmesini kapattıysa çocuk her zaman görevler
   // ekranında kalır - sekme çubuğu bile gösterilmez, seçim şansı olmaz.
   const gosterilenSekme = tumOyunlarAcik ? sekme : "gorevler";
+  const [mesajYenile, setMesajYenile] = useState(0);
+  const mesaj = useMemo(
+    () => anaEkranMesajiSec({ tamamlananSayisi, toplamGorev: bugunGorevleri.length }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tamamlananSayisi, bugunGorevleri.length, mesajYenile]
+  );
 
   return (
     <div className="home-root">
@@ -99,13 +106,20 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           align-items: center;
           gap: 10px;
           margin-bottom: 18px;
+          cursor: pointer;
         }
         .mascot-big {
           width: 96px;
           height: 96px;
-          animation: mascotBob 2.2s ease-in-out infinite;
+          animation: mascotPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), mascotBob 2.2s ease-in-out 0.45s infinite;
           display: inline-block;
           filter: drop-shadow(0 6px 10px rgba(31,46,69,0.15));
+        }
+        .mascot-greeting:active .mascot-big { transform: scale(0.92); }
+        @keyframes mascotPop {
+          0% { transform: scale(0.4) translateY(20px); opacity: 0; }
+          70% { transform: scale(1.08) translateY(-4px); opacity: 1; }
+          100% { transform: scale(1) translateY(0); }
         }
         @keyframes mascotBob {
           0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -120,6 +134,13 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           padding: 10px 18px;
           border-radius: 999px;
           box-shadow: 0 4px 14px rgba(31,46,69,0.1);
+        }
+        .mascot-bubble-pop {
+          animation: bubblePop 0.3s ease-out 0.25s backwards;
+        }
+        @keyframes bubblePop {
+          0% { transform: scale(0.7); opacity: 0; }
+          100% { transform: scale(1); opacity: 1; }
         }
         .home-title {
           font-family: 'Fredoka', sans-serif;
@@ -306,9 +327,14 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
       </button>
 
       <div className="home-header">
-        <div className="mascot-greeting">
-          <img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="mascot-big" alt="Tilki maskot" />
-          <div className="mascot-bubble">Merhaba! Bugün ne oynamak istersin?</div>
+        <div className="mascot-greeting" onClick={() => setMesajYenile((n) => n + 1)}>
+          <img
+            key={mesajYenile}
+            src={`${import.meta.env.BASE_URL}fox-mascot.png`}
+            className="mascot-big mascot-pop"
+            alt="Tilki maskot"
+          />
+          <div key={`b-${mesajYenile}`} className="mascot-bubble mascot-bubble-pop">{mesaj}</div>
         </div>
         <div className="home-title">İlkokul Platformu</div>
         <div className="home-subtitle">1. Sınıf</div>
