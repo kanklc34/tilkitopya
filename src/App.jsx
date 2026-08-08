@@ -298,13 +298,11 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           border-radius: 999px;
         }
         .today-row {
-          display: flex;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
           gap: 10px;
-          overflow-x: auto;
-          padding-bottom: 2px;
         }
         .today-item {
-          flex: 0 0 auto;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -312,9 +310,8 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           background: #F5F8FC;
           border: none;
           border-radius: 16px;
-          padding: 10px 14px;
+          padding: 10px 8px;
           cursor: pointer;
-          min-width: 72px;
         }
         .today-item.today-done {
           background: #E4F7E6;

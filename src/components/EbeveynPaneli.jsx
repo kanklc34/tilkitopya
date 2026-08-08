@@ -325,7 +325,7 @@ export default function EbeveynPaneli({ onKapat }) {
         }
         .ep-hold-circle svg { position: absolute; top: 0; left: 0; }
         .ep-hold-circle svg circle:nth-child(2) { transition: stroke-dashoffset 0.05s linear; }
-        .ep-hold-icon { font-size: 34px; pointer-events: none; }
+        .ep-hold-icon { font-size: 34px; pointer-events: none; position: relative; z-index: 1; }
         .ep-gate-hint {
           color: #5C6B85;
           font-size: 12px;
