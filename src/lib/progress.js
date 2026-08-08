@@ -105,17 +105,16 @@ export function gunTamamlandiMi(ilerleme, gunNo) {
   return !!ilerleme.gunler[gunNo]?.tamamlandi;
 }
 
-// Bir oyun oturumu bittiğinde çağrılır. Oyun bugünün görev listesindeyse
-// ilgili görevi işaretler; günün tüm görevleri bitince gün "tamamlandı"
-// sayılır ve aktif gün bir sonrakine geçer (takvimden bağımsız, tamamlama
-// bazlı ilerleme). Görev listesinde olmayan bir oyun oynanırsa (çocuk
-// istediği oyunu özgürce oynayabilir - kilit yok) yine oturum sayılır
-// ama gün ilerlemesini etkilemez.
+// Bir oyun oturumu bittiğinde çağrılır. Oyun, o dersin bugün için ATANMIŞ
+// olan görevi olmasa bile - çocuk "Tüm Oyunlar" sekmesinden aynı dersten
+// farklı bir oyun seçmiş olabilir - o dersin bugünkü görevini tamamlanmış
+// sayıyoruz (hangi oyunu oynadığı önemli değil, hangi dersi çalıştığı
+// önemli). Günün tüm dersleri bitince gün "tamamlandı" sayılır ve aktif
+// gün bir sonrakine geçer (takvimden bağımsız, tamamlama bazlı ilerleme).
 export function oyunTamamlandi(gameId, stars) {
   const ilerleme = ilerlemeyiOku();
   const gunNo = ilerleme.aktifGun;
-  const gorevler = gununGorevleri(gunNo);
-  const buGorevMi = gorevler.some((g) => g.id === gameId);
+  const oynananGrup = GUN_PLANI_KATALOGU.find((g) => g.items.some((i) => i.id === gameId));
 
   ilerleme.oturumSayisi += 1;
 
@@ -123,10 +122,14 @@ export function oyunTamamlandi(gameId, stars) {
     ilerleme.gunler[gunNo] = { tamamlandi: false, gorevler: {} };
   }
 
-  if (buGorevMi) {
-    ilerleme.gunler[gunNo].gorevler[gameId] = {
+  if (oynananGrup) {
+    const gorevler = gununGorevleri(gunNo);
+    const gununGorevi = gorevler.find((g) => g.ders === oynananGrup.ders);
+
+    ilerleme.gunler[gunNo].gorevler[gununGorevi.id] = {
       stars,
       tarih: new Date().toISOString(),
+      oynananOyun: gameId, // şeffaflık için: gerçekte hangi oyun oynandı
     };
 
     const hepsiTamam = gorevler.every((g) => ilerleme.gunler[gunNo].gorevler[g.id]);
