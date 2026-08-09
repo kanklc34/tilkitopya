@@ -1,9 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import hayatBilgisiBankasi from "../data/hayat-bilgisi-1-sinif.json";
 
 // ---- Oyun ayarları ----
+// Hedef nesne listesi artık gerçek soru bankasından (doga_gozlem
+// kayıtları) türetiliyor - müfredat güncellemesi kod değil veri
+// güncellemesi olsun diye. Rakip/dolgu (decoy) emojiler curriculum
+// içeriği olmadığı, sadece görsel gürültü olduğu için kod içinde kalıyor.
 const DECOY_POOL = ["🍃", "☁️", "🌸", "🪨", "🍂", "🌿"];
-const TARGET_POOL = ["🐛", "🐞", "🦋", "🐝", "🐌"];
+const DOGA_GOZLEM_SORULARI = hayatBilgisiBankasi.sorular.filter((s) => s.soru_tipi === "doga_gozlem");
+const TARGET_POOL = [...new Set(DOGA_GOZLEM_SORULARI.map((s) => s.secenekler.hedef))];
 // Tur büyüdükçe sahne kalabalıklaşıyor ve bulunacak hedef sayısı artıyor
 const ROUNDS = [
   { decoyCount: 12, targetCount: 2 }, // tur1: az kalabalık, 2 hedef

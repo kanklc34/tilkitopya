@@ -224,7 +224,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
         }
         .game-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           gap: 14px;
         }
         .game-card {
@@ -299,7 +299,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
         }
         .today-row {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
           gap: 10px;
         }
         .today-item {

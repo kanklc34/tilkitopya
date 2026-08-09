@@ -1,32 +1,25 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import ingilizceBankasi from "../data/ingilizce-1-sinif.json";
 
 // ---- Oyun ayarları ----
 // Türkçe harf tamamlama motorunun aynısı, içerik + alfabe İngilizce.
+// Kelime/emoji içeriği artık gerçek soru bankasından okunuyor. Bankada
+// bazı temalar (oyuncaklar, ev_aile, okul) tek başına 1-2 kelimeye
+// düştüğü için (tekrar riski) "gunluk_hayat" başlığında birleştirildi.
 const ROUND_LENGTH = 5;
-// Kelimeler Türkçe motordaki 6 temayla aynı - her tur tek bir temaya
-// bağlı kalıyor, karışık kelime akışı yerine tutarlı bir tur hissi verir.
-const WORD_BANK = [
-  { word: "CAT", emoji: "🐱", tema: "hayvanlar" },
-  { word: "DOG", emoji: "🐶", tema: "hayvanlar" },
-  { word: "FISH", emoji: "🐟", tema: "hayvanlar" },
-  { word: "BIRD", emoji: "🐦", tema: "hayvanlar" },
-  { word: "SUN", emoji: "☀️", tema: "doga" },
-  { word: "MOON", emoji: "🌙", tema: "doga" },
-  { word: "STAR", emoji: "⭐", tema: "doga" },
-  { word: "FLOWER", emoji: "🌸", tema: "doga" },
-  { word: "CAR", emoji: "🚗", tema: "oyuncaklar" },
-  { word: "BALL", emoji: "⚽", tema: "oyuncaklar" },
-  { word: "KITE", emoji: "🪁", tema: "oyuncaklar" },
-  { word: "HOUSE", emoji: "🏠", tema: "ev_aile" },
-  { word: "MOM", emoji: "👩", tema: "ev_aile" },
-  { word: "DAD", emoji: "👨", tema: "ev_aile" },
-  { word: "APPLE", emoji: "🍎", tema: "yiyecek" },
-  { word: "BANANA", emoji: "🍌", tema: "yiyecek" },
-  { word: "MILK", emoji: "🥛", tema: "yiyecek" },
-  { word: "BOOK", emoji: "📖", tema: "okul" },
-  { word: "BAG", emoji: "🎒", tema: "okul" },
-];
+const TEMA_ESLEME = {
+  CAT: "hayvanlar", DOG: "hayvanlar", FISH: "hayvanlar", BIRD: "hayvanlar",
+  SUN: "doga", MOON: "doga", STAR: "doga", FLOWER: "doga",
+  CAR: "gunluk_hayat", BALL: "gunluk_hayat", HOUSE: "gunluk_hayat", APPLE: "gunluk_hayat", BANANA: "gunluk_hayat", BOOK: "gunluk_hayat",
+};
+const WORD_BANK = ingilizceBankasi.sorular
+  .filter((s) => s.soru_tipi === "harf_tamamlama")
+  .map((s) => ({
+    word: s.tam_kelime,
+    emoji: s.gorsel_emoji,
+    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+  }));
 const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ENGLISH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const ROUNDS = [
@@ -36,6 +29,7 @@ const ROUNDS = [
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
 const SEQUENCE_RATIO = 0.3;
+const HARF_SIRA_SORULARI = ingilizceBankasi.sorular.filter((s) => s.soru_tipi === "harf_sira");
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -64,10 +58,11 @@ function generateWordPuzzle(round, theme) {
 }
 
 function generateSequencePuzzle() {
-  const idx = rand(1, ENGLISH_LETTERS.length - 2);
-  const seq = [ENGLISH_LETTERS[idx - 1], ENGLISH_LETTERS[idx], ENGLISH_LETTERS[idx + 1]];
-  const blankIndex = rand(0, 2);
-  return { type: "sequence", seq, blankIndex, answer: seq[blankIndex] };
+  const kayit = HARF_SIRA_SORULARI[rand(0, HARF_SIRA_SORULARI.length - 1)];
+  const parcalar = kayit.soru_metni.split(" → ");
+  const blankIndex = parcalar.indexOf("?");
+  const seq = parcalar.map((p) => (p === "?" ? kayit.dogru_cevap : p));
+  return { type: "sequence", seq, blankIndex, answer: kayit.dogru_cevap };
 }
 
 function generatePuzzle(round, theme) {

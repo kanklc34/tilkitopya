@@ -1,35 +1,33 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import turkceBankasi from "../data/turkce-1-sinif.json";
 
 // ---- Oyun ayarları ----
 const ROUND_LENGTH = 5;
 // Kelime + eksik harf pozisyonu + görsel ipucu (görsel > metin ilkesi).
 // Tur ilerledikçe kelimeler uzuyor ve eksik harf sayısı artıyor.
-// Kelimeler matematikteki 6 temayla aynı havuzdan - her tur tek bir temaya
-// bağlı kalıyor (o turda hep hayvanlar, sonraki turda hep doğa gibi),
-// karışık/alakasız kelime akışı yerine tutarlı bir tur hissi veriyor.
-const WORD_BANK = [
-  { word: "KEDİ", emoji: "🐱", tema: "hayvanlar" },
-  { word: "KÖPEK", emoji: "🐶", tema: "hayvanlar" },
-  { word: "KUŞ", emoji: "🐦", tema: "hayvanlar" },
-  { word: "BALIK", emoji: "🐟", tema: "hayvanlar" },
-  { word: "KELEBEK", emoji: "🦋", tema: "hayvanlar" },
-  { word: "GÜNEŞ", emoji: "☀️", tema: "doga" },
-  { word: "AY", emoji: "🌙", tema: "doga" },
-  { word: "YILDIZ", emoji: "⭐", tema: "doga" },
-  { word: "ÇİÇEK", emoji: "🌸", tema: "doga" },
-  { word: "TOP", emoji: "⚽", tema: "oyuncaklar" },
-  { word: "ARABA", emoji: "🚗", tema: "oyuncaklar" },
-  { word: "BALON", emoji: "🎈", tema: "oyuncaklar" },
-  { word: "EV", emoji: "🏠", tema: "ev_aile" },
-  { word: "ANNE", emoji: "👩", tema: "ev_aile" },
-  { word: "BABA", emoji: "👨", tema: "ev_aile" },
-  { word: "ELMA", emoji: "🍎", tema: "yiyecek" },
-  { word: "MUZ", emoji: "🍌", tema: "yiyecek" },
-  { word: "SU", emoji: "💧", tema: "yiyecek" },
-  { word: "KİTAP", emoji: "📖", tema: "okul" },
-  { word: "ÇANTA", emoji: "🎒", tema: "okul" },
-];
+// Kelime/emoji/ipucu içeriği artık gerçek soru bankasından (harf_tamamlama
+// kayıtları) okunuyor - müfredat güncellemesi kod değil veri güncellemesi
+// olsun diye. Banka "tema" alanı taşımadığı için (tema rotasyonu -
+// concreteness fading tasarımı korunsun diye) bu eşleme kod tarafında
+// tutuluyor.
+// Banka'daki bazı temalar (ev_aile: sadece EV, okul: sadece KİTAP) tek
+// kelimeye düşüyor - bu da bir turda aynı kelimenin tekrar tekrar
+// gelmesine yol açar. Küçük temaları "günlük hayat" başlığında
+// birleştirip her temanın en az 3-4 kelimesi olmasını sağlıyoruz.
+const TEMA_ESLEME = {
+  KEDİ: "hayvanlar", KÖPEK: "hayvanlar", KUŞ: "hayvanlar", BALIK: "hayvanlar", KELEBEK: "hayvanlar",
+  GÜNEŞ: "doga", AY: "doga", YILDIZ: "doga", ÇİÇEK: "doga",
+  TOP: "oyuncaklar", ARABA: "oyuncaklar", BALON: "oyuncaklar",
+  EV: "gunluk_hayat", KİTAP: "gunluk_hayat", ELMA: "gunluk_hayat", MUZ: "gunluk_hayat",
+};
+const WORD_BANK = turkceBankasi.sorular
+  .filter((s) => s.soru_tipi === "harf_tamamlama")
+  .map((s) => ({
+    word: s.tam_kelime,
+    emoji: s.gorsel_emoji,
+    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+  }));
 const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const TURKISH_LETTERS = ["A","B","C","Ç","D","E","F","G","Ğ","H","I","İ","J","K","L","M","N","O","Ö","P","R","S","Ş","T","U","Ü","V","Y","Z"];
 // tur1: kelime sonunda tek harf eksik (en kolay), tur2: ortada tek harf,
@@ -70,12 +68,14 @@ function generateWordPuzzle(round, theme) {
   return { type: "word", word: entry.word, emoji: entry.emoji, letters, blankPositions: positions };
 }
 
+const HARF_SIRA_SORULARI = turkceBankasi.sorular.filter((s) => s.soru_tipi === "harf_sira");
+
 function generateSequencePuzzle() {
-  // baş ve son harfleri seçmiyoruz ki her iki komşusu da alfabede olsun
-  const idx = rand(1, TURKISH_LETTERS.length - 2);
-  const seq = [TURKISH_LETTERS[idx - 1], TURKISH_LETTERS[idx], TURKISH_LETTERS[idx + 1]];
-  const blankIndex = rand(0, 2);
-  return { type: "sequence", seq, blankIndex, answer: seq[blankIndex] };
+  const kayit = HARF_SIRA_SORULARI[rand(0, HARF_SIRA_SORULARI.length - 1)];
+  const parcalar = kayit.soru_metni.split(" → ");
+  const blankIndex = parcalar.indexOf("?");
+  const seq = parcalar.map((p) => (p === "?" ? kayit.dogru_cevap : p));
+  return { type: "sequence", seq, blankIndex, answer: kayit.dogru_cevap };
 }
 
 function generatePuzzle(round, theme) {

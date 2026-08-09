@@ -1,27 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import turkceBankasi from "../data/turkce-1-sinif.json";
 
 // ---- Oyun ayarları ----
 // İngilizce Word Match ile aynı motor, içerik Türkçe kelime <-> görsel.
-// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı.
-const WORD_BANK = [
-  { word: "KEDİ", emoji: "🐱", tema: "hayvanlar" },
-  { word: "KÖPEK", emoji: "🐶", tema: "hayvanlar" },
-  { word: "KUŞ", emoji: "🐦", tema: "hayvanlar" },
-  { word: "BALIK", emoji: "🐟", tema: "hayvanlar" },
-  { word: "KELEBEK", emoji: "🦋", tema: "hayvanlar" },
-  { word: "GÜNEŞ", emoji: "☀️", tema: "doga" },
-  { word: "AY", emoji: "🌙", tema: "doga" },
-  { word: "YILDIZ", emoji: "⭐", tema: "doga" },
-  { word: "ÇİÇEK", emoji: "🌸", tema: "doga" },
-  { word: "TOP", emoji: "⚽", tema: "oyuncaklar" },
-  { word: "ARABA", emoji: "🚗", tema: "oyuncaklar" },
-  { word: "BALON", emoji: "🎈", tema: "oyuncaklar" },
-  { word: "EV", emoji: "🏠", tema: "ev_aile" },
-  { word: "ELMA", emoji: "🍎", tema: "yiyecek" },
-  { word: "MUZ", emoji: "🍌", tema: "yiyecek" },
-  { word: "KİTAP", emoji: "📖", tema: "okul" },
-];
+// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı - içerik
+// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor.
+const TEMA_ESLEME = {
+  KEDİ: "hayvanlar", KÖPEK: "hayvanlar", KUŞ: "hayvanlar", BALIK: "hayvanlar", KELEBEK: "hayvanlar",
+  GÜNEŞ: "doga", AY: "doga", YILDIZ: "doga", ÇİÇEK: "doga",
+  TOP: "oyuncaklar", ARABA: "oyuncaklar", BALON: "oyuncaklar",
+  EV: "gunluk_hayat", KİTAP: "gunluk_hayat", ELMA: "gunluk_hayat", MUZ: "gunluk_hayat",
+};
+const WORD_BANK = turkceBankasi.sorular
+  .filter((s) => s.soru_tipi === "eslestirme")
+  .map((s) => ({
+    word: s.tam_kelime,
+    emoji: s.gorsel_emoji,
+    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+  }));
 const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ROUNDS = [
   { pairs: 3, columns: 3 },

@@ -1,27 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import ingilizceBankasi from "../data/ingilizce-1-sinif.json";
 
 // ---- Oyun ayarları ----
 // Aynı eşleştirme motoru, içerik İngilizce kelime <-> görsel.
 // Tur ilerledikçe çift sayısı artıyor (3x2 -> 4x2 -> 3x4), yeni kelimeler geliyor.
-// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı.
-const WORD_BANK = [
-  { word: "CAT", emoji: "🐱", tema: "hayvanlar" },
-  { word: "DOG", emoji: "🐶", tema: "hayvanlar" },
-  { word: "FISH", emoji: "🐟", tema: "hayvanlar" },
-  { word: "BIRD", emoji: "🐦", tema: "hayvanlar" },
-  { word: "SUN", emoji: "☀️", tema: "doga" },
-  { word: "MOON", emoji: "🌙", tema: "doga" },
-  { word: "STAR", emoji: "⭐", tema: "doga" },
-  { word: "FLOWER", emoji: "🌸", tema: "doga" },
-  { word: "CAR", emoji: "🚗", tema: "oyuncaklar" },
-  { word: "BALL", emoji: "⚽", tema: "oyuncaklar" },
-  { word: "BALLOON", emoji: "🎈", tema: "oyuncaklar" },
-  { word: "HOUSE", emoji: "🏠", tema: "ev_aile" },
-  { word: "APPLE", emoji: "🍎", tema: "yiyecek" },
-  { word: "BANANA", emoji: "🍌", tema: "yiyecek" },
-  { word: "BOOK", emoji: "📖", tema: "okul" },
-];
+// Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı - içerik
+// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor.
+const TEMA_ESLEME = {
+  CAT: "hayvanlar", DOG: "hayvanlar", FISH: "hayvanlar", BIRD: "hayvanlar",
+  SUN: "doga", MOON: "doga", STAR: "doga", FLOWER: "doga",
+  CAR: "gunluk_hayat", BALL: "gunluk_hayat", HOUSE: "gunluk_hayat", APPLE: "gunluk_hayat", BANANA: "gunluk_hayat", BOOK: "gunluk_hayat",
+};
+const WORD_BANK = ingilizceBankasi.sorular
+  .filter((s) => s.soru_tipi === "eslestirme")
+  .map((s) => ({
+    word: s.tam_kelime,
+    emoji: s.gorsel_emoji,
+    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+  }));
 const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
 const ROUNDS = [
   { pairs: 3, columns: 3 }, // 3x2 - basit başlangıç

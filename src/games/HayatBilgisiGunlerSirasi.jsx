@@ -1,11 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
+import hayatBilgisiBankasi from "../data/hayat-bilgisi-1-sinif.json";
 
 // ---- Oyun ayarları ----
 // Boşluk doldurma motorunun "sıra" mantığı, içerik haftanın günleri.
 // Hayat Bilgisi "zaman kavramı / günler-aylar sırası" kazanımına karşılık gelir.
+// İçerik artık gerçek soru bankasından (gun_sira kayıtları) okunuyor -
+// müfredat güncellemesi kod değişikliği değil, veri güncellemesi olsun diye.
 const ROUND_LENGTH = 5;
 const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+const GUN_SIRA_SORULARI = hayatBilgisiBankasi.sorular.filter((s) => s.soru_tipi === "gun_sira");
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -20,10 +24,11 @@ function shuffle(arr) {
 }
 
 function generatePuzzle() {
-  const idx = rand(1, DAYS.length - 2); // baş/son gün seçilmiyor ki iki komşusu da olsun
-  const seq = [DAYS[idx - 1], DAYS[idx], DAYS[idx + 1]];
-  const blankIndex = rand(0, 2);
-  return { seq, blankIndex, answer: seq[blankIndex] };
+  const kayit = GUN_SIRA_SORULARI[rand(0, GUN_SIRA_SORULARI.length - 1)];
+  const parcalar = kayit.soru_metni.split(" → ");
+  const blankIndex = parcalar.indexOf("?");
+  const seq = parcalar.map((p) => (p === "?" ? kayit.dogru_cevap : p));
+  return { seq, blankIndex, answer: kayit.dogru_cevap };
 }
 
 function generateDayPad(correctDay) {
