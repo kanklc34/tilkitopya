@@ -116,7 +116,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
   }, []);
 
   useEffect(() => {
-    if (matched.size > 0 && matched.size === deck.length) {
+    if (matched.size > 0 && matched.size === deck.length / 2) {
       setTimeout(() => setRoundDone(true), 500);
     }
   }, [matched, deck]);
@@ -494,7 +494,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restartAll}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
-      <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 

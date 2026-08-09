@@ -29,7 +29,7 @@ const WORD_BANK = turkceBankasi.sorular
     tema: TEMA_ESLEME[s.tam_kelime] || "diger",
   }));
 const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
-const TURKISH_LETTERS = ["A","B","C","Ç","D","E","F","G","Ğ","H","I","İ","J","K","L","M","N","O","Ö","P","R","S","Ş","T","U","Ü","V","Y","Z"];
+const TURKISH_LETTERS = ["A", "B", "C", "Ç", "D", "E", "F", "G", "Ğ", "H", "I", "İ", "J", "K", "L", "M", "N", "O", "Ö", "P", "R", "S", "Ş", "T", "U", "Ü", "V", "Y", "Z"];
 // tur1: kelime sonunda tek harf eksik (en kolay), tur2: ortada tek harf,
 // tur3: iki harf eksik (en zor)
 const ROUNDS = [
@@ -613,7 +613,7 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
-      <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 

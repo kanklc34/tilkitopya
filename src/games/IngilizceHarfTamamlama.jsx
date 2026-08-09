@@ -598,7 +598,7 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
-      <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 
