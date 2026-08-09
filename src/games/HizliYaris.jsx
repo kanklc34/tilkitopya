@@ -149,6 +149,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
 
   function handlePick(val) {
     if (feedback === "correct" || finished) return;
+    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
 
     if (val === question.answer) {
       setFeedback("correct");

@@ -92,6 +92,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
 
   function handlePick(day) {
     if (paused || finished || feedback === "correct") return;
+    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
 
     if (day === puzzle.answer) {
       setFeedback("correct");

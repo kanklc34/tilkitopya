@@ -75,6 +75,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
 
   function handlePick(val) {
     if (feedback === "correct" || batchDone || paused) return;
+    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
 
     const newAskedIds = new Set(askedIds);
     newAskedIds.add(current.id);

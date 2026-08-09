@@ -170,6 +170,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
 
   function handlePick(val) {
     if (feedback === "correct" || finished || roundDone) return;
+    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
 
     if (val === puzzle.answer) {
       setFeedback("correct");

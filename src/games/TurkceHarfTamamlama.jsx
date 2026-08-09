@@ -180,6 +180,7 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
 
   function handlePick(letter) {
     if (paused || finished || roundDone || feedback === "correct") return;
+    if (feedback === "wrong" && ayniHarfDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
 
     if (letter === currentLetter) {
       setFeedback("correct");
