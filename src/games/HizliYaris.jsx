@@ -4,6 +4,11 @@ import { Star, HelpCircle, Trophy, RotateCcw } from "lucide-react";
 // ---- Oyun ayarları ----
 const RACE_LENGTH = 10;
 const LAP_SIZE = 4;
+// Flow teorisi gereği: art arda 2 yanlış olursa zorluğu bir basamak
+// kolaylaştır - Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
+const WRONG_STREAK_TO_LEVEL_DOWN = 2;
+const MAX_NUMBER_STEP = 5;
+const MIN_MAX_NUMBER = 5;
 const OPTION_COLORS = ["#5AB4E0", "#FF9F5A", "#8FCB6B"]; // sabit, cevap doğruluğuyla ilgisiz - sadece görsel çeşitlilik
 
 // Tema havuzu: her tema kısa bağlam cümlesi + eşleşen emoji taşıyor.
@@ -127,6 +132,8 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
   const [wrongPick, setWrongPick] = useState(null);
   const [showHint, setShowHint] = useState(false);
   const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
+  const [wrongStreak, setWrongStreak] = useState(0);
+  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
   const [finished, setFinished] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -154,6 +161,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
     if (val === question.answer) {
       setFeedback("correct");
       if (soundOn) playTone("correct");
+      setWrongStreak(0);
       const newProgress = progress + 1;
       setProgress(newProgress);
 
@@ -179,8 +187,20 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
       setShowHint(true);
       const yeniDeneme = ayniSoruDenemeSayisi + 1;
       setAyniSoruDenemeSayisi(yeniDeneme);
+      const yeniWrongStreak = wrongStreak + 1;
+      setWrongStreak(yeniWrongStreak);
 
-      if (yeniDeneme >= 2) {
+      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && maxNumber > MIN_MAX_NUMBER) {
+        // Art arda 2 yanlış - zorluğu bir basamak kolaylaştıralım
+        const demotedMax = Math.max(MIN_MAX_NUMBER, maxNumber - MAX_NUMBER_STEP);
+        setMaxNumber(demotedMax);
+        setWrongStreak(0);
+        setSeviyeFlash("down");
+        timeoutRef.current = setTimeout(() => {
+          setSeviyeFlash(null);
+          nextQuestion(demotedMax);
+        }, yeniDeneme >= 2 ? 2200 : 900);
+      } else if (yeniDeneme >= 2) {
         timeoutRef.current = setTimeout(() => {
           nextQuestion(maxNumber);
         }, 2200);
@@ -329,6 +349,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
 
         /* ---- Soru kartı ---- */
         .question-card {
+          position: relative;
           background: var(--card);
           border-radius: 24px;
           padding: 30px 20px;
@@ -422,6 +443,26 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
           border-radius: 10px;
           padding: 6px 12px;
           display: inline-block;
+        }
+        .level-down-badge {
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #F0A63E;
+          color: white;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          padding: 5px 14px;
+          border-radius: 999px;
+          animation: pop 0.6s ease;
+          white-space: nowrap;
+        }
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
         }
         .hint-btn {
           margin-top: 12px;
@@ -595,6 +636,7 @@ export default function MathRaceGame({ onExit, onComplete } = {}) {
       </div>
 
       <div className={`question-card ${feedback === "wrong" ? "shake" : ""}`}>
+        {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {question.baglamMetni && (
           <div className="context-text">
             <span className="context-emoji">{question.emoji}</span> {question.baglamMetni}

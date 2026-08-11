@@ -8,6 +8,9 @@ import ingilizceBankasi from "../data/ingilizce-1-sinif.json";
 // bazı temalar (oyuncaklar, ev_aile, okul) tek başına 1-2 kelimeye
 // düştüğü için (tekrar riski) "gunluk_hayat" başlığında birleştirildi.
 const ROUND_LENGTH = 5;
+// Flow teorisi gereği: art arda 2 yanlış olursa bir tur kolaylaştır -
+// Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
+const WRONG_STREAK_TO_LEVEL_DOWN = 2;
 const TEMA_ESLEME = {
   CAT: "hayvanlar", DOG: "hayvanlar", FISH: "hayvanlar", BIRD: "hayvanlar",
   SUN: "doga", MOON: "doga", STAR: "doga", FLOWER: "doga",
@@ -119,6 +122,8 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [ayniHarfDenemeSayisi, setAyniHarfDenemeSayisi] = useState(0);
+  const [wrongStreak, setWrongStreak] = useState(0);
+  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
   const [finished, setFinished] = useState(false);
   const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -173,6 +178,7 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
       setFeedback("correct");
       if (soundOn) playTone("correct");
       setShowBurst(true);
+      setWrongStreak(0);
       const nextFilled = filledCount + 1;
 
       timeoutRef.current = setTimeout(() => harfiIlerlet(nextFilled), 550);
@@ -183,8 +189,22 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
       setTotalMistakes((m) => m + 1);
       const yeniDeneme = ayniHarfDenemeSayisi + 1;
       setAyniHarfDenemeSayisi(yeniDeneme);
+      const yeniWrongStreak = wrongStreak + 1;
+      setWrongStreak(yeniWrongStreak);
 
-      if (yeniDeneme >= 2) {
+      const cevapGosterilsinMi = yeniDeneme >= 2;
+
+      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && round > 0) {
+        const demotedRound = round - 1;
+        setRound(demotedRound);
+        setProgress(0);
+        setWrongStreak(0);
+        setSeviyeFlash("down");
+        timeoutRef.current = setTimeout(() => {
+          setSeviyeFlash(null);
+          nextPuzzle(demotedRound, currentTheme);
+        }, cevapGosterilsinMi ? 2200 : 900);
+      } else if (cevapGosterilsinMi) {
         timeoutRef.current = setTimeout(() => harfiIlerlet(filledCount + 1), 1800);
       } else {
         timeoutRef.current = setTimeout(() => {
@@ -477,6 +497,26 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
         }
         .tutorial-emoji { font-size: 38px; }
         .tutorial-emoji-img { width: 44px; height: 44px; }
+        .level-down-badge {
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #F0A63E;
+          color: white;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          padding: 5px 14px;
+          border-radius: 999px;
+          animation: pop 0.6s ease;
+          white-space: nowrap;
+        }
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
         .tutorial-steps {
           display: flex;
           flex-direction: column;
@@ -513,6 +553,7 @@ export default function EnglishFillGame({ onExit, onComplete } = {}) {
       </div>
 
       <div className={`puzzle-card ${feedback === "wrong" ? "shake" : ""}`}>
+        {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {showBurst && <div className="burst">⭐</div>}
         {puzzle.type === "word" ? (
           <>

@@ -19,6 +19,9 @@ const ROUNDS = [
   { total: 16, columns: 4 }, // tur3: 4x4 - en zor
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
+// Flow teorisi gereği: art arda 2 yanlış olursa bir tur kolaylaştır -
+// Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
+const WRONG_STREAK_TO_LEVEL_DOWN = 2;
 
 function pickTwoDistinct(pool) {
   const a = pool[Math.floor(Math.random() * pool.length)];
@@ -74,6 +77,8 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
   const [locked, setLocked] = useState(false);
   const [mistakes, setMistakes] = useState(0);
   const [ayniPuzzleDenemeSayisi, setAyniPuzzleDenemeSayisi] = useState(0);
+  const [wrongStreak, setWrongStreak] = useState(0);
+  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
   const [finished, setFinished] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -110,6 +115,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
     if (cell.isOdd) {
       setLocked(true);
       setCorrectId(cell.id);
+      setWrongStreak(0);
       if (soundOn) playTone("correct");
       setTimeout(ilerle, 700);
     } else {
@@ -118,8 +124,24 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
       if (soundOn) playTone("wrong");
       const yeniDeneme = ayniPuzzleDenemeSayisi + 1;
       setAyniPuzzleDenemeSayisi(yeniDeneme);
+      const yeniWrongStreak = wrongStreak + 1;
+      setWrongStreak(yeniWrongStreak);
 
-      if (yeniDeneme >= 2) {
+      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && round > 0) {
+        // Art arda 2 yanlış - bir tur kolaylaştıralım
+        setLocked(true);
+        const oddCell = grid.find((c) => c.isOdd);
+        if (oddCell) setCorrectId(oddCell.id);
+        const demotedRound = round - 1;
+        setWrongStreak(0);
+        setSeviyeFlash("down");
+        setTimeout(() => {
+          setSeviyeFlash(null);
+          setRound(demotedRound);
+          setPuzzleInRound(0);
+          nextPuzzle(demotedRound, 0);
+        }, yeniDeneme >= 2 ? 1800 : 900);
+      } else if (yeniDeneme >= 2) {
         // Çocuk sonsuza dek karanlıkta denemesin - doğru hücreyi göster.
         setLocked(true);
         const oddCell = grid.find((c) => c.isOdd);
@@ -243,8 +265,31 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
         .progress-flag.filled { background: var(--grass-dark); }
 
         .grid {
+          position: relative;
           display: grid;
           gap: 10px;
+          margin-top: 18px;
+        }
+        .level-down-badge {
+          position: absolute;
+          top: -32px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #F0A63E;
+          color: white;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          padding: 5px 14px;
+          border-radius: 999px;
+          animation: pop 0.6s ease;
+          white-space: nowrap;
+          z-index: 5;
+        }
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
         }
         .cell {
           aspect-ratio: 1 / 1;
@@ -370,6 +415,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
       </div>
 
       <div className="grid" style={{ gridTemplateColumns: `repeat(${ROUNDS[round].columns}, 1fr)` }}>
+        {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {grid.map((cell) => (
           <button
             type="button"
@@ -398,7 +444,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
-      <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 

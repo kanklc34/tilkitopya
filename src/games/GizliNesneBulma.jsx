@@ -11,6 +11,10 @@ const ROUNDS = [
   { decoyCount: 26, targetCount: 4 }, // tur3: en kalabalık, 4 hedef
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
+// Bu oyunda tekli yanlış dokunuşlar zaten normal (kalabalık sahne) - o
+// yüzden seviye düşürmeyi tek tük yanlışa değil, 2 ayrı "zorlanma anına"
+// (yani 2 kez art arda 4 yanlışa ulaşma) bağlıyoruz.
+const ZORLANMA_ESIGI_TO_LEVEL_DOWN = 2;
 
 function shuffle(arr) {
   const a = [...arr];
@@ -94,6 +98,9 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
   const [mistakes, setMistakes] = useState(0);
   const [pesPeseYanlis, setPesPeseYanlis] = useState(0);
   const [ipucuHedefId, setIpucuHedefId] = useState(null);
+  const [seviyeZorlanmaSayisi, setSeviyeZorlanmaSayisi] = useState(0);
+  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
+  const [gecisKilitli, setGecisKilitli] = useState(false);
   const [roundDone, setRoundDone] = useState(false);
   const [finished, setFinished] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -108,10 +115,11 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
     setRoundDone(false);
     setPesPeseYanlis(0);
     setIpucuHedefId(null);
+    setSeviyeZorlanmaSayisi(0);
   }, []);
 
   function handleTap(item) {
-    if (paused || finished || roundDone || foundIds.has(item.id)) return;
+    if (paused || finished || roundDone || gecisKilitli || foundIds.has(item.id)) return;
 
     if (item.isTarget) {
       if (soundOn) playTone("correct");
@@ -119,6 +127,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       next.add(item.id);
       setFoundIds(next);
       setPesPeseYanlis(0);
+      setSeviyeZorlanmaSayisi(0);
       setIpucuHedefId(null);
       if (next.size >= scene.targetCount) {
         setTimeout(() => setRoundDone(true), 500);
@@ -136,12 +145,29 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       // Peş peşe çok yanlış denemede kalan hedeflerden birini kısa süre
       // parlat - çocuk sonsuza dek gözle taramaya devam etmesin.
       if (yeniDeneme >= 4) {
-        const kalanHedefler = scene.items.filter((it) => it.isTarget && !foundIds.has(it.id));
-        if (kalanHedefler.length > 0) {
-          const secilen = kalanHedefler[Math.floor(Math.random() * kalanHedefler.length)];
-          setIpucuHedefId(secilen.id);
+        const yeniZorlanma = seviyeZorlanmaSayisi + 1;
+        setSeviyeZorlanmaSayisi(yeniZorlanma);
+
+        if (yeniZorlanma >= ZORLANMA_ESIGI_TO_LEVEL_DOWN && round > 0) {
+          // İkinci kez zorlandı - bir tur kolaylaştıralım
+          const demotedRound = round - 1;
+          setGecisKilitli(true);
+          setSeviyeFlash("down");
           clearTimeout(ipucuTimeout.current);
-          ipucuTimeout.current = setTimeout(() => setIpucuHedefId(null), 1500);
+          ipucuTimeout.current = setTimeout(() => {
+            setSeviyeFlash(null);
+            setGecisKilitli(false);
+            setRound(demotedRound);
+            startRound(demotedRound);
+          }, 1600);
+        } else {
+          const kalanHedefler = scene.items.filter((it) => it.isTarget && !foundIds.has(it.id));
+          if (kalanHedefler.length > 0) {
+            const secilen = kalanHedefler[Math.floor(Math.random() * kalanHedefler.length)];
+            setIpucuHedefId(secilen.id);
+            clearTimeout(ipucuTimeout.current);
+            ipucuTimeout.current = setTimeout(() => setIpucuHedefId(null), 1500);
+          }
         }
         setPesPeseYanlis(0);
       }
@@ -278,6 +304,27 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
           border-radius: 18px;
           overflow: hidden;
         }
+        .level-down-badge {
+          position: absolute;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #F0A63E;
+          color: white;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          padding: 5px 14px;
+          border-radius: 999px;
+          animation: pop 0.6s ease;
+          white-space: nowrap;
+          z-index: 5;
+        }
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
         .scene-item {
           position: absolute;
           transform: translate(-50%, -50%);
@@ -398,6 +445,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
       </div>
 
       <div className="scene">
+        {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {scene.items.map((item) => (
           <button
             key={item.id}
@@ -436,7 +484,7 @@ export default function FindHiddenGame({ onExit, onComplete } = {}) {
           <button className="primary-btn" onClick={restart}>
             <RotateCcw size={16} /> Tekrar Oyna
           </button>
-      <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
+          <button className="secondary-btn" onClick={onExit}>Menüye Dön</button>
         </div>
       )}
 

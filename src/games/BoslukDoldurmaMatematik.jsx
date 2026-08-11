@@ -11,6 +11,9 @@ const ROUNDS = [
   { max: 20, blankPositions: ["second", "first"] },
 ];
 const TOTAL_ROUNDS = ROUNDS.length;
+// Flow teorisi gereği: art arda 2 yanlış olursa bir tur kolaylaştır -
+// Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
+const WRONG_STREAK_TO_LEVEL_DOWN = 2;
 // Denklem sorularının yanına "sıralama" (önce/sonra) soruları da karışıyor -
 // bu, MEB'in "Sayılar ve Nicelikler: sıralama" kazanımına karşılık geliyor.
 const SEQUENCE_RATIO = 0.35;
@@ -144,6 +147,8 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
   const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
+  const [wrongStreak, setWrongStreak] = useState(0);
+  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
   const [finished, setFinished] = useState(false);
   const [roundDone, setRoundDone] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
@@ -176,6 +181,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
       setFeedback("correct");
       if (soundOn) playTone("correct");
       setShowBurst(true);
+      setWrongStreak(0);
       const newProgress = progress + 1;
       setProgress(newProgress);
 
@@ -197,8 +203,21 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
       setTotalMistakes((m) => m + 1);
       const yeniDenemeSayisi = ayniSoruDenemeSayisi + 1;
       setAyniSoruDenemeSayisi(yeniDenemeSayisi);
+      const yeniWrongStreak = wrongStreak + 1;
+      setWrongStreak(yeniWrongStreak);
 
-      if (yeniDenemeSayisi >= 2) {
+      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && round > 0) {
+        // Art arda 2 yanlış - bir tur kolaylaştıralım
+        const demotedRound = round - 1;
+        setRound(demotedRound);
+        setProgress(0);
+        setWrongStreak(0);
+        setSeviyeFlash("down");
+        timeoutRef.current = setTimeout(() => {
+          setSeviyeFlash(null);
+          nextPuzzle(demotedRound);
+        }, yeniDenemeSayisi >= 2 ? 2200 : 900);
+      } else if (yeniDenemeSayisi >= 2) {
         // Çocuk sonsuza dek karanlıkta denemesin - doğru cevabı göster,
         // biraz bekleyip sonraki bulmacaya geç.
         timeoutRef.current = setTimeout(() => {
@@ -339,6 +358,26 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
           box-shadow: 0 6px 20px rgba(31,46,69,0.08);
         }
         .puzzle-card.shake { animation: shake 0.5s ease; }
+        .level-down-badge {
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: #F0A63E;
+          color: white;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 12px;
+          padding: 5px 14px;
+          border-radius: 999px;
+          animation: pop 0.6s ease;
+          white-space: nowrap;
+        }
+        @keyframes pop {
+          0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+          50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          100% { transform: translateX(-50%) scale(1); opacity: 1; }
+        }
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           20% { transform: translateX(-8px); }
@@ -525,6 +564,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
       </div>
 
       <div className={`puzzle-card ${feedback === "wrong" ? "shake" : ""}`}>
+        {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {showBurst && <div className="burst">⭐</div>}
         {puzzle.baglamMetni && (
           <div className="context-text">
