@@ -154,6 +154,12 @@ function EbeveynPaneliIcerik({ onKapat }) {
     setIlerleme(yeni);
   }
 
+  function odulModuToggle() {
+    const yeniMod = ilerleme.ayarlar.odulOyunlariModu === "herZaman" ? "gorevSonrasi" : "herZaman";
+    const yeni = ayarKaydet({ odulOyunlariModu: yeniMod });
+    setIlerleme(yeni);
+  }
+
   return (
     <div className="ep-overlay">
       <div className="ep-panel-card" role="dialog" aria-modal="true" aria-label="Ebeveyn paneli">
@@ -190,6 +196,23 @@ function EbeveynPaneliIcerik({ onKapat }) {
             className="ep-toggle-switch"
             checked={ilerleme.ayarlar.tumOyunlarSekmesiAcik}
             onChange={tumOyunlarToggle}
+          />
+        </label>
+
+        <label className="ep-toggle-row">
+          <div>
+            <div className="ep-toggle-label">🎁 Ödül oyunları her zaman açık olsun</div>
+            <div className="ep-toggle-sub">
+              {ilerleme.ayarlar.odulOyunlariModu === "herZaman"
+                ? "Açık: Boyama Kitabı ve Yap Boz her zaman erişilebilir."
+                : "Kapalı: günün 5 görevi bitince o gün için açılır (önerilen)."}
+            </div>
+          </div>
+          <input
+            type="checkbox"
+            className="ep-toggle-switch"
+            checked={ilerleme.ayarlar.odulOyunlariModu === "herZaman"}
+            onChange={odulModuToggle}
           />
         </label>
 

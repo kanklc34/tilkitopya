@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Settings } from "lucide-react";
+import { ArrowLeft, Settings, Lock, Gift } from "lucide-react";
 
 import EbeveynPaneli from "./components/EbeveynPaneli.jsx";
-import { ilerlemeyiOku, oyunTamamlandi, gununGorevleri } from "./lib/progress.js";
+import { ilerlemeyiOku, oyunTamamlandi, gununGorevleri, odulOyunlariAcikMi } from "./lib/progress.js";
 import { anaEkranMesajiSec } from "./lib/maskotMesajlari.js";
 
 import HizliYaris from "./games/HizliYaris.jsx";
@@ -17,6 +17,8 @@ import HayatBilgisiDogaGozlem from "./games/HayatBilgisiDogaGozlem.jsx";
 import HayatBilgisiGunlerSirasi from "./games/HayatBilgisiGunlerSirasi.jsx";
 import FarkBulma from "./games/FarkBulma.jsx";
 import GizliNesneBulma from "./games/GizliNesneBulma.jsx";
+import BoyamaKitabi from "./games/BoyamaKitabi.jsx";
+import YapBoz from "./games/YapBoz.jsx";
 
 // Tek yerden yönetilen oyun kayıt defteri - yeni bir oyun eklemek
 // istediğinde sadece buraya bir satır eklemen yeterli.
@@ -70,11 +72,12 @@ const GAMES = [
   },
 ];
 
-function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
+function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc }) {
   const bugunGorevleri = gununGorevleri(ilerleme.aktifGun);
   const bugunKayit = ilerleme.gunler[ilerleme.aktifGun];
   const tamamlananSayisi = bugunGorevleri.filter((g) => bugunKayit?.gorevler?.[g.id]).length;
   const tumOyunlarAcik = ilerleme.ayarlar.tumOyunlarSekmesiAcik;
+  const odulAcikMi = odulOyunlariAcikMi(ilerleme);
   // Ebeveyn "Tüm Oyunlar" sekmesini kapattıysa çocuk her zaman görevler
   // ekranında kalır - sekme çubuğu bile gösterilmez, seçim şansı olmaz.
   const gosterilenSekme = tumOyunlarAcik ? sekme : "gorevler";
@@ -334,6 +337,55 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
           padding: 6px 0;
         }
 
+        .odul-banner {
+          max-width: 720px;
+          margin: 0 auto 22px;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          border: none;
+          border-radius: 20px;
+          padding: 16px 20px;
+          width: 100%;
+          box-sizing: border-box;
+          text-align: left;
+          cursor: pointer;
+        }
+        .odul-banner-acik {
+          background: linear-gradient(135deg, #FFD93C, #FF9F5A);
+          box-shadow: 0 6px 16px rgba(255,159,90,0.35);
+          transition: transform 0.12s ease;
+        }
+        .odul-banner-acik:hover { transform: translateY(-2px); }
+        .odul-banner-acik:focus-visible { outline: 3px solid #1F2E45; outline-offset: 3px; }
+        .odul-banner-kilitli {
+          background: #E7ECF2;
+          cursor: default;
+        }
+        .odul-banner-emoji {
+          font-size: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #8892A6;
+        }
+        .odul-banner-baslik {
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 700;
+          font-size: 16px;
+          color: #1F2E45;
+        }
+        .odul-banner-alt {
+          font-size: 12px;
+          color: #1F2E45;
+          opacity: 0.75;
+          margin-top: 2px;
+        }
+        .odul-banner-kilitli .odul-banner-baslik,
+        .odul-banner-kilitli .odul-banner-alt {
+          color: #5C6B85;
+        }
+
         .tab-bar {
           max-width: 720px;
           margin: 0 auto 22px;
@@ -391,6 +443,24 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
         <h1 className="home-title">İlkokul Platformu</h1>
         <div className="home-subtitle">1. Sınıf</div>
       </div>
+
+      {odulAcikMi ? (
+        <button type="button" className="odul-banner odul-banner-acik" onClick={onOdulAc}>
+          <span className="odul-banner-emoji">🎁</span>
+          <div className="odul-banner-metin">
+            <div className="odul-banner-baslik">Ödül Oyunları</div>
+            <div className="odul-banner-alt">Boyama Kitabı ve Yap Boz seni bekliyor!</div>
+          </div>
+        </button>
+      ) : ilerleme.ayarlar.odulOyunlariModu === "gorevSonrasi" ? (
+        <div className="odul-banner odul-banner-kilitli" aria-hidden="true">
+          <span className="odul-banner-emoji"><Lock size={26} /></span>
+          <div className="odul-banner-metin">
+            <div className="odul-banner-baslik">Ödül Oyunları</div>
+            <div className="odul-banner-alt">Bugünün görevlerini bitirince açılır</div>
+          </div>
+        </div>
+      ) : null}
 
       {tumOyunlarAcik && (
         <div className="tab-bar">
@@ -457,11 +527,64 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme }) {
   );
 }
 
+// Ödül oyunları hub'ı - GAMES kataloğunun dışında, kendi yıldız/ilerleme
+// takibi olmayan bağımsız bir mini-ekran. Bu yüzden App() içinde ayrı bir
+// state (odulEkrani) ile yönetiliyor, activeId/oyunTamamlandi akışına
+// karışmıyor.
+function OdulSecim({ onGeri, onSec }) {
+  return (
+    <div style={{ maxWidth: 520, margin: "0 auto", fontFamily: "'Nunito', sans-serif" }}>
+      <style>{`
+        .os-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 22px; }
+        .os-kart {
+          background: white; border: none; border-radius: 22px; padding: 30px 16px; cursor: pointer;
+          display: flex; flex-direction: column; align-items: center; gap: 12px;
+          box-shadow: 0 4px 14px rgba(31,46,69,0.08); transition: transform 0.12s ease;
+        }
+        .os-kart:hover { transform: translateY(-3px); }
+        .os-kart:focus-visible { outline: 3px solid #5AB4E0; outline-offset: 3px; }
+        .os-emoji { font-size: 44px; }
+        .os-ad { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 16px; color: #1F2E45; }
+      `}</style>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <button
+          onClick={onGeri}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, background: "white", border: "none",
+            borderRadius: 999, padding: "8px 16px", cursor: "pointer", fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, fontSize: 14, color: "#5C6B85", boxShadow: "0 2px 8px rgba(31,46,69,0.08)",
+          }}
+        >
+          <ArrowLeft size={16} /> Menüye Dön
+        </button>
+      </div>
+      <div style={{ textAlign: "center", marginTop: 18, fontFamily: "'Fredoka', sans-serif", fontWeight: 700, fontSize: 22, color: "#1F2E45" }}>
+        <Gift size={22} style={{ verticalAlign: "-3px", marginRight: 6 }} />
+        Ödül Oyunları
+      </div>
+      <div style={{ textAlign: "center", color: "#5C6B85", fontSize: 14, marginTop: 4 }}>
+        Ders yok, sadece keyif! Hangisini oynamak istersin?
+      </div>
+      <div className="os-grid">
+        <button className="os-kart" onClick={() => onSec("boyama")}>
+          <span className="os-emoji">🎨</span>
+          <span className="os-ad">Boyama Kitabı</span>
+        </button>
+        <button className="os-kart" onClick={() => onSec("yapboz")}>
+          <span className="os-emoji">🧩</span>
+          <span className="os-ad">Yap Boz</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [activeId, setActiveId] = useState(null);
   const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
   const [ebeveynAcik, setEbeveynAcik] = useState(false);
   const [sekme, setSekme] = useState("gorevler");
+  const [odulEkrani, setOdulEkrani] = useState(null); // null | "secim" | "boyama" | "yapboz"
 
   // Ebeveyn panelinden ilerleme sıfırlanabildiği ve ayarlar
   // değiştirilebildiği için, panel kapanınca en güncel veriyi tekrar
@@ -475,6 +598,18 @@ export default function App() {
     setIlerleme(guncel);
   }
 
+  if (odulEkrani) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#EAF6FD", padding: "20px 16px 60px" }}>
+        {odulEkrani === "secim" && (
+          <OdulSecim onGeri={() => setOdulEkrani(null)} onSec={setOdulEkrani} />
+        )}
+        {odulEkrani === "boyama" && <BoyamaKitabi onGeri={() => setOdulEkrani("secim")} />}
+        {odulEkrani === "yapboz" && <YapBoz onGeri={() => setOdulEkrani("secim")} />}
+      </div>
+    );
+  }
+
   if (!activeId) {
     return (
       <>
@@ -484,6 +619,7 @@ export default function App() {
           onEbeveynAc={() => setEbeveynAcik(true)}
           sekme={sekme}
           setSekme={setSekme}
+          onOdulAc={() => setOdulEkrani("secim")}
         />
         {ebeveynAcik && <EbeveynPaneli onKapat={() => setEbeveynAcik(false)} />}
       </>

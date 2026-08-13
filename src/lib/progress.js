@@ -64,6 +64,11 @@ function bosIlerleme() {
       // Ebeveyn kapatırsa çocuk sadece "Görevler" sekmesini görür,
       // istediği oyunu özgürce seçemez. Varsayılan: açık (esnek).
       tumOyunlarSekmesiAcik: true,
+      // Ödül oyunları (Boyama Kitabı, Yap Boz) ne zaman erişilebilir olsun.
+      // "gorevSonrasi" (varsayılan): günün 5 görevi bitince o gün için açılır,
+      // yeni gün başlayıp ilk görev oynanınca tekrar kilitlenir.
+      // "herZaman": ebeveyn isterse kısıtlamayı tamamen kaldırabilir.
+      odulOyunlariModu: "gorevSonrasi",
     },
   };
 }
@@ -165,6 +170,23 @@ export function dersOzetiHesapla(ilerleme) {
     oturumSayisi: veri.toplamOturum,
     zorlaniyor: veri.toplamOturum > 0 && veri.toplamYildiz / veri.toplamOturum < 1.6,
   }));
+}
+
+// Ödül oyunları (Boyama Kitabı, Yap Boz) şu an açık mı?
+// - "herZaman" modunda her zaman açık.
+// - "gorevSonrasi" modunda: bir önceki gün tamamlanmışsa VE bugünün
+//   görevlerinden henüz hiçbiri oynanmamışsa açık sayılır (yani "günün
+//   görevlerini bitirdin, ödül zamanı" penceresi). Çocuk yeni günün ilk
+//   görevine başlar başlamaz pencere kapanır, bir sonraki gün tamamlanana
+//   kadar tekrar kilitli kalır.
+export function odulOyunlariAcikMi(ilerleme) {
+  if (ilerleme.ayarlar.odulOyunlariModu === "herZaman") return true;
+  const gunNo = ilerleme.aktifGun;
+  const oncekiGun = ilerleme.gunler[gunNo - 1];
+  if (!oncekiGun?.tamamlandi) return false;
+  const bugunKayit = ilerleme.gunler[gunNo];
+  const bugunBaslandiMi = !!bugunKayit && Object.keys(bugunKayit.gorevler || {}).length > 0;
+  return !bugunBaslandiMi;
 }
 
 export function ilerlemeyiSifirla() {
