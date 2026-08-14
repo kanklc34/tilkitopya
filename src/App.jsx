@@ -2,7 +2,15 @@ import { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Settings, Lock, Gift } from "lucide-react";
 
 import EbeveynPaneli from "./components/EbeveynPaneli.jsx";
-import { ilerlemeyiOku, oyunTamamlandi, gununGorevleri, odulOyunlariAcikMi } from "./lib/progress.js";
+import {
+  ilerlemeyiOku,
+  oyunTamamlandi,
+  gununGorevleri,
+  odulOyunlariAcikMi,
+  aktifSinifOku,
+  aktifSinifKaydet,
+  sinifIcerigiVarMi,
+} from "./lib/progress.js";
 import { anaEkranMesajiSec } from "./lib/maskotMesajlari.js";
 
 import HizliYaris from "./games/HizliYaris.jsx";
@@ -21,8 +29,10 @@ import BoyamaKitabi from "./games/BoyamaKitabi.jsx";
 import YapBoz from "./games/YapBoz.jsx";
 
 // Tek yerden yönetilen oyun kayıt defteri - yeni bir oyun eklemek
-// istediğinde sadece buraya bir satır eklemen yeterli.
-const GAMES = [
+// istediğinde sadece buraya bir satır eklemen yeterli. Sınıf bazlı ayrılmış
+// durumda: her sınıfın kendi müfredatı/oyun kataloğu var. 2. sınıf henüz
+// boş - mimari hazır, içerik (soru bankaları + oyunlar) bir sonraki adım.
+const GAMES_SINIF1 = [
   {
     ders: "Matematik",
     dersIkon: "🔢",
@@ -72,8 +82,13 @@ const GAMES = [
   },
 ];
 
-function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc }) {
-  const bugunGorevleri = gununGorevleri(ilerleme.aktifGun);
+const GAMES_SINIF2 = [];
+
+const GAMES_BY_SINIF = { 1: GAMES_SINIF1, 2: GAMES_SINIF2 };
+
+function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc, aktifSinif }) {
+  const oyunKatalogu = GAMES_BY_SINIF[aktifSinif] || [];
+  const bugunGorevleri = gununGorevleri(ilerleme.aktifGun, aktifSinif);
   const bugunKayit = ilerleme.gunler[ilerleme.aktifGun];
   const tamamlananSayisi = bugunGorevleri.filter((g) => bugunKayit?.gorevler?.[g.id]).length;
   const tumOyunlarAcik = ilerleme.ayarlar.tumOyunlarSekmesiAcik;
@@ -441,7 +456,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc
           <div key={`b-${mesajYenile}`} className="mascot-bubble mascot-bubble-pop">{mesaj}</div>
         </button>
         <h1 className="home-title">İlkokul Platformu</h1>
-        <div className="home-subtitle">1. Sınıf</div>
+        <div className="home-subtitle">{aktifSinif}. Sınıf</div>
       </div>
 
       {odulAcikMi ? (
@@ -506,7 +521,7 @@ function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc
           </div>
         </div>
       ) : (
-        GAMES.map((grup) => (
+        oyunKatalogu.map((grup) => (
           <div className="ders-block" key={grup.ders}>
             <div className="ders-title" style={{ color: grup.renk }}>
               <span className="ders-icon" style={{ background: grup.renk }}>{grup.dersIkon}</span>
@@ -579,22 +594,81 @@ function OdulSecim({ onGeri, onSec }) {
   );
 }
 
+// 2. sınıf müfredatı henüz hazırlanmadı - GAMES_BY_SINIF[2] boş olduğu
+// sürece Ana Ekran yerine bu basit "yakında" ekranı gösteriliyor. Ebeveyn
+// yanlışlıkla boş bir ekranla karşılaşmasın, ne olduğunu net anlasın diye.
+function SinifYakindaEkrani({ sinif, onEbeveynAc, on1SinifaDon }) {
+  return (
+    <div style={{ minHeight: "100vh", background: "#EAF6FD", padding: "32px 20px 60px", fontFamily: "'Nunito', sans-serif" }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", maxWidth: 460, margin: "0 auto 8px" }}>
+        <button
+          onClick={onEbeveynAc}
+          aria-label="Ebeveyn Alanı"
+          style={{
+            background: "white", border: "none", borderRadius: "50%", width: 38, height: 38,
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+            boxShadow: "0 2px 8px rgba(31,46,69,0.08)", color: "#5C6B85",
+          }}
+        >
+          <Settings size={17} />
+        </button>
+      </div>
+      <div style={{ maxWidth: 420, margin: "60px auto 0", textAlign: "center" }}>
+        <div style={{ fontSize: 60, marginBottom: 18 }}>🚧</div>
+        <div style={{ fontFamily: "'Fredoka', sans-serif", fontWeight: 700, fontSize: 22, color: "#1F2E45", marginBottom: 10 }}>
+          {sinif}. Sınıf içerikleri hazırlanıyor
+        </div>
+        <div style={{ color: "#5C6B85", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
+          Tilkitopya şu an sadece 1. sınıf müfredatını destekliyor. {sinif}. sınıf oyunları
+          ve soru bankaları çok yakında burada olacak!
+        </div>
+        <button
+          onClick={on1SinifaDon}
+          style={{
+            background: "#5AB4E0", color: "white", border: "none", borderRadius: 999,
+            padding: "12px 24px", cursor: "pointer", fontFamily: "'Fredoka', sans-serif",
+            fontWeight: 600, fontSize: 14,
+          }}
+        >
+          ← 1. Sınıfa Dön
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [activeId, setActiveId] = useState(null);
-  const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
+  const [aktifSinif, setAktifSinif] = useState(() => aktifSinifOku());
+  const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku(aktifSinif));
   const [ebeveynAcik, setEbeveynAcik] = useState(false);
   const [sekme, setSekme] = useState("gorevler");
   const [odulEkrani, setOdulEkrani] = useState(null); // null | "secim" | "boyama" | "yapboz"
 
-  // Ebeveyn panelinden ilerleme sıfırlanabildiği ve ayarlar
-  // değiştirilebildiği için, panel kapanınca en güncel veriyi tekrar
-  // okuyup ana ekranı tazeliyoruz.
+  // Ebeveyn panelinden ilerleme sıfırlanabildiği, ayarlar değiştirilebildiği
+  // VE aktif sınıf değiştirilebildiği için, panel kapanınca hem güncel
+  // sınıfı hem de o sınıfın ilerlemesini tekrar okuyup ana ekranı
+  // tazeliyoruz.
   useEffect(() => {
-    if (!ebeveynAcik) setIlerleme(ilerlemeyiOku());
+    if (!ebeveynAcik) {
+      const guncelSinif = aktifSinifOku();
+      setAktifSinif(guncelSinif);
+      setIlerleme(ilerlemeyiOku(guncelSinif));
+    }
   }, [ebeveynAcik]);
 
+  function handleSinifDegistir(yeniSinif) {
+    aktifSinifKaydet(yeniSinif);
+    setAktifSinif(yeniSinif);
+    setIlerleme(ilerlemeyiOku(yeniSinif));
+    setActiveId(null);
+    setOdulEkrani(null);
+    setSekme("gorevler");
+    setEbeveynAcik(false);
+  }
+
   function handleGameComplete(stars) {
-    const guncel = oyunTamamlandi(activeId, stars);
+    const guncel = oyunTamamlandi(activeId, stars, aktifSinif);
     setIlerleme(guncel);
   }
 
@@ -610,6 +684,25 @@ export default function App() {
     );
   }
 
+  if (!sinifIcerigiVarMi(aktifSinif)) {
+    return (
+      <>
+        <SinifYakindaEkrani
+          sinif={aktifSinif}
+          onEbeveynAc={() => setEbeveynAcik(true)}
+          on1SinifaDon={() => handleSinifDegistir(1)}
+        />
+        {ebeveynAcik && (
+          <EbeveynPaneli
+            sinif={aktifSinif}
+            onSinifSec={handleSinifDegistir}
+            onKapat={() => setEbeveynAcik(false)}
+          />
+        )}
+      </>
+    );
+  }
+
   if (!activeId) {
     return (
       <>
@@ -620,13 +713,20 @@ export default function App() {
           sekme={sekme}
           setSekme={setSekme}
           onOdulAc={() => setOdulEkrani("secim")}
+          aktifSinif={aktifSinif}
         />
-        {ebeveynAcik && <EbeveynPaneli onKapat={() => setEbeveynAcik(false)} />}
+        {ebeveynAcik && (
+          <EbeveynPaneli
+            sinif={aktifSinif}
+            onSinifSec={handleSinifDegistir}
+            onKapat={() => setEbeveynAcik(false)}
+          />
+        )}
       </>
     );
   }
 
-  const allItems = GAMES.flatMap((g) => g.items);
+  const allItems = (GAMES_BY_SINIF[aktifSinif] || []).flatMap((g) => g.items);
   const active = allItems.find((o) => o.id === activeId);
   const ActiveComponent = active.Component;
 

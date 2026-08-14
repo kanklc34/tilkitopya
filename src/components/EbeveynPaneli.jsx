@@ -128,9 +128,9 @@ function EbeveynKapisi({ onBasarili, onKapat }) {
 }
 
 // ---- Ebeveyn Paneli (kapıdan sonra gösterilen içerik) ----
-function EbeveynPaneliIcerik({ onKapat }) {
+function EbeveynPaneliIcerik({ onKapat, sinif, onSinifSec }) {
   useEscKapat(onKapat);
-  const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku());
+  const [ilerleme, setIlerleme] = useState(() => ilerlemeyiOku(sinif));
   const [sifirlaOnay, setSifirlaOnay] = useState(false);
   const kapatBtnRef = useRef(null);
 
@@ -140,23 +140,23 @@ function EbeveynPaneliIcerik({ onKapat }) {
 
   const dersOzeti = useMemo(() => dersOzetiHesapla(ilerleme), [ilerleme]);
   const tamamlananGunSayisi = Object.values(ilerleme.gunler).filter((g) => g.tamamlandi).length;
-  const aktifGunGorevleri = gununGorevleri(ilerleme.aktifGun);
+  const aktifGunGorevleri = gununGorevleri(ilerleme.aktifGun, sinif);
   const aktifGunKayit = ilerleme.gunler[ilerleme.aktifGun];
 
   function sifirla() {
-    const yeni = ilerlemeyiSifirla();
+    const yeni = ilerlemeyiSifirla(sinif);
     setIlerleme(yeni);
     setSifirlaOnay(false);
   }
 
   function tumOyunlarToggle() {
-    const yeni = ayarKaydet({ tumOyunlarSekmesiAcik: !ilerleme.ayarlar.tumOyunlarSekmesiAcik });
+    const yeni = ayarKaydet({ tumOyunlarSekmesiAcik: !ilerleme.ayarlar.tumOyunlarSekmesiAcik }, sinif);
     setIlerleme(yeni);
   }
 
   function odulModuToggle() {
     const yeniMod = ilerleme.ayarlar.odulOyunlariModu === "herZaman" ? "gorevSonrasi" : "herZaman";
-    const yeni = ayarKaydet({ odulOyunlariModu: yeniMod });
+    const yeni = ayarKaydet({ odulOyunlariModu: yeniMod }, sinif);
     setIlerleme(yeni);
   }
 
@@ -167,6 +167,21 @@ function EbeveynPaneliIcerik({ onKapat }) {
           <X size={18} />
         </button>
         <h2 className="ep-panel-title">Ebeveyn Paneli</h2>
+
+        <div className="ep-section-title">Aktif sınıf</div>
+        <div className="ep-sinif-row">
+          {[1, 2].map((s) => (
+            <button
+              key={s}
+              type="button"
+              className={`ep-sinif-btn ${sinif === s ? "ep-sinif-btn-aktif" : ""}`}
+              onClick={() => onSinifSec(s)}
+              aria-pressed={sinif === s}
+            >
+              {s}. Sınıf
+            </button>
+          ))}
+        </div>
 
         <div className="ep-stat-row">
           <div className="ep-stat">
@@ -265,7 +280,7 @@ function EbeveynPaneliIcerik({ onKapat }) {
   );
 }
 
-export default function EbeveynPaneli({ onKapat }) {
+export default function EbeveynPaneli({ onKapat, sinif = 1, onSinifSec }) {
   const [dogrulandi, setDogrulandi] = useState(false);
 
   return (
@@ -407,6 +422,32 @@ export default function EbeveynPaneli({ onKapat }) {
           color: #1F2E45;
           margin: 18px 0 10px;
         }
+        .ep-sinif-row {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 4px;
+        }
+        .ep-sinif-btn {
+          flex: 1;
+          background: #F5F8FC;
+          border: 2px solid transparent;
+          border-radius: 12px;
+          padding: 10px;
+          cursor: pointer;
+          font-family: 'Fredoka', sans-serif;
+          font-weight: 600;
+          font-size: 13px;
+          color: #5C6B85;
+        }
+        .ep-sinif-btn-aktif {
+          background: #EAF6FD;
+          border-color: #5AB4E0;
+          color: #1F2E45;
+        }
+        .ep-sinif-btn:focus-visible {
+          outline: 3px solid #5AB4E0;
+          outline-offset: 2px;
+        }
         .ep-today-list {
           display: flex;
           flex-direction: column;
@@ -528,7 +569,7 @@ export default function EbeveynPaneli({ onKapat }) {
       {!dogrulandi ? (
         <EbeveynKapisi onBasarili={() => setDogrulandi(true)} onKapat={onKapat} />
       ) : (
-        <EbeveynPaneliIcerik onKapat={onKapat} />
+        <EbeveynPaneliIcerik onKapat={onKapat} sinif={sinif} onSinifSec={onSinifSec} />
       )}
     </>
   );

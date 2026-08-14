@@ -3,13 +3,44 @@
 // tarayıcının localStorage'ında JSON olarak tutulur. Veri hacmi küçük
 // (tek çocuk, günlük birkaç oturum) olduğundan SQLite/IndexedDB gibi
 // daha ağır çözümler yerine bilinçli olarak bu basit yaklaşım seçildi.
+//
+// SINIF SİSTEMİ: Her sınıfın kendi ilerlemesi, kendi ayarları ve kendi
+// müfredat kataloğu var - birbirinden tamamen bağımsız localStorage
+// anahtarlarında tutuluyor (kardeşler aynı cihazı paylaşabilir, ya da
+// aynı çocuk yıl atlayınca eski yılın verisi kaybolmasın diye). Hangi
+// sınıfın şu an aktif olduğu ayrı, üçüncü bir anahtarda tutuluyor.
 
-const STORAGE_KEY = "tilkitopya_ilerleme_v1";
+const STORAGE_ANAHTARI_ONEKI = "tilkitopya_ilerleme_v1";
+const AKTIF_SINIF_ANAHTARI = "tilkitopya_aktif_sinif";
 
-// Gün planında dönen oyun kataloğu. App.jsx'teki GAMES ile aynı id'leri
-// kullanır ama Component referansı taşımaz - bu dosya React'tan bağımsız,
-// saf veri/mantık katmanı olarak kalsın diye kasıtlı olarak ayrı tutuldu.
-export const GUN_PLANI_KATALOGU = [
+// 1. sınıf, geriye dönük uyumluluk için orijinal (sınıf eki olmayan)
+// anahtarı kullanmaya devam ediyor - böylece mevcut kullanıcıların
+// birikmiş ilerlemesi kaybolmuyor.
+function storageAnahtari(sinif) {
+  return sinif === 2 ? `${STORAGE_ANAHTARI_ONEKI}_sinif2` : STORAGE_ANAHTARI_ONEKI;
+}
+
+export function aktifSinifOku() {
+  try {
+    return localStorage.getItem(AKTIF_SINIF_ANAHTARI) === "2" ? 2 : 1;
+  } catch {
+    return 1;
+  }
+}
+
+export function aktifSinifKaydet(sinif) {
+  try {
+    localStorage.setItem(AKTIF_SINIF_ANAHTARI, String(sinif));
+  } catch {
+    // yazılamıyorsa sessizce geç - sadece bu oturumda hatırlanmaz
+  }
+}
+
+// Gün planında dönen oyun kataloğu. App.jsx'teki GAMES_BY_SINIF ile aynı
+// id'leri kullanır ama Component referansı taşımaz - bu dosya React'tan
+// bağımsız, saf veri/mantık katmanı olarak kalsın diye kasıtlı olarak
+// ayrı tutuldu.
+const GUN_PLANI_KATALOGU_SINIF1 = [
   {
     ders: "Matematik",
     dersEmoji: "🔢",
@@ -54,9 +85,25 @@ export const GUN_PLANI_KATALOGU = [
   },
 ];
 
-function bosIlerleme() {
+// 2. sınıf müfredatı henüz hazır değil - mimari (sınıf seçici, ayrı
+// ilerleme/ayar deposu) bu oturumda kuruldu, içerik (soru bankaları,
+// oyunlar) bir sonraki adım. Boş katalog kasıtlı: Ana Ekran bunu görüp
+// "yakında" ekranını gösteriyor (bkz. sinifIcerigiVarMi).
+const GUN_PLANI_KATALOGU_SINIF2 = [];
+
+export const MUFREDAT_KATALOGLARI = {
+  1: GUN_PLANI_KATALOGU_SINIF1,
+  2: GUN_PLANI_KATALOGU_SINIF2,
+};
+
+export function sinifIcerigiVarMi(sinif) {
+  return (MUFREDAT_KATALOGLARI[sinif]?.length ?? 0) > 0;
+}
+
+function bosIlerleme(sinif = 1) {
   return {
     surum: 1,
+    sinif,
     aktifGun: 1, // çocuğun şu an üzerinde çalıştığı gün numarası
     gunler: {}, // { [gunNo]: { tamamlandi, tamamlanmaTarihi, gorevler: { [gameId]: { stars, tarih } } } }
     oturumSayisi: 0,
@@ -73,23 +120,23 @@ function bosIlerleme() {
   };
 }
 
-export function ilerlemeyiOku() {
+export function ilerlemeyiOku(sinif = 1) {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return bosIlerleme();
+    const raw = localStorage.getItem(storageAnahtari(sinif));
+    if (!raw) return bosIlerleme(sinif);
     const parsed = JSON.parse(raw);
-    const varsayilan = bosIlerleme();
-    return { ...varsayilan, ...parsed, ayarlar: { ...varsayilan.ayarlar, ...parsed.ayarlar } };
+    const varsayilan = bosIlerleme(sinif);
+    return { ...varsayilan, ...parsed, sinif, ayarlar: { ...varsayilan.ayarlar, ...parsed.ayarlar } };
   } catch {
     // localStorage okunamıyorsa (gizli mod, devre dışı vb.) sıfırdan başla -
     // uygulama ilerleme takibi olmadan da normal çalışmaya devam etmeli
-    return bosIlerleme();
+    return bosIlerleme(sinif);
   }
 }
 
 function ilerlemeyiYaz(ilerleme) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(ilerleme));
+    localStorage.setItem(storageAnahtari(ilerleme.sinif || 1), JSON.stringify(ilerleme));
   } catch {
     // yazılamıyorsa sessizce geç
   }
@@ -98,8 +145,9 @@ function ilerlemeyiYaz(ilerleme) {
 // Bir gün için "bugünün görevleri"ni döndürür: her ders grubundan gün
 // numarasına göre rotasyonla bir oyun seçilir (aynı oyun art arda gelmesin,
 // çeşitlilik sağlansın diye). 5 ders grubu = günde 5 görev.
-export function gununGorevleri(gunNo) {
-  return GUN_PLANI_KATALOGU.map((grup) => {
+export function gununGorevleri(gunNo, sinif = 1) {
+  const katalog = MUFREDAT_KATALOGLARI[sinif] || [];
+  return katalog.map((grup) => {
     const index = (gunNo - 1) % grup.items.length;
     const oyun = grup.items[index];
     return { ders: grup.ders, dersEmoji: grup.dersEmoji, ...oyun };
@@ -116,10 +164,11 @@ export function gunTamamlandiMi(ilerleme, gunNo) {
 // sayıyoruz (hangi oyunu oynadığı önemli değil, hangi dersi çalıştığı
 // önemli). Günün tüm dersleri bitince gün "tamamlandı" sayılır ve aktif
 // gün bir sonrakine geçer (takvimden bağımsız, tamamlama bazlı ilerleme).
-export function oyunTamamlandi(gameId, stars) {
-  const ilerleme = ilerlemeyiOku();
+export function oyunTamamlandi(gameId, stars, sinif = 1) {
+  const ilerleme = ilerlemeyiOku(sinif);
+  const katalog = MUFREDAT_KATALOGLARI[sinif] || [];
   const gunNo = ilerleme.aktifGun;
-  const oynananGrup = GUN_PLANI_KATALOGU.find((g) => g.items.some((i) => i.id === gameId));
+  const oynananGrup = katalog.find((g) => g.items.some((i) => i.id === gameId));
 
   ilerleme.oturumSayisi += 1;
 
@@ -128,7 +177,7 @@ export function oyunTamamlandi(gameId, stars) {
   }
 
   if (oynananGrup) {
-    const gorevler = gununGorevleri(gunNo);
+    const gorevler = gununGorevleri(gunNo, sinif);
     const gununGorevi = gorevler.find((g) => g.ders === oynananGrup.ders);
 
     ilerleme.gunler[gunNo].gorevler[gununGorevi.id] = {
@@ -154,10 +203,11 @@ export function oyunTamamlandi(gameId, stars) {
 // "zorlanıyor olabilir" olarak işaretleniyor - kesin tanı değil, sadece
 // ebeveynin dikkatini çekecek kaba bir sinyal.
 export function dersOzetiHesapla(ilerleme) {
+  const katalog = MUFREDAT_KATALOGLARI[ilerleme.sinif || 1] || [];
   const ozet = {};
   Object.values(ilerleme.gunler).forEach((gun) => {
     Object.entries(gun.gorevler || {}).forEach(([gameId, kayit]) => {
-      const grup = GUN_PLANI_KATALOGU.find((g) => g.items.some((i) => i.id === gameId));
+      const grup = katalog.find((g) => g.items.some((i) => i.id === gameId));
       if (!grup) return;
       if (!ozet[grup.ders]) ozet[grup.ders] = { toplamOturum: 0, toplamYildiz: 0 };
       ozet[grup.ders].toplamOturum += 1;
@@ -179,6 +229,9 @@ export function dersOzetiHesapla(ilerleme) {
 //   görevlerini bitirdin, ödül zamanı" penceresi). Çocuk yeni günün ilk
 //   görevine başlar başlamaz pencere kapanır, bir sonraki gün tamamlanana
 //   kadar tekrar kilitli kalır.
+// Not: Ödül oyunları sınıftan bağımsız (her iki sınıfta da aynı Boyama
+// Kitabı/Yap Boz kullanılıyor), bu yüzden bu fonksiyon sınıf bilgisine
+// ihtiyaç duymuyor.
 export function odulOyunlariAcikMi(ilerleme) {
   if (ilerleme.ayarlar.odulOyunlariModu === "herZaman") return true;
   const gunNo = ilerleme.aktifGun;
@@ -189,15 +242,16 @@ export function odulOyunlariAcikMi(ilerleme) {
   return !bugunBaslandiMi;
 }
 
-export function ilerlemeyiSifirla() {
-  ilerlemeyiYaz(bosIlerleme());
-  return bosIlerleme();
+export function ilerlemeyiSifirla(sinif = 1) {
+  const bos = bosIlerleme(sinif);
+  ilerlemeyiYaz(bos);
+  return bos;
 }
 
 // Ebeveyn panelinden ayar değiştirmek için (örn. "Tüm Oyunlar" sekmesini
 // açma/kapatma). İlerleme verisini sıfırlamadan sadece ayarları günceller.
-export function ayarKaydet(patch) {
-  const ilerleme = ilerlemeyiOku();
+export function ayarKaydet(patch, sinif = 1) {
+  const ilerleme = ilerlemeyiOku(sinif);
   ilerleme.ayarlar = { ...ilerleme.ayarlar, ...patch };
   ilerlemeyiYaz(ilerleme);
   return ilerleme;
