@@ -30,8 +30,9 @@ import YapBoz from "./games/YapBoz.jsx";
 
 // Tek yerden yönetilen oyun kayıt defteri - yeni bir oyun eklemek
 // istediğinde sadece buraya bir satır eklemen yeterli. Sınıf bazlı ayrılmış
-// durumda: her sınıfın kendi müfredatı/oyun kataloğu var. 2. sınıf henüz
-// boş - mimari hazır, içerik (soru bankaları + oyunlar) bir sonraki adım.
+// durumda: her sınıfın kendi müfredatı/oyun kataloğu var (ilkokul 1-4.
+// sınıf, bkz. progress.js#DESTEKLENEN_SINIFLAR). 2-3-4. sınıf henüz boş -
+// mimari hazır, içerik (soru bankaları + oyunlar) sınıf sınıf ekleniyor.
 const GAMES_SINIF1 = [
   {
     ders: "Matematik",
@@ -82,9 +83,40 @@ const GAMES_SINIF1 = [
   },
 ];
 
-const GAMES_SINIF2 = [];
+// 2. sınıf: içerik sınıf sınıf ekleniyor.
+// - Matematik soru bankası hazır (src/data/matematik-2-sinif.json) -
+//   şimdilik sadece Pratik Modu bu bankayı kullanıyor. Hızlı Yarış/
+//   Eşleştirme/Boşluk Doldur gibi diğer matematik oyunları kendi
+//   içlerinde 1. sınıf seviyesine (10-20 arası) göre sayı üretiyor, 2.
+//   sınıfa (100'e kadar) uyarlanana kadar burada yer almıyorlar.
+// - Türkçe soru bankası hazır (src/data/turkce-2-sinif.json) - Kelime
+//   Eşleştir ve Harf Tamamla bu bankayı kullanıyor (1. sınıfla aynı
+//   motor, daha uzun kelime dağarcığı). Bitişik el yazısı/cümle
+//   tamamlama/paragraf okuma/noktalama için yeni oyun motoru gerekiyor,
+//   henüz yok.
+const GAMES_SINIF2 = [
+  {
+    ders: "Matematik",
+    dersIkon: "🔢",
+    renk: "#5AB4E0",
+    items: [
+      { id: "pratik-matematik-2", ad: "Pratik Modu", emoji: "📚", Component: PratikModuMatematik },
+    ],
+  },
+  {
+    ders: "Türkçe",
+    dersIkon: "🔤",
+    renk: "#FF9F5A",
+    items: [
+      { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏", Component: TurkceEslestirme },
+      { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤", Component: TurkceHarfTamamlama },
+    ],
+  },
+];
+const GAMES_SINIF3 = [];
+const GAMES_SINIF4 = [];
 
-const GAMES_BY_SINIF = { 1: GAMES_SINIF1, 2: GAMES_SINIF2 };
+const GAMES_BY_SINIF = { 1: GAMES_SINIF1, 2: GAMES_SINIF2, 3: GAMES_SINIF3, 4: GAMES_SINIF4 };
 
 function HomeScreen({ onSelect, ilerleme, onEbeveynAc, sekme, setSekme, onOdulAc, aktifSinif }) {
   const oyunKatalogu = GAMES_BY_SINIF[aktifSinif] || [];
@@ -619,8 +651,8 @@ function SinifYakindaEkrani({ sinif, onEbeveynAc, on1SinifaDon }) {
           {sinif}. Sınıf içerikleri hazırlanıyor
         </div>
         <div style={{ color: "#5C6B85", fontSize: 14, lineHeight: 1.6, marginBottom: 28 }}>
-          Tilkitopya şu an sadece 1. sınıf müfredatını destekliyor. {sinif}. sınıf oyunları
-          ve soru bankaları çok yakında burada olacak!
+          {sinif}. sınıf oyunları ve soru bankaları henüz hazır değil, çok yakında burada
+          olacak! Şimdilik desteklenen sınıflara dönebilirsin.
         </div>
         <button
           onClick={on1SinifaDon}
@@ -754,7 +786,7 @@ export default function App() {
       >
         <ArrowLeft size={16} /> Menüye Dön
       </button>
-      <ActiveComponent key={activeId} onExit={() => setActiveId(null)} onComplete={handleGameComplete} />
+      <ActiveComponent key={activeId} onExit={() => setActiveId(null)} onComplete={handleGameComplete} sinif={aktifSinif} />
     </div>
   );
 }

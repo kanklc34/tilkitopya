@@ -13,16 +13,23 @@
 const STORAGE_ANAHTARI_ONEKI = "tilkitopya_ilerleme_v1";
 const AKTIF_SINIF_ANAHTARI = "tilkitopya_aktif_sinif";
 
+// İlkokul 1-4. sınıfları kapsıyor. Yeni bir sınıf eklemek istendiğinde
+// (örn. gelecekte ortaokula genişleme) tek yapılması gereken bu diziye
+// bir sayı eklemek - storage anahtarı, aktif sınıf doğrulaması ve
+// EbeveynPaneli'ndeki sınıf seçici hepsi buradan besleniyor.
+export const DESTEKLENEN_SINIFLAR = [1, 2, 3, 4];
+
 // 1. sınıf, geriye dönük uyumluluk için orijinal (sınıf eki olmayan)
 // anahtarı kullanmaya devam ediyor - böylece mevcut kullanıcıların
-// birikmiş ilerlemesi kaybolmuyor.
+// birikmiş ilerlemesi kaybolmuyor. Diğer sınıflar `_sinifN` eki alır.
 function storageAnahtari(sinif) {
-  return sinif === 2 ? `${STORAGE_ANAHTARI_ONEKI}_sinif2` : STORAGE_ANAHTARI_ONEKI;
+  return sinif === 1 ? STORAGE_ANAHTARI_ONEKI : `${STORAGE_ANAHTARI_ONEKI}_sinif${sinif}`;
 }
 
 export function aktifSinifOku() {
   try {
-    return localStorage.getItem(AKTIF_SINIF_ANAHTARI) === "2" ? 2 : 1;
+    const deger = Number(localStorage.getItem(AKTIF_SINIF_ANAHTARI));
+    return DESTEKLENEN_SINIFLAR.includes(deger) ? deger : 1;
   } catch {
     return 1;
   }
@@ -85,15 +92,37 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
   },
 ];
 
-// 2. sınıf müfredatı henüz hazır değil - mimari (sınıf seçici, ayrı
-// ilerleme/ayar deposu) bu oturumda kuruldu, içerik (soru bankaları,
-// oyunlar) bir sonraki adım. Boş katalog kasıtlı: Ana Ekran bunu görüp
-// "yakında" ekranını gösteriyor (bkz. sinifIcerigiVarMi).
-const GUN_PLANI_KATALOGU_SINIF2 = [];
+// 2-3-4. sınıf müfredatları içerik sınıf sınıf ekleniyor. 2. sınıf
+// Matematik + Türkçe soru bankaları hazır (matematik-2-sinif.json,
+// turkce-2-sinif.json) - App.jsx'teki GAMES_SINIF2 ile id'ler birebir
+// eşleşmeli (bkz. o dosyadaki not). İngilizce/Hayat Bilgisi/Genel
+// Beceriler grupları henüz yok, bu yüzden sinifIcerigiVarMi(2) true olsa
+// da "Bugünün Görevi" şu an için 2 derse (Matematik + Türkçe) indirgenmiş
+// durumda - kalan gruplar eklendikçe gününGorevleri otomatik olarak 5
+// derse çıkacak.
+const GUN_PLANI_KATALOGU_SINIF2 = [
+  {
+    ders: "Matematik",
+    dersEmoji: "🔢",
+    items: [{ id: "pratik-matematik-2", ad: "Pratik Modu", emoji: "📚" }],
+  },
+  {
+    ders: "Türkçe",
+    dersEmoji: "🔤",
+    items: [
+      { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏" },
+      { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤" },
+    ],
+  },
+];
+const GUN_PLANI_KATALOGU_SINIF3 = [];
+const GUN_PLANI_KATALOGU_SINIF4 = [];
 
 export const MUFREDAT_KATALOGLARI = {
   1: GUN_PLANI_KATALOGU_SINIF1,
   2: GUN_PLANI_KATALOGU_SINIF2,
+  3: GUN_PLANI_KATALOGU_SINIF3,
+  4: GUN_PLANI_KATALOGU_SINIF4,
 };
 
 export function sinifIcerigiVarMi(sinif) {

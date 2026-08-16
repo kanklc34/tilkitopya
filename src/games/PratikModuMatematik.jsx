@@ -1,24 +1,35 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Star, Trophy, RotateCcw, HelpCircle, BookOpen } from "lucide-react";
-import matematikBankasi from "../data/matematik-1-sinif.json";
+import matematikBankasiSinif1 from "../data/matematik-1-sinif.json";
+import matematikBankasiSinif2 from "../data/matematik-2-sinif.json";
 import { ipucuGetir } from "../lib/ipucuUret.js";
 
 // ---- GERÇEK SORU BANKASI ----
-// Gömülü/statik veri değil - src/data/matematik-1-sinif.json dosyasından
+// Gömülü/statik veri değil - src/data/matematik-N-sinif.json dosyalarından
 // gerçek zamanlı import ediliyor. Bankayı güncelleyince kod değişmeden
 // bileşen otomatik güncel soruları kullanır (tek veri katmanı ilkesi).
-const QUESTIONS = matematikBankasi.sorular.map((q) => ({
-  id: q.id,
-  seviye: q.seviye,
-  soru_tipi: q.soru_tipi,
-  soru_metni: q.soru_metni,
-  baglam_metni: q.baglam_metni,
-  tema_emoji: q.tema_emoji,
-  secenekler: q.secenekler,
-  dogru_cevap: q.dogru_cevap,
-  ipucu: q.ipucu,
-  kazanim: q.kazanim,
-}));
+// Sınıf bazlı: `sinif` prop'una göre doğru banka seçilir (bkz. App.jsx'te
+// ActiveComponent'e geçirilen `sinif` prop'u).
+const BANKALAR = {
+  1: matematikBankasiSinif1,
+  2: matematikBankasiSinif2,
+};
+
+function sorulariHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  return banka.sorular.map((q) => ({
+    id: q.id,
+    seviye: q.seviye,
+    soru_tipi: q.soru_tipi,
+    soru_metni: q.soru_metni,
+    baglam_metni: q.baglam_metni,
+    tema_emoji: q.tema_emoji,
+    secenekler: q.secenekler,
+    dogru_cevap: q.dogru_cevap,
+    ipucu: q.ipucu,
+    kazanim: q.kazanim,
+  }));
+}
 
 // Ustalık bazlı ilerleme: seviye 1'den başla, art arda 4 doğruda bir üst
 // seviyeye geç. Flow teorisi gereği: 2 yanlış üst üste olursa bir seviye
@@ -36,18 +47,19 @@ function shuffle(arr) {
   return a;
 }
 
-function pickQuestion(seviye, askedIds) {
-  const pool = QUESTIONS.filter((q) => q.seviye === seviye && !askedIds.has(q.id));
-  const usable = pool.length > 0 ? pool : QUESTIONS.filter((q) => q.seviye === seviye);
+function pickQuestion(questions, seviye, askedIds) {
+  const pool = questions.filter((q) => q.seviye === seviye && !askedIds.has(q.id));
+  const usable = pool.length > 0 ? pool : questions.filter((q) => q.seviye === seviye);
   return usable[Math.floor(Math.random() * usable.length)];
 }
 
-export default function PratikModuMatematik({ onExit, onComplete } = {}) {
+export default function PratikModuMatematik({ onExit, onComplete, sinif = 1 } = {}) {
+  const QUESTIONS = useMemo(() => sorulariHazirla(sinif), [sinif]);
   const [seviye, setSeviye] = useState(1);
   const [streak, setStreak] = useState(0);
   const [wrongStreak, setWrongStreak] = useState(0);
   const [askedIds, setAskedIds] = useState(() => new Set());
-  const [current, setCurrent] = useState(() => pickQuestion(1, new Set()));
+  const [current, setCurrent] = useState(() => pickQuestion(QUESTIONS, 1, new Set()));
   const [answeredCount, setAnsweredCount] = useState(0);
   const [correctCount, setCorrectCount] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -65,7 +77,7 @@ export default function PratikModuMatematik({ onExit, onComplete } = {}) {
   const options = useMemo(() => shuffle(current.secenekler), [current]);
 
   function nextQuestion(nextSeviye, nextAskedIds) {
-    const q = pickQuestion(nextSeviye, nextAskedIds);
+    const q = pickQuestion(QUESTIONS, nextSeviye, nextAskedIds);
     setCurrent(q);
     setFeedback(null);
     setWrongPick(null);

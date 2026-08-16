@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
-import turkceBankasi from "../data/turkce-1-sinif.json";
+import turkceBankasiSinif1 from "../data/turkce-1-sinif.json";
+import turkceBankasiSinif2 from "../data/turkce-2-sinif.json";
 
 // ---- Oyun ayarları ----
 const ROUND_LENGTH = 5;
@@ -13,25 +14,42 @@ const WRONG_STREAK_TO_LEVEL_DOWN = 2;
 // kayıtları) okunuyor - müfredat güncellemesi kod değil veri güncellemesi
 // olsun diye. Banka "tema" alanı taşımadığı için (tema rotasyonu -
 // concreteness fading tasarımı korunsun diye) bu eşleme kod tarafında
-// tutuluyor.
+// tutuluyor. Sınıf bazlı: `sinif` prop'una göre doğru banka seçilir (bkz.
+// BANKALAR ve component içindeki useMemo'lar).
 // Banka'daki bazı temalar (ev_aile: sadece EV, okul: sadece KİTAP) tek
 // kelimeye düşüyor - bu da bir turda aynı kelimenin tekrar tekrar
 // gelmesine yol açar. Küçük temaları "günlük hayat" başlığında
 // birleştirip her temanın en az 3-4 kelimesi olmasını sağlıyoruz.
 const TEMA_ESLEME = {
+  // 1. sınıf kelimeleri
   KEDİ: "hayvanlar", KÖPEK: "hayvanlar", KUŞ: "hayvanlar", BALIK: "hayvanlar", KELEBEK: "hayvanlar",
   GÜNEŞ: "doga", AY: "doga", YILDIZ: "doga", ÇİÇEK: "doga",
   TOP: "oyuncaklar", ARABA: "oyuncaklar", BALON: "oyuncaklar",
   EV: "gunluk_hayat", KİTAP: "gunluk_hayat", ELMA: "gunluk_hayat", MUZ: "gunluk_hayat",
+  // 2. sınıf kelimeleri (bkz. turkce-2-sinif.json)
+  ASLAN: "hayvanlar", FİL: "hayvanlar", ZÜRAFA: "hayvanlar", PENGUEN: "hayvanlar", TAVŞAN: "hayvanlar", KAPLUMBAĞA: "hayvanlar",
+  BULUT: "doga", YAĞMUR: "doga", GÖKKUŞAĞI: "doga", ORMAN: "doga", DENİZ: "doga",
+  KALEM: "okul", DEFTER: "okul", ÇANTA: "okul", SINIF: "okul", HARİTA: "okul", MAKAS: "okul",
+  PASTA: "yiyecek", DONDURMA: "yiyecek", LİMONATA: "yiyecek", ÇİLEK: "yiyecek", KARPUZ: "yiyecek", SALATA: "yiyecek",
+  UÇAK: "oyuncaklar", GEMİ: "oyuncaklar", TREN: "oyuncaklar", BİSİKLET: "oyuncaklar", ROBOT: "oyuncaklar",
+  ANAHTAR: "gunluk_hayat", MERDİVEN: "gunluk_hayat", AYNA: "gunluk_hayat", LAMBA: "gunluk_hayat", TELEFON: "gunluk_hayat", SAAT: "gunluk_hayat",
 };
-const WORD_BANK = turkceBankasi.sorular
-  .filter((s) => s.soru_tipi === "harf_tamamlama")
-  .map((s) => ({
-    word: s.tam_kelime,
-    emoji: s.gorsel_emoji,
-    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
-  }));
-const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
+const BANKALAR = { 1: turkceBankasiSinif1, 2: turkceBankasiSinif2 };
+
+function bankalariHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  const wordBank = banka.sorular
+    .filter((s) => s.soru_tipi === "harf_tamamlama")
+    .map((s) => ({
+      word: s.tam_kelime,
+      emoji: s.gorsel_emoji,
+      tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+    }));
+  const themes = [...new Set(wordBank.map((w) => w.tema))];
+  const harfSiraSorulari = banka.sorular.filter((s) => s.soru_tipi === "harf_sira");
+  return { wordBank, themes, harfSiraSorulari };
+}
+
 const TURKISH_LETTERS = ["A", "B", "C", "Ç", "D", "E", "F", "G", "Ğ", "H", "I", "İ", "J", "K", "L", "M", "N", "O", "Ö", "P", "R", "S", "Ş", "T", "U", "Ü", "V", "Y", "Z"];
 // tur1: kelime sonunda tek harf eksik (en kolay), tur2: ortada tek harf,
 // tur3: iki harf eksik (en zor)
@@ -57,9 +75,9 @@ function shuffle(arr) {
   return a;
 }
 
-function generateWordPuzzle(round, theme) {
+function generateWordPuzzle(round, theme, wordBank) {
   const { blanksCount, positionMode } = ROUNDS[round];
-  const pool = WORD_BANK.filter((w) => w.tema === theme);
+  const pool = wordBank.filter((w) => w.tema === theme);
   const entry = pool[rand(0, pool.length - 1)];
   const letters = entry.word.split("");
   let positions;
@@ -71,19 +89,17 @@ function generateWordPuzzle(round, theme) {
   return { type: "word", word: entry.word, emoji: entry.emoji, letters, blankPositions: positions };
 }
 
-const HARF_SIRA_SORULARI = turkceBankasi.sorular.filter((s) => s.soru_tipi === "harf_sira");
-
-function generateSequencePuzzle() {
-  const kayit = HARF_SIRA_SORULARI[rand(0, HARF_SIRA_SORULARI.length - 1)];
+function generateSequencePuzzle(harfSiraSorulari) {
+  const kayit = harfSiraSorulari[rand(0, harfSiraSorulari.length - 1)];
   const parcalar = kayit.soru_metni.split(" → ");
   const blankIndex = parcalar.indexOf("?");
   const seq = parcalar.map((p) => (p === "?" ? kayit.dogru_cevap : p));
   return { type: "sequence", seq, blankIndex, answer: kayit.dogru_cevap };
 }
 
-function generatePuzzle(round, theme) {
-  if (Math.random() < SEQUENCE_RATIO) return generateSequencePuzzle();
-  return generateWordPuzzle(round, theme);
+function generatePuzzle(round, theme, wordBank, harfSiraSorulari) {
+  if (Math.random() < SEQUENCE_RATIO) return generateSequencePuzzle(harfSiraSorulari);
+  return generateWordPuzzle(round, theme, wordBank);
 }
 
 function currentLetterOf(puzzle, filledCount) {
@@ -124,10 +140,14 @@ function playTone(kind) {
   }
 }
 
-export default function TurkishFillGame({ onExit, onComplete } = {}) {
+export default function TurkishFillGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const { wordBank, themes: THEMES, harfSiraSorulari: HARF_SIRA_SORULARI } = useMemo(
+    () => bankalariHazirla(sinif),
+    [sinif]
+  );
   const [currentTheme, setCurrentTheme] = useState(() => THEMES[rand(0, THEMES.length - 1)]);
   const [round, setRound] = useState(0);
-  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0, currentTheme));
+  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0, currentTheme, wordBank, HARF_SIRA_SORULARI));
   const [pad, setPad] = useState(() => generateLetterPad(currentLetterOf(puzzle, 0)));
   const [filledCount, setFilledCount] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -146,14 +166,14 @@ export default function TurkishFillGame({ onExit, onComplete } = {}) {
   const timeoutRef = useRef(null);
 
   const nextPuzzle = useCallback((r, theme) => {
-    const p = generatePuzzle(r, theme);
+    const p = generatePuzzle(r, theme, wordBank, HARF_SIRA_SORULARI);
     setPuzzle(p);
     setPad(generateLetterPad(currentLetterOf(p, 0)));
     setFilledCount(0);
     setFeedback(null);
     setWrongPick(null);
     setAyniHarfDenemeSayisi(0);
-  }, []);
+  }, [wordBank, HARF_SIRA_SORULARI]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 

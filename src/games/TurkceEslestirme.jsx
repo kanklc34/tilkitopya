@@ -1,25 +1,44 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
-import turkceBankasi from "../data/turkce-1-sinif.json";
+import turkceBankasiSinif1 from "../data/turkce-1-sinif.json";
+import turkceBankasiSinif2 from "../data/turkce-2-sinif.json";
 
 // ---- Oyun ayarları ----
 // İngilizce Word Match ile aynı motor, içerik Türkçe kelime <-> görsel.
 // Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı - içerik
-// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor.
+// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor. Sınıf
+// bazlı: `sinif` prop'una göre doğru banka seçilir (bkz. BANKALAR ve
+// component içindeki useMemo). TEMA_ESLEME, TurkceHarfTamamlama.jsx'teki
+// ile birebir aynı tutulmalı - ikisi aynı kelime dağarcığını paylaşıyor.
 const TEMA_ESLEME = {
+  // 1. sınıf kelimeleri
   KEDİ: "hayvanlar", KÖPEK: "hayvanlar", KUŞ: "hayvanlar", BALIK: "hayvanlar", KELEBEK: "hayvanlar",
   GÜNEŞ: "doga", AY: "doga", YILDIZ: "doga", ÇİÇEK: "doga",
   TOP: "oyuncaklar", ARABA: "oyuncaklar", BALON: "oyuncaklar",
   EV: "gunluk_hayat", KİTAP: "gunluk_hayat", ELMA: "gunluk_hayat", MUZ: "gunluk_hayat",
+  // 2. sınıf kelimeleri (bkz. turkce-2-sinif.json)
+  ASLAN: "hayvanlar", FİL: "hayvanlar", ZÜRAFA: "hayvanlar", PENGUEN: "hayvanlar", TAVŞAN: "hayvanlar", KAPLUMBAĞA: "hayvanlar",
+  BULUT: "doga", YAĞMUR: "doga", GÖKKUŞAĞI: "doga", ORMAN: "doga", DENİZ: "doga",
+  KALEM: "okul", DEFTER: "okul", ÇANTA: "okul", SINIF: "okul", HARİTA: "okul", MAKAS: "okul",
+  PASTA: "yiyecek", DONDURMA: "yiyecek", LİMONATA: "yiyecek", ÇİLEK: "yiyecek", KARPUZ: "yiyecek", SALATA: "yiyecek",
+  UÇAK: "oyuncaklar", GEMİ: "oyuncaklar", TREN: "oyuncaklar", BİSİKLET: "oyuncaklar", ROBOT: "oyuncaklar",
+  ANAHTAR: "gunluk_hayat", MERDİVEN: "gunluk_hayat", AYNA: "gunluk_hayat", LAMBA: "gunluk_hayat", TELEFON: "gunluk_hayat", SAAT: "gunluk_hayat",
 };
-const WORD_BANK = turkceBankasi.sorular
-  .filter((s) => s.soru_tipi === "eslestirme")
-  .map((s) => ({
-    word: s.tam_kelime,
-    emoji: s.gorsel_emoji,
-    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
-  }));
-const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
+const BANKALAR = { 1: turkceBankasiSinif1, 2: turkceBankasiSinif2 };
+
+function bankalariHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  const wordBank = banka.sorular
+    .filter((s) => s.soru_tipi === "eslestirme")
+    .map((s) => ({
+      word: s.tam_kelime,
+      emoji: s.gorsel_emoji,
+      tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+    }));
+  const themes = [...new Set(wordBank.map((w) => w.tema))];
+  return { wordBank, themes };
+}
+
 const ROUNDS = [
   { pairs: 3, columns: 3 },
   { pairs: 4, columns: 4 },
@@ -40,13 +59,13 @@ function shuffle(arr) {
   return a;
 }
 
-function buildDeck(round) {
+function buildDeck(round, wordBank, themes) {
   const { pairs } = ROUNDS[round];
   // Son tur (en zor) tam karışık havuzdan geliyor - erken turlar tek bir
   // temaya bağlı kalıyor (concreteness fading ile aynı mantık: destek
   // ustalık seviyesinde kalkıyor). Yeterli kelimesi olmayan temalar elenir.
-  const eligible = THEMES.filter((t) => WORD_BANK.filter((w) => w.tema === t).length >= pairs);
-  const pool = eligible.length > 0 ? WORD_BANK.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : WORD_BANK;
+  const eligible = themes.filter((t) => wordBank.filter((w) => w.tema === t).length >= pairs);
+  const pool = eligible.length > 0 ? wordBank.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : wordBank;
   const entries = shuffle(pool).slice(0, pairs);
   const cards = [];
   entries.forEach((entry, idx) => {
@@ -87,9 +106,10 @@ function playTone(kind) {
   }
 }
 
-export default function TurkishMatchGame({ onExit, onComplete } = {}) {
+export default function TurkishMatchGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const { wordBank, themes } = useMemo(() => bankalariHazirla(sinif), [sinif]);
   const [round, setRound] = useState(0);
-  const [deck, setDeck] = useState(() => buildDeck(0));
+  const [deck, setDeck] = useState(() => buildDeck(0, wordBank, themes));
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState(new Set());
   const [locked, setLocked] = useState(false);
@@ -104,7 +124,7 @@ export default function TurkishMatchGame({ onExit, onComplete } = {}) {
   const [paused, setPaused] = useState(false);
 
   const startRound = useCallback((r) => {
-    setDeck(buildDeck(r));
+    setDeck(buildDeck(r, wordBank, themes));
     setFlipped([]);
     setMatched(new Set());
     setLocked(false);
@@ -112,7 +132,7 @@ export default function TurkishMatchGame({ onExit, onComplete } = {}) {
     setMistakes(0);
     setPesPeseYanlis(0);
     setRoundDone(false);
-  }, []);
+  }, [wordBank, themes]);
 
   useEffect(() => {
     if (matched.size > 0 && matched.size === deck.length / 2) {

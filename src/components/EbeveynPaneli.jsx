@@ -6,6 +6,7 @@ import {
   gununGorevleri,
   ilerlemeyiSifirla,
   ayarKaydet,
+  DESTEKLENEN_SINIFLAR,
 } from "../lib/progress.js";
 
 // ---- Ebeveyn Kapısı ----
@@ -170,7 +171,7 @@ function EbeveynPaneliIcerik({ onKapat, sinif, onSinifSec }) {
 
         <div className="ep-section-title">Aktif sınıf</div>
         <div className="ep-sinif-row">
-          {[1, 2].map((s) => (
+          {DESTEKLENEN_SINIFLAR.map((s) => (
             <button
               key={s}
               type="button"
