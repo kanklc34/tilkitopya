@@ -1,22 +1,41 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
-import hayatBilgisiBankasi from "../data/hayat-bilgisi-1-sinif.json";
+import hayatBilgisiBankasiSinif1 from "../data/hayat-bilgisi-1-sinif.json";
+import hayatBilgisiBankasiSinif2 from "../data/hayat-bilgisi-2-sinif.json";
 
 // ---- Oyun ayarları ----
 // Hedef nesne listesi artık gerçek soru bankasından (doga_gozlem
 // kayıtları) türetiliyor - müfredat güncellemesi kod değil veri
 // güncellemesi olsun diye. Rakip/dolgu (decoy) emojiler curriculum
 // içeriği olmadığı, sadece görsel gürültü olduğu için kod içinde kalıyor.
+// Sınıf bazlı: `sinif` prop'una göre doğru banka seçilir (bkz. BANKALAR
+// ve component içindeki useMemo).
 const DECOY_POOL = ["🍃", "☁️", "🌸", "🪨", "🍂", "🌿"];
-const DOGA_GOZLEM_SORULARI = hayatBilgisiBankasi.sorular.filter((s) => s.soru_tipi === "doga_gozlem");
-const TARGET_POOL = [...new Set(DOGA_GOZLEM_SORULARI.map((s) => s.secenekler.hedef))];
-// Tur büyüdükçe sahne kalabalıklaşıyor ve bulunacak hedef sayısı artıyor
-const ROUNDS = [
-  { decoyCount: 12, targetCount: 2 }, // tur1: az kalabalık, 2 hedef
-  { decoyCount: 18, targetCount: 3 }, // tur2
-  { decoyCount: 26, targetCount: 4 }, // tur3: en kalabalık, 4 hedef
-];
-const TOTAL_ROUNDS = ROUNDS.length;
+const BANKALAR = { 1: hayatBilgisiBankasiSinif1, 2: hayatBilgisiBankasiSinif2 };
+
+function hedefleriHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  const dogaGozlemSorulari = banka.sorular.filter((s) => s.soru_tipi === "doga_gozlem");
+  return [...new Set(dogaGozlemSorulari.map((s) => s.secenekler.hedef))];
+}
+
+// Tur büyüdükçe sahne kalabalıklaşıyor ve bulunacak hedef sayısı artıyor.
+// 2. sınıf turları 1. sınıftan daha kalabalık (roadmap: "daha yoğun/çok
+// nesneli sahneler") - concreteness fading'in devamı, 2. sınıf JSON'undaki
+// doga_gozlem kayıtlarının kendi hedef_sayisi/kalabalik alanlarıyla da
+// tutarlı büyüklükte tutuldu.
+const ROUNDS_BY_SINIF = {
+  1: [
+    { decoyCount: 12, targetCount: 2 }, // tur1: az kalabalık, 2 hedef
+    { decoyCount: 18, targetCount: 3 }, // tur2
+    { decoyCount: 26, targetCount: 4 }, // tur3: en kalabalık, 4 hedef
+  ],
+  2: [
+    { decoyCount: 16, targetCount: 2 }, // tur1
+    { decoyCount: 22, targetCount: 3 }, // tur2
+    { decoyCount: 32, targetCount: 4 }, // tur3: 1. sınıftan daha kalabalık
+  ],
+};
 // Bu oyunda tekli yanlış dokunuşlar zaten normal (kalabalık sahne) - o
 // yüzden seviye düşürmeyi tek tük yanlışa değil, 2 ayrı "zorlanma anına"
 // (yani 2 kez art arda 4 yanlışa ulaşma) bağlıyoruz.
@@ -34,8 +53,8 @@ function shuffle(arr) {
 // Kartlar üst üste binmesin diye sahneyi görünmez bir ızgaraya bölüp
 // her hücreye hafif rastgele kaydırma (jitter) uyguluyoruz - sonuç
 // hizalı bir grid değil, dağınık/organik bir sahne gibi görünüyor.
-function buildScene(round) {
-  const { decoyCount, targetCount } = ROUNDS[round];
+function buildScene(round, rounds, targetPool) {
+  const { decoyCount, targetCount } = rounds[round];
   const total = decoyCount + targetCount;
   const cols = Math.ceil(Math.sqrt(total * 1.4));
   const rows = Math.ceil(total / cols);
@@ -51,7 +70,7 @@ function buildScene(round) {
   const decoyEmoji1 = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
   let decoyEmoji2 = decoyEmoji1;
   while (decoyEmoji2 === decoyEmoji1) decoyEmoji2 = DECOY_POOL[Math.floor(Math.random() * DECOY_POOL.length)];
-  const targetEmoji = TARGET_POOL[Math.floor(Math.random() * TARGET_POOL.length)];
+  const targetEmoji = targetPool[Math.floor(Math.random() * targetPool.length)];
 
   const items = chosenCells.map((cell, i) => {
     const isTarget = i < targetCount;
@@ -96,9 +115,12 @@ function playTone(kind) {
   }
 }
 
-export default function NatureObserveGame({ onExit, onComplete } = {}) {
+export default function NatureObserveGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const targetPool = useMemo(() => hedefleriHazirla(sinif), [sinif]);
+  const rounds = ROUNDS_BY_SINIF[sinif] || ROUNDS_BY_SINIF[1];
+  const totalRounds = rounds.length;
   const [round, setRound] = useState(0);
-  const [scene, setScene] = useState(() => buildScene(0));
+  const [scene, setScene] = useState(() => buildScene(0, rounds, targetPool));
   const [foundIds, setFoundIds] = useState(new Set());
   const [wrongPulseId, setWrongPulseId] = useState(null);
   const [mistakes, setMistakes] = useState(0);
@@ -116,13 +138,13 @@ export default function NatureObserveGame({ onExit, onComplete } = {}) {
   const ipucuTimeout = useRef(null);
 
   const startRound = useCallback((r) => {
-    setScene(buildScene(r));
+    setScene(buildScene(r, rounds, targetPool));
     setFoundIds(new Set());
     setRoundDone(false);
     setPesPeseYanlis(0);
     setIpucuHedefId(null);
     setSeviyeZorlanmaSayisi(0);
-  }, []);
+  }, [rounds, targetPool]);
 
   function handleTap(item) {
     if (paused || finished || roundDone || gecisKilitli || foundIds.has(item.id)) return;
@@ -179,7 +201,7 @@ export default function NatureObserveGame({ onExit, onComplete } = {}) {
   }
 
   function nextRound() {
-    if (round + 1 >= TOTAL_ROUNDS) {
+    if (round + 1 >= totalRounds) {
       setFinished(true);
     } else {
       const r = round + 1;
@@ -432,7 +454,7 @@ export default function NatureObserveGame({ onExit, onComplete } = {}) {
       <div className="top-row">
         <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Doğa Gözlemi</h1>
         <div className="top-right">
-          <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
+          <span className="round-pill">Tur {round + 1}/{totalRounds}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
           <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">⏸️</button>
         </div>
@@ -468,7 +490,7 @@ export default function NatureObserveGame({ onExit, onComplete } = {}) {
           <div className="finish-title">Tur {round + 1} tamam!</div>
           <div style={{ fontSize: 14, opacity: 0.9 }}>Hepsini buldun!</div>
           <button className="primary-btn" onClick={nextRound}>
-            {round + 1 >= TOTAL_ROUNDS ? "Bitir" : "Sonraki Tur"}
+            {round + 1 >= totalRounds ? "Bitir" : "Sonraki Tur"}
           </button>
         </div>
       )}

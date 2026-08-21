@@ -93,13 +93,13 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
 ];
 
 // 2-3-4. sınıf müfredatları içerik sınıf sınıf ekleniyor. 2. sınıf
-// Matematik + Türkçe soru bankaları hazır (matematik-2-sinif.json,
-// turkce-2-sinif.json) - App.jsx'teki GAMES_SINIF2 ile id'ler birebir
-// eşleşmeli (bkz. o dosyadaki not). İngilizce/Hayat Bilgisi/Genel
-// Beceriler grupları henüz yok, bu yüzden sinifIcerigiVarMi(2) true olsa
-// da "Bugünün Görevi" şu an için 2 derse (Matematik + Türkçe) indirgenmiş
-// durumda - kalan gruplar eklendikçe gününGorevleri otomatik olarak 5
-// derse çıkacak.
+// Matematik + Türkçe + İngilizce + Hayat Bilgisi soru bankaları hazır
+// (matematik-2-sinif.json, turkce-2-sinif.json, ingilizce-2-sinif.json,
+// hayat-bilgisi-2-sinif.json) - App.jsx'teki GAMES_SINIF2 ile id'ler
+// birebir eşleşmeli (bkz. o dosyadaki not). Genel Beceriler grubu henüz
+// yok, bu yüzden sinifIcerigiVarMi(2) true olsa da "Bugünün Görevi" şu an
+// için 4 derse indirgenmiş durumda - kalan grup eklendikçe gününGorevleri
+// otomatik olarak 5 derse çıkacak.
 const GUN_PLANI_KATALOGU_SINIF2 = [
   {
     ders: "Matematik",
@@ -112,6 +112,22 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
     items: [
       { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏" },
       { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤" },
+    ],
+  },
+  {
+    ders: "İngilizce",
+    dersEmoji: "🌍",
+    items: [
+      { id: "en-eslestirme-2", ad: "Word Match", emoji: "🃏" },
+      { id: "en-harf-2", ad: "Word Fill", emoji: "🔤" },
+    ],
+  },
+  {
+    ders: "Hayat Bilgisi",
+    dersEmoji: "🌻",
+    items: [
+      { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋" },
+      { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅" },
     ],
   },
 ];

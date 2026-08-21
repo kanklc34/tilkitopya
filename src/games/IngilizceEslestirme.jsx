@@ -1,25 +1,44 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
-import ingilizceBankasi from "../data/ingilizce-1-sinif.json";
+import ingilizceBankasiSinif1 from "../data/ingilizce-1-sinif.json";
+import ingilizceBankasiSinif2 from "../data/ingilizce-2-sinif.json";
 
 // ---- Oyun ayarları ----
 // Aynı eşleştirme motoru, içerik İngilizce kelime <-> görsel.
 // Tur ilerledikçe çift sayısı artıyor (3x2 -> 4x2 -> 3x4), yeni kelimeler geliyor.
 // Aynı 6 tema, Harf Tamamlama motoruyla ortak kelime dağarcığı - içerik
-// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor.
+// artık gerçek soru bankasından (eslestirme kayıtları) okunuyor. Sınıf
+// bazlı: `sinif` prop'una göre doğru banka seçilir (bkz. BANKALAR ve
+// component içindeki useMemo). TEMA_ESLEME, IngilizceHarfTamamlama.jsx'teki
+// ile birebir aynı tutulmalı - ikisi aynı kelime dağarcığını paylaşıyor.
 const TEMA_ESLEME = {
+  // 1. sınıf kelimeleri
   CAT: "hayvanlar", DOG: "hayvanlar", FISH: "hayvanlar", BIRD: "hayvanlar",
   SUN: "doga", MOON: "doga", STAR: "doga", FLOWER: "doga",
   CAR: "gunluk_hayat", BALL: "gunluk_hayat", HOUSE: "gunluk_hayat", APPLE: "gunluk_hayat", BANANA: "gunluk_hayat", BOOK: "gunluk_hayat",
+  // 2. sınıf kelimeleri (bkz. ingilizce-2-sinif.json)
+  LION: "hayvanlar", TIGER: "hayvanlar", RABBIT: "hayvanlar", DUCK: "hayvanlar", SHEEP: "hayvanlar", BEAR: "hayvanlar",
+  CLOUD: "doga", RAIN: "doga", RAINBOW: "doga", SNOW: "doga", TREE: "doga", LEAF: "doga",
+  PIZZA: "yiyecek", BURGER: "yiyecek", COOKIE: "yiyecek", MILK: "yiyecek", EGG: "yiyecek", BREAD: "yiyecek",
+  SCHOOL: "okul", PENCIL: "okul", CLOCK: "okul", DOOR: "okul", KEY: "okul", CHAIR: "okul",
+  BALLOON: "oyuncaklar", ROBOT: "oyuncaklar", BOAT: "oyuncaklar", TRAIN: "oyuncaklar", KITE: "oyuncaklar", DRUM: "oyuncaklar",
+  RED: "renkler", BLUE: "renkler", GREEN: "renkler", YELLOW: "renkler", PURPLE: "renkler", ORANGE: "renkler",
 };
-const WORD_BANK = ingilizceBankasi.sorular
-  .filter((s) => s.soru_tipi === "eslestirme")
-  .map((s) => ({
-    word: s.tam_kelime,
-    emoji: s.gorsel_emoji,
-    tema: TEMA_ESLEME[s.tam_kelime] || "diger",
-  }));
-const THEMES = [...new Set(WORD_BANK.map((w) => w.tema))];
+const BANKALAR = { 1: ingilizceBankasiSinif1, 2: ingilizceBankasiSinif2 };
+
+function bankalariHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  const wordBank = banka.sorular
+    .filter((s) => s.soru_tipi === "eslestirme")
+    .map((s) => ({
+      word: s.tam_kelime,
+      emoji: s.gorsel_emoji,
+      tema: TEMA_ESLEME[s.tam_kelime] || "diger",
+    }));
+  const themes = [...new Set(wordBank.map((w) => w.tema))];
+  return { wordBank, themes };
+}
+
 const ROUNDS = [
   { pairs: 3, columns: 3 }, // 3x2 - basit başlangıç
   { pairs: 4, columns: 4 }, // 4x2
@@ -40,12 +59,12 @@ function shuffle(arr) {
   return a;
 }
 
-function buildDeck(round) {
+function buildDeck(round, wordBank, themes) {
   const { pairs } = ROUNDS[round];
   // Son tur (en zor) tam karışık havuzdan geliyor - erken turlar tek bir
   // temaya bağlı kalıyor (concreteness fading ile aynı mantık).
-  const eligible = THEMES.filter((t) => WORD_BANK.filter((w) => w.tema === t).length >= pairs);
-  const pool = eligible.length > 0 ? WORD_BANK.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : WORD_BANK;
+  const eligible = themes.filter((t) => wordBank.filter((w) => w.tema === t).length >= pairs);
+  const pool = eligible.length > 0 ? wordBank.filter((w) => w.tema === eligible[rand(0, eligible.length - 1)]) : wordBank;
   const entries = shuffle(pool).slice(0, pairs);
   const cards = [];
   entries.forEach((entry, idx) => {
@@ -88,9 +107,10 @@ function playTone(kind) {
   }
 }
 
-export default function EnglishMatchGame({ onExit, onComplete } = {}) {
+export default function EnglishMatchGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const { wordBank, themes } = useMemo(() => bankalariHazirla(sinif), [sinif]);
   const [round, setRound] = useState(0);
-  const [deck, setDeck] = useState(() => buildDeck(0));
+  const [deck, setDeck] = useState(() => buildDeck(0, wordBank, themes));
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState(new Set());
   const [locked, setLocked] = useState(false);
@@ -105,7 +125,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
   const [paused, setPaused] = useState(false);
 
   const startRound = useCallback((r) => {
-    setDeck(buildDeck(r));
+    setDeck(buildDeck(r, wordBank, themes));
     setFlipped([]);
     setMatched(new Set());
     setLocked(false);
@@ -113,7 +133,7 @@ export default function EnglishMatchGame({ onExit, onComplete } = {}) {
     setMistakes(0);
     setPesPeseYanlis(0);
     setRoundDone(false);
-  }, []);
+  }, [wordBank, themes]);
 
   useEffect(() => {
     if (matched.size > 0 && matched.size === deck.length / 2) {

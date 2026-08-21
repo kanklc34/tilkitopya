@@ -94,6 +94,15 @@ const GAMES_SINIF1 = [
 //   motor, daha uzun kelime dağarcığı). Bitişik el yazısı/cümle
 //   tamamlama/paragraf okuma/noktalama için yeni oyun motoru gerekiyor,
 //   henüz yok.
+// - İngilizce soru bankası hazır (src/data/ingilizce-2-sinif.json) - Word
+//   Match ve Word Fill bu bankayı kullanıyor (1. sınıfla aynı motor,
+//   genişletilmiş kelime dağarcığı + yeni "renkler" teması).
+// - Hayat Bilgisi soru bankası hazır (src/data/hayat-bilgisi-2-sinif.json) -
+//   Doğa Gözlemi ve Günler/Zaman Sırası bu bankayı kullanıyor (1. sınıftan
+//   bir adım ileri: yeni "ay sırası" kazanımı + daha kalabalık doğa
+//   gözlemi sahneleri). Genel Beceriler (Fark Bulma, Gizli Nesne Bulma)
+//   henüz uyarlanmadı - bu ikisi JSON tabanlı değil, kendi içlerinde sabit
+//   emoji havuzu kullanıyor, ayrı bir strateji gerektiriyor.
 const GAMES_SINIF2 = [
   {
     ders: "Matematik",
@@ -110,6 +119,24 @@ const GAMES_SINIF2 = [
     items: [
       { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏", Component: TurkceEslestirme },
       { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤", Component: TurkceHarfTamamlama },
+    ],
+  },
+  {
+    ders: "İngilizce",
+    dersIkon: "🌍",
+    renk: "#8B7FD9",
+    items: [
+      { id: "en-eslestirme-2", ad: "Word Match", emoji: "🃏", Component: IngilizceEslestirme },
+      { id: "en-harf-2", ad: "Word Fill", emoji: "🔤", Component: IngilizceHarfTamamlama },
+    ],
+  },
+  {
+    ders: "Hayat Bilgisi",
+    dersIkon: "🌻",
+    renk: "#6FBF73",
+    items: [
+      { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋", Component: HayatBilgisiDogaGozlem },
+      { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅", Component: HayatBilgisiGunlerSirasi },
     ],
   },
 ];

@@ -1,15 +1,26 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
-import hayatBilgisiBankasi from "../data/hayat-bilgisi-1-sinif.json";
+import hayatBilgisiBankasiSinif1 from "../data/hayat-bilgisi-1-sinif.json";
+import hayatBilgisiBankasiSinif2 from "../data/hayat-bilgisi-2-sinif.json";
 
 // ---- Oyun ayarları ----
-// Boşluk doldurma motorunun "sıra" mantığı, içerik haftanın günleri.
-// Hayat Bilgisi "zaman kavramı / günler-aylar sırası" kazanımına karşılık gelir.
-// İçerik artık gerçek soru bankasından (gun_sira kayıtları) okunuyor -
-// müfredat güncellemesi kod değişikliği değil, veri güncellemesi olsun diye.
+// Boşluk doldurma motorunun "sıra" mantığı, içerik zaman birimleri (gün/ay).
+// Hayat Bilgisi "zaman kavramı" kazanımına karşılık gelir. İçerik gerçek
+// soru bankasından (gun_sira + ay_sira kayıtları) okunuyor - müfredat
+// güncellemesi kod değişikliği değil, veri güncellemesi olsun diye. Sınıf
+// bazlı: `sinif` prop'una göre doğru banka seçilir. 1. sınıfta sadece
+// gün_sira var; 2. sınıfta ay_sira da eklendi (12 ay) - puzzle hangi
+// havuzdan geldiyse (gün mü ay mı) seçenek pedi de o havuzdan üretilir,
+// aksi halde "Mart" doğru cevapken "Salı" gibi bir gün seçeneği çıkardı.
 const ROUND_LENGTH = 5;
 const DAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
-const GUN_SIRA_SORULARI = hayatBilgisiBankasi.sorular.filter((s) => s.soru_tipi === "gun_sira");
+const MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const BANKALAR = { 1: hayatBilgisiBankasiSinif1, 2: hayatBilgisiBankasiSinif2 };
+
+function zamanSorulariniHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  return banka.sorular.filter((s) => s.soru_tipi === "gun_sira" || s.soru_tipi === "ay_sira");
+}
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -23,18 +34,20 @@ function shuffle(arr) {
   return a;
 }
 
-function generatePuzzle() {
-  const kayit = GUN_SIRA_SORULARI[rand(0, GUN_SIRA_SORULARI.length - 1)];
+function generatePuzzle(zamanSorulari) {
+  const kayit = zamanSorulari[rand(0, zamanSorulari.length - 1)];
   const parcalar = kayit.soru_metni.split(" → ");
   const blankIndex = parcalar.indexOf("?");
   const seq = parcalar.map((p) => (p === "?" ? kayit.dogru_cevap : p));
-  return { seq, blankIndex, answer: kayit.dogru_cevap };
+  const pool = kayit.soru_tipi === "ay_sira" ? MONTHS : DAYS;
+  return { seq, blankIndex, answer: kayit.dogru_cevap, pool };
 }
 
-function generateDayPad(correctDay) {
-  const pool = new Set([correctDay]);
-  while (pool.size < 4) pool.add(DAYS[rand(0, DAYS.length - 1)]);
-  return shuffle(Array.from(pool));
+function generateDayPad(correctValue, pool) {
+  const havuz = pool || DAYS;
+  const secilenler = new Set([correctValue]);
+  while (secilenler.size < 4) secilenler.add(havuz[rand(0, havuz.length - 1)]);
+  return shuffle(Array.from(secilenler));
 }
 
 
@@ -63,9 +76,10 @@ function playTone(kind) {
   }
 }
 
-export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
-  const [puzzle, setPuzzle] = useState(() => generatePuzzle());
-  const [pad, setPad] = useState(() => generateDayPad(puzzle.answer));
+export default function WeekdayOrderGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const zamanSorulari = useMemo(() => zamanSorulariniHazirla(sinif), [sinif]);
+  const [puzzle, setPuzzle] = useState(() => generatePuzzle(zamanSorulari));
+  const [pad, setPad] = useState(() => generateDayPad(puzzle.answer, puzzle.pool));
   const [progress, setProgress] = useState(0);
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -79,13 +93,13 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
   const timeoutRef = useRef(null);
 
   const nextPuzzle = useCallback(() => {
-    const p = generatePuzzle();
+    const p = generatePuzzle(zamanSorulari);
     setPuzzle(p);
-    setPad(generateDayPad(p.answer));
+    setPad(generateDayPad(p.answer, p.pool));
     setFeedback(null);
     setWrongPick(null);
     setAyniSoruDenemeSayisi(0);
-  }, []);
+  }, [zamanSorulari]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
   const cevapAcikMi = feedback === "correct" || (feedback === "wrong" && ayniSoruDenemeSayisi >= 2);
@@ -384,7 +398,7 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
       `}</style>
 
       <div className="top-row">
-        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Günler Sırası</h1>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> {sinif === 1 ? "Günler Sırası" : "Zaman Sırası"}</h1>
         <div className="top-right">
           <span className="round-pill">{progress}/{ROUND_LENGTH}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
@@ -455,15 +469,15 @@ export default function WeekdayOrderGame({ onExit, onComplete } = {}) {
           <div className="tutorial-steps">
             <div className="tutorial-step">
               <span className="tutorial-step-icon">📅</span>
-              <span>Haftanın günleri sırayla dizili</span>
+              <span>{sinif === 1 ? "Haftanın günleri sırayla dizili" : "Günler veya aylar sırayla dizili"}</span>
             </div>
             <div className="tutorial-step">
               <span className="tutorial-step-icon">❓</span>
-              <span>Kesikli kutu eksik gün demek</span>
+              <span>Kesikli kutu eksik olanı gösterir</span>
             </div>
             <div className="tutorial-step">
               <span className="tutorial-step-icon">👉</span>
-              <span>Doğru güne dokun</span>
+              <span>Doğru olana dokun</span>
             </div>
           </div>
           <button className="primary-btn" onClick={() => setShowTutorial(false)}>
