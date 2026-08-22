@@ -92,14 +92,13 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
   },
 ];
 
-// 2-3-4. sınıf müfredatları içerik sınıf sınıf ekleniyor. 2. sınıf
-// Matematik + Türkçe + İngilizce + Hayat Bilgisi soru bankaları hazır
-// (matematik-2-sinif.json, turkce-2-sinif.json, ingilizce-2-sinif.json,
-// hayat-bilgisi-2-sinif.json) - App.jsx'teki GAMES_SINIF2 ile id'ler
-// birebir eşleşmeli (bkz. o dosyadaki not). Genel Beceriler grubu henüz
-// yok, bu yüzden sinifIcerigiVarMi(2) true olsa da "Bugünün Görevi" şu an
-// için 4 derse indirgenmiş durumda - kalan grup eklendikçe gününGorevleri
-// otomatik olarak 5 derse çıkacak.
+// 2-3-4. sınıf müfredatları içerik sınıf sınıf ekleniyor. 2. sınıf artık
+// TÜM 5 ders grubunu kapsıyor (Matematik, Türkçe, İngilizce, Hayat
+// Bilgisi, Genel Beceriler) - App.jsx'teki GAMES_SINIF2 ile id'ler
+// birebir eşleşmeli (bkz. o dosyadaki not). Genel Beceriler'in soru
+// bankası yok (Fark Bulma/Gizli Nesne Bulma JSON tabanlı değil, kod içi
+// zorluk parametreleriyle çalışıyor) - burada sadece oyun kaydı var.
+// gününGorevleri artık gerçekten 5 dersten seçim yapabiliyor.
 const GUN_PLANI_KATALOGU_SINIF2 = [
   {
     ders: "Matematik",
@@ -128,6 +127,14 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
     items: [
       { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋" },
       { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅" },
+    ],
+  },
+  {
+    ders: "Genel Beceriler",
+    dersEmoji: "🧠",
+    items: [
+      { id: "gb-fark-2", ad: "Farklı Olan", emoji: "🔍" },
+      { id: "gb-gizli-2", ad: "Gizli Nesne", emoji: "🕵️" },
     ],
   },
 ];

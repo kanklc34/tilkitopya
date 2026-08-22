@@ -4,21 +4,40 @@ import { Star, Trophy, RotateCcw } from "lucide-react";
 // ---- Oyun ayarları ----
 // Fark, birbirinden kategorik olarak uzak (araba/elma gibi) değil, aynı
 // "aile"den seçiliyor (hepsi meyve, hepsi hayvan vb.) - bu taramayı/dikkati
-// gerçekten gerektiriyor ama hâlâ net bir fark, belirsizlik yok.
-const CONFUSABLE_GROUPS = [
-  ["🍎", "🍊", "🍇", "🍓", "🍌"],
-  ["🐶", "🐱", "🐭", "🐰", "🐻"],
-  ["⭐", "🌙", "☀️", "✨", "🌟"],
-  ["🚗", "🚕", "🚙", "🚓", "🚌"],
-];
+// gerçekten gerektiriyor ama hâlâ net bir fark, belirsizlik yok. Sınıf
+// bazlı: 2. sınıf grupları 1. sınıftan daha fazla çeşitlilik + daha büyük
+// ızgaralar içeriyor (roadmap: "daha yoğun/çok nesneli sahneler" - Hayat
+// Bilgisi Doğa Gözlemi'nde uygulanan ROUNDS_BY_SINIF deseniyle tutarlı).
+const CONFUSABLE_GROUPS_BY_SINIF = {
+  1: [
+    ["🍎", "🍊", "🍇", "🍓", "🍌"],
+    ["🐶", "🐱", "🐭", "🐰", "🐻"],
+    ["⭐", "🌙", "☀️", "✨", "🌟"],
+    ["🚗", "🚕", "🚙", "🚓", "🚌"],
+  ],
+  2: [
+    ["🍎", "🍊", "🍇", "🍓", "🍌", "🍑", "🍒"],
+    ["🐶", "🐱", "🐭", "🐰", "🐻", "🦊", "🐨"],
+    ["⭐", "🌙", "☀️", "✨", "🌟", "☁️", "🌈"],
+    ["🚗", "🚕", "🚙", "🚓", "🚌", "🚒", "🚐"],
+    ["🌸", "🌷", "🌹", "🌻", "🌺", "🌼", "💐"],
+    ["🐟", "🐠", "🐡", "🦈", "🐙", "🦑", "🦐"],
+  ],
+};
 const PUZZLES_PER_ROUND = 3;
 // Tur büyüdükçe ızgara büyüyor (daha çok tarama/dikkat gerekiyor)
-const ROUNDS = [
-  { total: 6, columns: 3 }, // tur1: 3x2
-  { total: 9, columns: 3 }, // tur2: 3x3
-  { total: 16, columns: 4 }, // tur3: 4x4 - en zor
-];
-const TOTAL_ROUNDS = ROUNDS.length;
+const ROUNDS_BY_SINIF = {
+  1: [
+    { total: 6, columns: 3 }, // tur1: 3x2
+    { total: 9, columns: 3 }, // tur2: 3x3
+    { total: 16, columns: 4 }, // tur3: 4x4 - en zor
+  ],
+  2: [
+    { total: 9, columns: 3 }, // tur1: 1. sınıfın en zor turuyla başlıyor
+    { total: 16, columns: 4 }, // tur2
+    { total: 25, columns: 5 }, // tur3: 5x5 - 1. sınıftan daha kalabalık
+  ],
+};
 // Flow teorisi gereği: art arda 2 yanlış olursa bir tur kolaylaştır -
 // Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
 const WRONG_STREAK_TO_LEVEL_DOWN = 2;
@@ -30,9 +49,9 @@ function pickTwoDistinct(pool) {
   return [a, b];
 }
 
-function buildGrid(round) {
-  const { total } = ROUNDS[round];
-  const group = CONFUSABLE_GROUPS[Math.floor(Math.random() * CONFUSABLE_GROUPS.length)];
+function buildGrid(round, rounds, groups) {
+  const { total } = rounds[round];
+  const group = groups[Math.floor(Math.random() * groups.length)];
   const [base, odd] = pickTwoDistinct(group);
   const oddIndex = Math.floor(Math.random() * total);
   return Array.from({ length: total }, (_, i) => ({
@@ -68,10 +87,13 @@ function playTone(kind) {
   }
 }
 
-export default function OddOneOutGame({ onExit, onComplete } = {}) {
+export default function OddOneOutGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const rounds = ROUNDS_BY_SINIF[sinif] || ROUNDS_BY_SINIF[1];
+  const groups = CONFUSABLE_GROUPS_BY_SINIF[sinif] || CONFUSABLE_GROUPS_BY_SINIF[1];
+  const totalRounds = rounds.length;
   const [round, setRound] = useState(0);
   const [puzzleInRound, setPuzzleInRound] = useState(0);
-  const [grid, setGrid] = useState(() => buildGrid(0));
+  const [grid, setGrid] = useState(() => buildGrid(0, rounds, groups));
   const [wrongId, setWrongId] = useState(null);
   const [correctId, setCorrectId] = useState(null);
   const [locked, setLocked] = useState(false);
@@ -85,16 +107,16 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
   const [paused, setPaused] = useState(false);
 
   const nextPuzzle = useCallback((r) => {
-    setGrid(buildGrid(r));
+    setGrid(buildGrid(r, rounds, groups));
     setWrongId(null);
     setCorrectId(null);
     setLocked(false);
     setAyniPuzzleDenemeSayisi(0);
-  }, []);
+  }, [rounds, groups]);
 
   function ilerle() {
     if (puzzleInRound + 1 >= PUZZLES_PER_ROUND) {
-      if (round + 1 >= TOTAL_ROUNDS) {
+      if (round + 1 >= totalRounds) {
         setFinished(true);
       } else {
         const r = round + 1;
@@ -171,7 +193,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
     }
   }, [finished, stars, onComplete]);
 
-  const totalPuzzles = TOTAL_ROUNDS * PUZZLES_PER_ROUND;
+  const totalPuzzles = totalRounds * PUZZLES_PER_ROUND;
   const solvedCount = round * PUZZLES_PER_ROUND + puzzleInRound;
 
   return (
@@ -400,7 +422,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
       <div className="top-row">
         <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Farklı Olan</h1>
         <div className="top-right">
-          <span className="round-pill">Tur {round + 1}/{TOTAL_ROUNDS}</span>
+          <span className="round-pill">Tur {round + 1}/{totalRounds}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">{soundOn ? "🔊" : "🔇"}</button>
           <button className="icon-btn" onClick={() => setPaused(true)} aria-label="Duraklat">⏸️</button>
         </div>
@@ -414,7 +436,7 @@ export default function OddOneOutGame({ onExit, onComplete } = {}) {
         ))}
       </div>
 
-      <div className="grid" style={{ gridTemplateColumns: `repeat(${ROUNDS[round].columns}, 1fr)` }}>
+      <div className="grid" style={{ gridTemplateColumns: `repeat(${rounds[round].columns}, 1fr)` }}>
         {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
         {grid.map((cell) => (
           <button

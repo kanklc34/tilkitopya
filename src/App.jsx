@@ -100,9 +100,13 @@ const GAMES_SINIF1 = [
 // - Hayat Bilgisi soru bankası hazır (src/data/hayat-bilgisi-2-sinif.json) -
 //   Doğa Gözlemi ve Günler/Zaman Sırası bu bankayı kullanıyor (1. sınıftan
 //   bir adım ileri: yeni "ay sırası" kazanımı + daha kalabalık doğa
-//   gözlemi sahneleri). Genel Beceriler (Fark Bulma, Gizli Nesne Bulma)
-//   henüz uyarlanmadı - bu ikisi JSON tabanlı değil, kendi içlerinde sabit
-//   emoji havuzu kullanıyor, ayrı bir strateji gerektiriyor.
+//   gözlemi sahneleri).
+// - Genel Beceriler: Fark Bulma ve Gizli Nesne Bulma JSON tabanlı DEĞİL -
+//   kod içi ROUNDS_BY_SINIF + hedef/grup havuzları sınıfa göre genişletildi
+//   (daha kalabalık ızgara/sahne + daha fazla emoji çeşidi).
+// 2. sınıf kataloğu artık 5/5 ders grubunu kapsıyor - "yakında" ekranından
+// çıkıp gerçek kullanıcıya sunulabilir hale gelmeden önceki teknik eşik
+// geçildi (bkz. devir teslim dokümanı: pedagog incelemesi hâlâ gerekiyor).
 const GAMES_SINIF2 = [
   {
     ders: "Matematik",
@@ -137,6 +141,15 @@ const GAMES_SINIF2 = [
     items: [
       { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋", Component: HayatBilgisiDogaGozlem },
       { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅", Component: HayatBilgisiGunlerSirasi },
+    ],
+  },
+  {
+    ders: "Genel Beceriler",
+    dersIkon: "🧠",
+    renk: "#E0855A",
+    items: [
+      { id: "gb-fark-2", ad: "Farklı Olan", emoji: "🔍", Component: FarkBulma },
+      { id: "gb-gizli-2", ad: "Gizli Nesne", emoji: "🕵️", Component: GizliNesneBulma },
     ],
   },
 ];
