@@ -1,113 +1,78 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Star, HelpCircle, Trophy, RotateCcw } from "lucide-react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { Star, Trophy, RotateCcw } from "lucide-react";
+import ingilizceBankasiSinif1 from "../data/ingilizce-1-sinif.json";
+import ingilizceBankasiSinif2 from "../data/ingilizce-2-sinif.json";
 
 // ---- Oyun ayarları ----
+// Hızlı Yarış motoru, içerik İngilizce kelime tanıma: resim gösterilir,
+// doğru kelime 3 seçenek arasından hızlıca seçilir. Kelime Eşleştir'in
+// (bellek) ve Harf Tamamla'nın (yazım) yanına "hızlı okuma/kelime tanıma"
+// becerisini ekliyor - bkz. devir-teslim Bölüm 4 madde 2, TurkceKelimeYarisi
+// ile birebir aynı desen. TEMA_ESLEME, IngilizceEslestirme.jsx ve
+// IngilizceHarfTamamlama.jsx'teki ile birebir aynı tutulmalı - üçü de aynı
+// kelime dağarcığını paylaşıyor.
+const TEMA_ESLEME = {
+  // 1. sınıf kelimeleri
+  CAT: "hayvanlar", DOG: "hayvanlar", FISH: "hayvanlar", BIRD: "hayvanlar",
+  SUN: "doga", MOON: "doga", STAR: "doga", FLOWER: "doga",
+  CAR: "gunluk_hayat", BALL: "gunluk_hayat", HOUSE: "gunluk_hayat", APPLE: "gunluk_hayat", BANANA: "gunluk_hayat", BOOK: "gunluk_hayat",
+  // 2. sınıf kelimeleri (bkz. ingilizce-2-sinif.json)
+  LION: "hayvanlar", TIGER: "hayvanlar", RABBIT: "hayvanlar", DUCK: "hayvanlar", SHEEP: "hayvanlar", BEAR: "hayvanlar",
+  CLOUD: "doga", RAIN: "doga", RAINBOW: "doga", SNOW: "doga", TREE: "doga", LEAF: "doga",
+  PIZZA: "yiyecek", BURGER: "yiyecek", COOKIE: "yiyecek", MILK: "yiyecek", EGG: "yiyecek", BREAD: "yiyecek",
+  SCHOOL: "okul", PENCIL: "okul", CLOCK: "okul", DOOR: "okul", KEY: "okul", CHAIR: "okul",
+  BALLOON: "oyuncaklar", ROBOT: "oyuncaklar", BOAT: "oyuncaklar", TRAIN: "oyuncaklar", KITE: "oyuncaklar", DRUM: "oyuncaklar",
+  RED: "renkler", BLUE: "renkler", GREEN: "renkler", YELLOW: "renkler", PURPLE: "renkler", ORANGE: "renkler",
+};
+const BANKALAR = { 1: ingilizceBankasiSinif1, 2: ingilizceBankasiSinif2 };
 const RACE_LENGTH = 10;
 const LAP_SIZE = 4;
-// Flow teorisi gereği: art arda 2 yanlış olursa zorluğu bir basamak
-// kolaylaştır - Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
 const WRONG_STREAK_TO_LEVEL_DOWN = 2;
-const OPTION_COLORS = ["#5AB4E0", "#FF9F5A", "#8FCB6B"]; // sabit, cevap doğruluğuyla ilgisiz - sadece görsel çeşitlilik
+const OPTION_COLORS = ["#5AB4E0", "#FF9F5A", "#8FCB6B"];
+// Zorluk ekseni sayı değil "çeldirici benzerliği": seviye 1 = rastgele
+// çeldirici (kolay ayırt edilir), seviye 2 = aynı temadan çeldirici (daha
+// zor - ör. CAT vs DOG, ikisi de "hayvanlar" teması, ayırt etmek daha zor).
+const MAX_LEVEL = 2;
 
-// Sınıf bazlı zorluk ilerlemesi: 1. sınıf 0-20 somut aralıkta kalırken,
-// 2. sınıf MEB kazanımına uygun 100'e kadar soyut aralığa geçiyor (bkz.
-// matematik-2-sinif.json "concreteness fading" notu - Seviye 2 yarı-soyut).
-// contextMax: bağlam cümlesinin (ör. "5 kuş vardı...") hâlâ okunabilir
-// kaldığı üst sınır - üstünde sadece soyut denklem gösterilir.
-const CONFIG_BY_SINIF = {
-  1: { start: 5, minMax: 5, step: 5, capMax: 20, contextMax: 10 },
-  2: { start: 20, minMax: 10, step: 15, capMax: 100, contextMax: 40 },
-};
-function cfgFor(sinif) {
-  return CONFIG_BY_SINIF[sinif] || CONFIG_BY_SINIF[1];
-}
-
-// Tema havuzu: her tema kısa bağlam cümlesi + eşleşen emoji taşıyor.
-// Sıfır durumunda işlemi (özellikle çıkarmayı) gizlememek için toplama/
-// çıkarma ayrı şablonlara sahip (bkz. soru bankası üretimindeki aynı ders).
-const THEMES = [
-  { ad: "hayvanlar", emoji: "🐦", add: "{a} kuş vardı, {b} kuş daha geldi.", sub: "{a} kuş vardı, {b} kuş uçtu gitti.", addZero: "{a} kuş vardı, hiç kuş gelmedi.", subZero: "{a} kuş vardı, hiç kuş uçup gitmedi." },
-  { ad: "doga", emoji: "🌸", add: "{a} çiçek vardı, {b} çiçek daha açtı.", sub: "{a} çiçek vardı, {b} tanesi soldu.", addZero: "{a} çiçek vardı, hiç çiçek açmadı.", subZero: "{a} çiçek vardı, hiç çiçek solmadı." },
-  { ad: "oyuncaklar", emoji: "🎈", add: "{a} balon vardı, {b} balon daha eklendi.", sub: "{a} balon vardı, {b} tanesi uçtu.", addZero: "{a} balon vardı, hiç balon eklenmedi.", subZero: "{a} balon vardı, hiç balon uçmadı." },
-  { ad: "yiyecek", emoji: "🍎", add: "{a} elma vardı, {b} elma daha kondu.", sub: "{a} elma vardı, {b} elma yendi.", addZero: "{a} elma vardı, hiç elma konmadı.", subZero: "{a} elma vardı, hiç elma yenmedi." },
-  { ad: "okul", emoji: "📖", add: "{a} kitap vardı, {b} kitap daha kondu.", sub: "{a} kitap vardı, {b} kitap verildi.", addZero: "{a} kitap vardı, hiç kitap konmadı.", subZero: "{a} kitap vardı, hiç kitap verilmedi." },
-];
-
-function ObjectGroup({ n, crossed = 0, emoji }) {
-  if (n === 0) {
-    return (
-      <span className="object-group">
-        <span className="object-empty">0</span>
-      </span>
-    );
-  }
-  return (
-    <span className="object-group">
-      {Array.from({ length: n }).map((_, i) => {
-        const isCrossed = i >= n - crossed;
-        return (
-          <span key={i} className={`object-item ${isCrossed ? "object-crossed" : ""}`}>
-            {emoji}
-          </span>
-        );
-      })}
-    </span>
-  );
+function bankalariHazirla(sinif) {
+  const banka = BANKALAR[sinif] || BANKALAR[1];
+  return banka.sorular
+    .filter((s) => s.soru_tipi === "eslestirme")
+    .map((s) => ({ word: s.tam_kelime, emoji: s.gorsel_emoji, tema: TEMA_ESLEME[s.tam_kelime] || "diger" }));
 }
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateQuestion(maxNumber, withContext) {
-  const op = Math.random() < 0.5 ? "+" : "-";
-  let a, b, answer;
-  if (op === "+") {
-    a = rand(0, maxNumber);
-    b = rand(0, maxNumber - a);
-    answer = a + b;
-  } else {
-    a = rand(0, maxNumber);
-    b = rand(0, a);
-    answer = a - b;
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
   }
-  const theme = THEMES[rand(0, THEMES.length - 1)];
-  const emoji = theme.emoji;
-
-  let baglamMetni = null;
-  if (withContext) {
-    let tpl;
-    if (b === 0) tpl = op === "+" ? theme.addZero : theme.subZero;
-    else tpl = op === "+" ? theme.add : theme.sub;
-    baglamMetni = tpl.replace("{a}", a).replace("{b}", b);
-  }
-
-  return { a, b, op, answer, emoji, baglamMetni };
+  return a;
 }
 
-function generateOptions(answer, maxNumber) {
-  const opts = new Set([answer]);
-  while (opts.size < 3) {
-    const delta = rand(-3, 3);
-    const candidate = answer + delta;
-    if (candidate >= 0 && candidate <= maxNumber + 3 && candidate !== answer) {
-      opts.add(candidate);
-    }
+function generateQuestion(wordBank, level) {
+  const correct = wordBank[rand(0, wordBank.length - 1)];
+  // Aynı emojili başka kelime yoksa (tekil emoji), çeldiriciler bu havuzdan
+  // seçilir - correct ile aynı resme sahip bir çeldirici olmasın diye
+  // farklı emojili kelimeler filtrelendi.
+  const differentEmojiPool = wordBank.filter((w) => w.emoji !== correct.emoji);
+  let distractorPool = differentEmojiPool;
+  // Seviye 2: aynı temadan (ör. "hayvanlar") çeldirici seç - anlamsal
+  // olarak yakın kelimeler ayırt etmesi daha zor, gerçek zorluk artışı.
+  if (level >= MAX_LEVEL) {
+    const ayniTema = differentEmojiPool.filter((w) => w.tema === correct.tema);
+    if (ayniTema.length >= 2) distractorPool = ayniTema;
   }
-  return Array.from(opts).sort(() => Math.random() - 0.5);
+  const distractors = shuffle(distractorPool).slice(0, 2);
+  const options = shuffle([correct, ...distractors]);
+  return { correct, options };
 }
 
-function Dots({ n }) {
-  return (
-    <div className="hint-dots">
-      {Array.from({ length: n }).map((_, i) => (
-        <span key={i} className="hint-dot" />
-      ))}
-    </div>
-  );
-}
-
-// Basit, dosyasız sesli geri bildirim (Web Audio)
+// Basit, dosyasız sesli geri bildirim (Web Audio) - ortak desen
 function playTone(kind) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -132,89 +97,81 @@ function playTone(kind) {
   }
 }
 
-export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
-  const cfg = cfgFor(sinif);
+export default function IngilizceKelimeYarisi({ onExit, onComplete, sinif = 1 } = {}) {
+  const wordBank = useMemo(() => bankalariHazirla(sinif), [sinif]);
   const [lap, setLap] = useState(1);
-  const [maxNumber, setMaxNumber] = useState(cfg.start);
-  const [question, setQuestion] = useState(() => generateQuestion(cfg.start, true));
-  const [options, setOptions] = useState(() => generateOptions(question.answer, cfg.start));
+  const [level, setLevel] = useState(1);
+  const [round, setRound] = useState(() => generateQuestion(wordBank, 1));
   const [progress, setProgress] = useState(0);
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const [wrongPick, setWrongPick] = useState(null);
-  const [showHint, setShowHint] = useState(false);
   const [ayniSoruDenemeSayisi, setAyniSoruDenemeSayisi] = useState(0);
   const [wrongStreak, setWrongStreak] = useState(0);
-  const [seviyeFlash, setSeviyeFlash] = useState(null); // 'down' | null
+  const [seviyeFlash, setSeviyeFlash] = useState(null);
   const [finished, setFinished] = useState(false);
   const [soundOn, setSoundOn] = useState(true);
   const [showTutorial, setShowTutorial] = useState(true);
   const [paused, setPaused] = useState(false);
   const timeoutRef = useRef(null);
 
-  const nextQuestion = useCallback((newMax) => {
-    const m = newMax ?? maxNumber;
-    const withContext = m <= cfg.contextMax;
-    const q = generateQuestion(m, withContext);
-    setQuestion(q);
-    setOptions(generateOptions(q.answer, m));
-    setShowHint(false);
+  const nextQuestion = useCallback((newLevel) => {
+    const l = newLevel ?? level;
+    setRound(generateQuestion(wordBank, l));
     setFeedback(null);
     setWrongPick(null);
     setAyniSoruDenemeSayisi(0);
-  }, [maxNumber, cfg.contextMax]);
+  }, [wordBank, level]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
-  function handlePick(val) {
+  function handlePick(word) {
     if (feedback === "correct" || finished) return;
-    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return; // cevap gösteriliyor, bekle
+    if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2) return;
 
-    if (val === question.answer) {
+    if (word === round.correct.word) {
       setFeedback("correct");
       if (soundOn) playTone("correct");
       setWrongStreak(0);
       const newProgress = progress + 1;
       setProgress(newProgress);
 
-      let newMax = maxNumber;
-      if (newProgress % LAP_SIZE === 0 && maxNumber < cfg.capMax) {
+      let newLevel = level;
+      if (newProgress % LAP_SIZE === 0 && level < MAX_LEVEL) {
         setLap((l) => l + 1);
-        newMax = Math.min(cfg.capMax, maxNumber + cfg.step);
-        setMaxNumber(newMax);
+        newLevel = Math.min(MAX_LEVEL, level + 1);
+        setLevel(newLevel);
       }
 
       timeoutRef.current = setTimeout(() => {
         if (newProgress >= RACE_LENGTH) {
           setFinished(true);
         } else {
-          nextQuestion(newMax);
+          nextQuestion(newLevel);
         }
       }, 800);
     } else {
       setFeedback("wrong");
       if (soundOn) playTone("wrong");
-      setWrongPick(val);
+      setWrongPick(word);
       setTotalMistakes((n) => n + 1);
-      setShowHint(true);
       const yeniDeneme = ayniSoruDenemeSayisi + 1;
       setAyniSoruDenemeSayisi(yeniDeneme);
       const yeniWrongStreak = wrongStreak + 1;
       setWrongStreak(yeniWrongStreak);
 
-      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && maxNumber > cfg.minMax) {
-        // Art arda 2 yanlış - zorluğu bir basamak kolaylaştıralım
-        const demotedMax = Math.max(cfg.minMax, maxNumber - cfg.step);
-        setMaxNumber(demotedMax);
+      if (yeniWrongStreak >= WRONG_STREAK_TO_LEVEL_DOWN && level > 1) {
+        const demotedLevel = level - 1;
+        setLevel(demotedLevel);
         setWrongStreak(0);
         setSeviyeFlash("down");
         timeoutRef.current = setTimeout(() => {
           setSeviyeFlash(null);
-          nextQuestion(demotedMax);
+          nextQuestion(demotedLevel);
         }, yeniDeneme >= 2 ? 2200 : 900);
       } else if (yeniDeneme >= 2) {
         timeoutRef.current = setTimeout(() => {
-          nextQuestion(maxNumber);
+          nextQuestion(level);
         }, 2200);
       } else {
         timeoutRef.current = setTimeout(() => {
@@ -228,11 +185,11 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
   function restart() {
     clearTimeout(timeoutRef.current);
     setLap(1);
-    setMaxNumber(cfg.start);
+    setLevel(1);
     setProgress(0);
     setTotalMistakes(0);
     setFinished(false);
-    nextQuestion(cfg.start);
+    nextQuestion(1);
   }
 
   const stars = totalMistakes === 0 ? 3 : totalMistakes <= 3 ? 2 : 1;
@@ -246,19 +203,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
   }, [finished, stars, onComplete]);
 
   const trackFill = (progress / RACE_LENGTH) * 100;
-
-  // Rakam HER ZAMAN görünür (planımızdaki ilkeye uygun); sadece görsel
-  // destek turlara göre azalır: tur1 = varsayılan açık, tur2 = istenirse
-  // açılır, tur3+ = sadece nokta ipucu. Sayı 6'yı geçerse (dağınıklık
-  // riski) görsel destek hiç sunulmaz. 2. sınıfta somut nesne sayımı hiç
-  // sunulmuyor (100'e kadar sayılarla anlamsızlaşıyor) - concreteness
-  // fading zaten 1. sınıfta tamamlandı, bkz. matematik-2-sinif.json notu.
-  const objectsFit = sinif === 1 && question.a <= 6 && question.b <= 6;
-  const objectsAvailable = objectsFit && lap <= 2;
-  const objectsVisible = objectsAvailable && showHint;
-  // 2. sınıfta nokta-sayma ipucu yerine basamak değeri stratejisi öneriyoruz
-  // (bkz. matematik-2-sinif.json "Onlukları ve birlikleri ayrı ayrı topla").
-  const placeValueHint = "Onlukları ve birlikleri ayrı ayrı düşün";
 
   return (
     <div className="game-root">
@@ -287,7 +231,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           position: relative;
         }
 
-        /* ---- Üst bar ---- */
         .top-row {
           display: flex;
           align-items: center;
@@ -304,13 +247,8 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           font-size: 19px;
           color: var(--ink);
         }
-        .brand-emoji { font-size: 26px; }
         .brand-emoji-img { width: 26px; height: 26px; }
-        .top-right {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
+        .top-right { display: flex; align-items: center; gap: 10px; }
         .lap-pill {
           background: var(--sun);
           color: var(--ink);
@@ -334,7 +272,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           box-shadow: 0 2px 6px rgba(31,46,69,0.1);
         }
 
-        /* ---- İnce yarış çubuğu ---- */
         .track-row {
           display: flex;
           align-items: center;
@@ -364,7 +301,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
         }
         .track-flag { font-size: 18px; }
 
-        /* ---- Soru kartı ---- */
         .question-card {
           position: relative;
           background: var(--card);
@@ -382,74 +318,13 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           60% { transform: translateX(-6px); }
           80% { transform: translateX(6px); }
         }
-        .object-row {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          margin-bottom: 12px;
-          flex-wrap: wrap;
-        }
-        .object-group {
-          display: inline-flex;
-          gap: 2px;
-          flex-wrap: wrap;
-          max-width: 100%;
-          justify-content: center;
-        }
-        .object-item {
-          font-size: 22px;
-          line-height: 1;
-          position: relative;
-          display: inline-flex;
-        }
-        .object-item.object-crossed {
-          opacity: 0.32;
-          filter: grayscale(60%);
-        }
-        .object-item.object-crossed::after {
-          content: '';
-          position: absolute;
-          left: -2px;
-          right: -2px;
-          top: 50%;
-          height: 2px;
-          background: #D9534F;
-          transform: rotate(-18deg);
-        }
-        .object-empty {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 30px;
-          height: 30px;
-          border: 2px dashed #B7C2D6;
-          border-radius: 8px;
-          color: #8593AC;
-          font-family: 'Fredoka', sans-serif;
-          font-weight: 600;
-          font-size: 15px;
-        }
-        .object-op {
-          font-size: 20px;
-        }
-        .context-text {
+        .question-emoji { font-size: 64px; line-height: 1; }
+        .question-prompt {
           font-family: 'Nunito', sans-serif;
           font-weight: 700;
           font-size: 14px;
           color: var(--ink-soft);
-          background: var(--track-bg);
-          border-radius: 12px;
-          padding: 7px 12px;
-          margin-bottom: 10px;
-          line-height: 1.4;
-        }
-        .context-emoji { font-size: 15px; }
-        .question-text {
-          font-family: 'Fredoka', sans-serif;
-          font-weight: 700;
-          font-size: 40px;
-          color: var(--ink);
+          margin-top: 10px;
         }
         .correct-reveal {
           margin-top: 8px;
@@ -481,71 +356,29 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           50% { transform: translateX(-50%) scale(1.1); opacity: 1; }
           100% { transform: translateX(-50%) scale(1); opacity: 1; }
         }
-        .hint-btn {
-          margin-top: 12px;
-          background: transparent;
-          border: none;
-          color: var(--ink-soft);
-          font-family: 'Nunito', sans-serif;
-          font-weight: 700;
-          font-size: 13px;
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          cursor: pointer;
-          padding: 6px 10px;
-          border-radius: 10px;
-        }
-        .hint-btn:hover { background: var(--track-bg); }
-        .hint-dots {
-          margin-top: 12px;
-          display: flex;
-          justify-content: center;
-          gap: 7px;
-          flex-wrap: wrap;
-        }
-        .hint-dot {
-          width: 14px;
-          height: 14px;
-          border-radius: 50%;
-          background: var(--hero);
-        }
-        .place-value-hint {
-          margin-top: 12px;
-          font-family: 'Nunito', sans-serif;
-          font-weight: 700;
-          font-size: 13px;
-          color: var(--hero-dark);
-          background: rgba(255,122,89,0.1);
-          border-radius: 10px;
-          padding: 8px 12px;
-          display: inline-block;
-        }
 
-        /* ---- Cevap butonları ---- */
         .options-row {
           display: flex;
-          gap: 16px;
-          justify-content: center;
+          flex-direction: column;
+          gap: 12px;
         }
         .option-btn {
           font-family: 'Fredoka', sans-serif;
           font-weight: 700;
-          font-size: 30px;
+          font-size: 22px;
           color: white;
           border: none;
-          border-radius: 20px;
-          width: 92px;
-          height: 88px;
+          border-radius: 16px;
+          padding: 16px 12px;
           cursor: pointer;
           box-shadow: 0 5px 0 rgba(0,0,0,0.15);
           transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s ease;
+          letter-spacing: 0.3px;
         }
         .option-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.15); }
         .option-btn.correct { background: var(--grass-dark) !important; }
         .option-btn.wrong { background: #D9534F !important; }
 
-        /* ---- Bitiş ekranı ---- */
         .finish-overlay {
           position: absolute;
           inset: 0;
@@ -623,12 +456,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           text-align: left;
         }
         .tutorial-step-icon { font-size: 20px; flex-shrink: 0; }
-        .tutorial-note {
-          font-size: 11px;
-          opacity: 0.65;
-          margin-top: 4px;
-          max-width: 280px;
-        }
         .secondary-btn {
           background: transparent;
           border: none;
@@ -643,7 +470,7 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
       `}</style>
 
       <div className="top-row">
-        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Hızlı Yarış</h1>
+        <h1 className="brand"><img src={`${import.meta.env.BASE_URL}fox-mascot.png`} className="brand-emoji-img" alt="Tilki" /> Word Race</h1>
         <div className="top-right">
           <span className="lap-pill">Tur {lap}</span>
           <button className="icon-btn" onClick={() => setSoundOn((s) => !s)} aria-label="Ses aç/kapat">
@@ -665,63 +492,27 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
 
       <div className={`question-card ${feedback === "wrong" ? "shake" : ""}`}>
         {seviyeFlash === "down" && <div className="level-down-badge">💪 Biraz kolaylaştıralım</div>}
-        {question.baglamMetni && (
-          <div className="context-text">
-            <span className="context-emoji">{question.emoji}</span> {question.baglamMetni}
-          </div>
-        )}
-
-        {objectsVisible && (
-          <div className="object-row">
-            {question.op === "+" ? (
-              <>
-                <ObjectGroup n={question.a} emoji={question.emoji} />
-                <span className="object-op">➕</span>
-                <ObjectGroup n={question.b} emoji={question.emoji} />
-              </>
-            ) : (
-              <ObjectGroup n={question.a} crossed={question.b} emoji={question.emoji} />
-            )}
-          </div>
-        )}
-
-        <div className="question-text">
-          {question.a} {question.op} {question.b} = ?
-        </div>
-
-        {objectsAvailable && !objectsVisible && (
-          <button className="hint-btn" onClick={() => setShowHint(true)}>
-            <HelpCircle size={14} /> Görsel göster
-          </button>
-        )}
-        {!objectsAvailable && !showHint && (
-          <button className="hint-btn" onClick={() => setShowHint(true)}>
-            <HelpCircle size={14} /> İpucu göster
-          </button>
-        )}
-        {!objectsAvailable && showHint && sinif === 1 && <Dots n={question.a} />}
-        {!objectsAvailable && showHint && sinif !== 1 && (
-          <div className="place-value-hint">💡 {placeValueHint}</div>
-        )}
+        <div className="question-emoji">{round.correct.emoji}</div>
+        <div className="question-prompt">Bu resmin İngilizcesi hangisi?</div>
         {feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && (
-          <div className="correct-reveal">Doğru cevap: <strong>{question.answer}</strong></div>
+          <div className="correct-reveal">Doğru cevap: <strong>{round.correct.word}</strong></div>
         )}
       </div>
 
       <div className="options-row">
-        {options.map((opt, i) => {
+        {round.options.map((opt, i) => {
           let cls = "option-btn";
-          if (feedback === "correct" && opt === question.answer) cls += " correct";
-          if (feedback === "wrong" && opt === wrongPick) cls += " wrong";
-          if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && opt === question.answer) cls += " correct";
+          if (feedback === "correct" && opt.word === round.correct.word) cls += " correct";
+          if (feedback === "wrong" && opt.word === wrongPick) cls += " wrong";
+          if (feedback === "wrong" && ayniSoruDenemeSayisi >= 2 && opt.word === round.correct.word) cls += " correct";
           return (
             <button
-              key={opt}
+              key={opt.word}
               className={cls}
               style={{ background: OPTION_COLORS[i % OPTION_COLORS.length] }}
-              onClick={() => handlePick(opt)}
+              onClick={() => handlePick(opt.word)}
             >
-              {opt}
+              {opt.word}
             </button>
           );
         })}
@@ -752,19 +543,18 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           <div className="tutorial-title">Nasıl Oynanır?</div>
           <div className="tutorial-steps">
             <div className="tutorial-step">
-              <span className="tutorial-step-icon">🔢</span>
-              <span>Yukarıda bir soru var, cevabını bul</span>
+              <span className="tutorial-step-icon">🖼️</span>
+              <span>Resme bak, İngilizce kelimeyi düşün</span>
             </div>
             <div className="tutorial-step">
               <span className="tutorial-step-icon">👉</span>
-              <span>Doğru sayıya dokun</span>
+              <span>Doğru kelimeye dokun</span>
             </div>
             <div className="tutorial-step">
               <span className="tutorial-step-icon">🚗</span>
               <span>Araba ilerlesin, bitiş çizgisine ulaş!</span>
             </div>
           </div>
-          <div className="tutorial-note">(Veliye not: Görsel yardım için "İpucu" düğmesi kullanılabilir.)</div>
           <button className="primary-btn" onClick={() => setShowTutorial(false)}>
             Başla!
           </button>
@@ -781,7 +571,6 @@ export default function MathRaceGame({ onExit, onComplete, sinif = 1 } = {}) {
           <button className="secondary-btn" onClick={() => (onExit ? onExit() : setPaused(false))}>
             Oyundan Çık
           </button>
-          <div className="tutorial-note">(Üretimde: çıkış öncesi veli onayı/PIN istenebilir.)</div>
         </div>
       )}
     </div>

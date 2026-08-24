@@ -348,7 +348,13 @@ export default function FindHiddenGame({ onExit, onComplete, sinif = 1 } = {}) {
           border: none;
           cursor: pointer;
           line-height: 1;
-          padding: 6px;
+          /* Dokunma alanı büyütüldü (6px->10px, ~36px->~44px) - Boyama
+             Kitabı'nda çözülen küçük dokunma hedefi sorunuyla aynı kök
+             neden (bkz. devir-teslim Bölüm 3.C / Bölüm 4 madde 7).
+             10px'te tutuldu (Boyama Kitabı'nın 12px'i yerine) çünkü en
+             kalabalık turda (2. sınıf, 36 nesne) öğeler arası mesafe dar -
+             daha büyük bir hitbox komşu öğelerle çakışma riski taşıyor. */
+          padding: 10px;
           transition: opacity 0.25s ease, transform 0.2s ease;
         }
         .scene-item.is-found {

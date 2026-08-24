@@ -2,8 +2,8 @@
   "meta": {
     "ders": "Türkçe",
     "sinif": 2,
-    "kaynak_not": "T.2.x kodları temsilidir, resmi kod ile değiştirilmeli. 1. sınıf şemasıyla birebir uyumlu, kelime havuzu genişletilip zorlaştırıldı (daha uzun kelime + 2 boşluk + daha geniş alfabetik atlama). Bitişik el yazısı / cümle tamamlama / paragraf okuma / noktalama KAPSAM DIŞI - mevcut oyun motorları bunları desteklemiyor, yeni motor kararı bekliyor.",
-    "toplam_soru": 97,
+    "kaynak_not": "T.2.x kodları temsilidir, resmi kod ile değiştirilmeli. 1. sınıf şemasıyla birebir uyumlu, kelime havuzu genişletilip zorlaştırıldı (daha uzun kelime + 2 boşluk + daha geniş alfabetik atlama). Cümle tamamlama (coktan_secmeli, 3 seçenekli) eklendi - yeni TurkceCumleTamamlama.jsx motoruyla kullanılıyor. Bitişik el yazısı / paragraf okuma / noktalama hâlâ KAPSAM DIŞI - farklı bir motor (çizim/uzun metin) gerektiriyor.",
+    "toplam_soru": 117,
     "temalar": [
       "doga",
       "gunluk_hayat",
@@ -1709,6 +1709,426 @@
       "dogru_cevap": "V",
       "ipucu": null,
       "zorluk_puani": 2
+    },
+    {
+      "id": "TUR-2-0098",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (okul)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Öğretmenimiz tahtaya ___ ile yazı yazdı.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "tebeşir",
+        "çorap",
+        "elma"
+      ],
+      "dogru_cevap": "tebeşir",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "okul"
+    },
+    {
+      "id": "TUR-2-0099",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (okul)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Sınıfta ders çalışırken ___ olmalıyız.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "sessiz",
+        "gürültülü",
+        "uykulu"
+      ],
+      "dogru_cevap": "sessiz",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "okul"
+    },
+    {
+      "id": "TUR-2-0100",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (okul)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Ödevlerimi ___ içine koydum.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "çantama",
+        "buzdolabına",
+        "havuza"
+      ],
+      "dogru_cevap": "çantama",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "okul"
+    },
+    {
+      "id": "TUR-2-0101",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (gunluk_hayat)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Sabah kalkınca dişlerimi ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "fırçalarım",
+        "yıkarım hiç",
+        "keserim"
+      ],
+      "dogru_cevap": "fırçalarım",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "gunluk_hayat"
+    },
+    {
+      "id": "TUR-2-0102",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (gunluk_hayat)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Dışarı çıkarken ___ giyerim.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "ayakkabı",
+        "tabak",
+        "yastık"
+      ],
+      "dogru_cevap": "ayakkabı",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "gunluk_hayat"
+    },
+    {
+      "id": "TUR-2-0103",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (gunluk_hayat)",
+      "seviye": 2,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Akşam olunca ___ yatağa girerim.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "erken",
+        "asla",
+        "denizde"
+      ],
+      "dogru_cevap": "erken",
+      "ipucu": null,
+      "zorluk_puani": 2,
+      "tema": "gunluk_hayat"
+    },
+    {
+      "id": "TUR-2-0104",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (hayvanlar)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Kedi ___ içmeyi çok sever.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "süt",
+        "benzin",
+        "çorba"
+      ],
+      "dogru_cevap": "süt",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "hayvanlar"
+    },
+    {
+      "id": "TUR-2-0105",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (hayvanlar)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Kuşlar gökyüzünde ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "uçar",
+        "yüzer",
+        "koşar"
+      ],
+      "dogru_cevap": "uçar",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "hayvanlar"
+    },
+    {
+      "id": "TUR-2-0106",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (hayvanlar)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Balık suda ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "yüzer",
+        "uçar",
+        "koşar"
+      ],
+      "dogru_cevap": "yüzer",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "hayvanlar"
+    },
+    {
+      "id": "TUR-2-0107",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (hayvanlar)",
+      "seviye": 2,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Tavşanın uzun ___ vardır.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "kulakları",
+        "kanatları",
+        "yüzgeçleri"
+      ],
+      "dogru_cevap": "kulakları",
+      "ipucu": null,
+      "zorluk_puani": 2,
+      "tema": "hayvanlar"
+    },
+    {
+      "id": "TUR-2-0108",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (doga)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Yağmur yağınca ___ açarız.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "şemsiye",
+        "pencere",
+        "kitap"
+      ],
+      "dogru_cevap": "şemsiye",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "doga"
+    },
+    {
+      "id": "TUR-2-0109",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (doga)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Kışın hava çok ___ olur.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "soğuk",
+        "sıcak",
+        "yumuşak"
+      ],
+      "dogru_cevap": "soğuk",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "doga"
+    },
+    {
+      "id": "TUR-2-0110",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (doga)",
+      "seviye": 2,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Güneş doğunca gökyüzü ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "aydınlanır",
+        "kararır",
+        "donar"
+      ],
+      "dogru_cevap": "aydınlanır",
+      "ipucu": null,
+      "zorluk_puani": 2,
+      "tema": "doga"
+    },
+    {
+      "id": "TUR-2-0111",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (yiyecek)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Elma ağaçtan ___ olarak toplanır.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "meyve",
+        "sebze",
+        "içecek"
+      ],
+      "dogru_cevap": "meyve",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "yiyecek"
+    },
+    {
+      "id": "TUR-2-0112",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (yiyecek)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Sabah kahvaltıda ___ içerim.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "süt",
+        "asit",
+        "boya"
+      ],
+      "dogru_cevap": "süt",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "yiyecek"
+    },
+    {
+      "id": "TUR-2-0113",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (oyuncaklar)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Topu arkadaşıma ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "attım",
+        "yedim",
+        "içtim"
+      ],
+      "dogru_cevap": "attım",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "oyuncaklar"
+    },
+    {
+      "id": "TUR-2-0114",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (oyuncaklar)",
+      "seviye": 2,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Bebeğimi her gece yanımda ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "uyuturum",
+        "pişiririm",
+        "yıkarım hiç"
+      ],
+      "dogru_cevap": "uyuturum",
+      "ipucu": null,
+      "zorluk_puani": 2,
+      "tema": "oyuncaklar"
+    },
+    {
+      "id": "TUR-2-0115",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (okul)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Kütüphanede ___ okuruz.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "kitap",
+        "yemek",
+        "top"
+      ],
+      "dogru_cevap": "kitap",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "okul"
+    },
+    {
+      "id": "TUR-2-0116",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (gunluk_hayat)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Yemekten önce ellerimi ___.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "yıkarım",
+        "kırarım",
+        "boyarım"
+      ],
+      "dogru_cevap": "yıkarım",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "gunluk_hayat"
+    },
+    {
+      "id": "TUR-2-0117",
+      "ders": "Türkçe",
+      "sinif": 2,
+      "kazanim": "T.2.3 Cümle bilgisi - anlama uygun kelimeyle cümleyi tamamlar (doga)",
+      "seviye": 1,
+      "oyun_tipi": "coktan_secmeli",
+      "soru_tipi": "cumle_tamamlama",
+      "soru_metni": "Ormanda birçok ___ yaşar.",
+      "soru_gorseli": null,
+      "ses_dosyasi": null,
+      "secenekler": [
+        "hayvan",
+        "araba",
+        "bilgisayar"
+      ],
+      "dogru_cevap": "hayvan",
+      "ipucu": null,
+      "zorluk_puani": 1,
+      "tema": "doga"
     }
   ]
 }

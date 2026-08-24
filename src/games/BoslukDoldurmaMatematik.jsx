@@ -5,12 +5,24 @@ import { Star, Trophy, RotateCcw } from "lucide-react";
 const ROUND_LENGTH = 6; // her turu bitirmek için gereken doğru cevap
 // Tur ilerledikçe hem sayı aralığı hem de tuş takımı büyüyor - baştan 21
 // tuş göstermek çocuğu yorar, kademeli büyümek daha doğru.
-const ROUNDS = [
-  { max: 10, blankPositions: ["result"] },
-  { max: 15, blankPositions: ["result", "second"] },
-  { max: 20, blankPositions: ["second", "first"] },
-];
-const TOTAL_ROUNDS = ROUNDS.length;
+// 2. sınıf: aynı kademeli mantık, ama MEB'in 100'e kadar soyut aralık
+// kazanımına uygun üç adım (bkz. matematik-2-sinif.json concreteness
+// fading notu - Seviye 2 yarı-soyut, onluk-birlik).
+const ROUNDS_BY_SINIF = {
+  1: [
+    { max: 10, blankPositions: ["result"] },
+    { max: 15, blankPositions: ["result", "second"] },
+    { max: 20, blankPositions: ["second", "first"] },
+  ],
+  2: [
+    { max: 30, blankPositions: ["result"] },
+    { max: 60, blankPositions: ["result", "second"] },
+    { max: 100, blankPositions: ["second", "first"] },
+  ],
+};
+function roundsFor(sinif) {
+  return ROUNDS_BY_SINIF[sinif] || ROUNDS_BY_SINIF[1];
+}
 // Flow teorisi gereği: art arda 2 yanlış olursa bir tur kolaylaştır -
 // Pratik Modu'ndaki "seviye geri" kuralıyla aynı eşik.
 const WRONG_STREAK_TO_LEVEL_DOWN = 2;
@@ -90,18 +102,23 @@ function generateSequencePuzzle(max) {
   return { type: "sequence", seq, blankIndex, answer: seq[blankIndex] };
 }
 
-function generatePuzzle(round) {
-  const { max, blankPositions } = ROUNDS[round];
+function generatePuzzle(round, rounds) {
+  const { max, blankPositions } = rounds[round];
   if (Math.random() < SEQUENCE_RATIO) return generateSequencePuzzle(max);
   return generateEquationPuzzle(max, blankPositions);
 }
 
 // Bu oyun soru bankasından değil, anlık üretilen bulmacalardan besleniyor
 // (ipucu alanı yok) - o yüzden puzzle tipine göre basit bir strateji
-// ipucu üretiyoruz.
-function puzzleIpucu(puzzle) {
+// ipucu üretiyoruz. 2. sınıfta sayılar 100'e kadar çıktığından "parmakla
+// say" stratejisi anlamsızlaşıyor - onluk/birlik ipucuna geçiyoruz (bkz.
+// matematik-2-sinif.json ile aynı konvansiyon).
+function puzzleIpucu(puzzle, sinif) {
   if (puzzle.type === "sequence") {
     return "Sayıları sırayla say: bir öncesi ve bir sonrası";
+  }
+  if (sinif === 2) {
+    return "Onlukları ve birlikleri ayrı ayrı düşün";
   }
   return "Parmaklarınla ya da nesnelerle say";
 }
@@ -139,9 +156,11 @@ function playTone(kind) {
   }
 }
 
-export default function FillBlankGame({ onExit, onComplete } = {}) {
+export default function FillBlankGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const ROUNDS = useMemo(() => roundsFor(sinif), [sinif]);
+  const TOTAL_ROUNDS = ROUNDS.length;
   const [round, setRound] = useState(0);
-  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0));
+  const [puzzle, setPuzzle] = useState(() => generatePuzzle(0, ROUNDS));
   const [progress, setProgress] = useState(0);
   const [totalMistakes, setTotalMistakes] = useState(0);
   const [feedback, setFeedback] = useState(null);
@@ -158,18 +177,18 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
   const timeoutRef = useRef(null);
 
   const nextPuzzle = useCallback((r) => {
-    const p = generatePuzzle(r);
+    const p = generatePuzzle(r, ROUNDS);
     setPuzzle(p);
     setFeedback(null);
     setWrongPick(null);
     setAyniSoruDenemeSayisi(0);
-  }, []);
+  }, [ROUNDS]);
 
   useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   const pad = useMemo(
     () => generatePadOptions(puzzle.answer, ROUNDS[round].max),
-    [puzzle, round]
+    [puzzle, round, ROUNDS]
   );
   const cevapAcikMi = feedback === "correct" || (feedback === "wrong" && ayniSoruDenemeSayisi >= 2);
 
@@ -589,7 +608,7 @@ export default function FillBlankGame({ onExit, onComplete } = {}) {
           </div>
         )}
         {feedback === "wrong" && (
-          <div className="hint-text">💡 {puzzleIpucu(puzzle)}</div>
+          <div className="hint-text">💡 {puzzleIpucu(puzzle, sinif)}</div>
         )}
         {cevapAcikMi && (
           <div className="correct-reveal">Doğru cevap: <strong>{puzzle.answer}</strong></div>

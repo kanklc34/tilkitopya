@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Suspense, lazy } from "react";
 import { ArrowLeft, Settings, Lock, Gift } from "lucide-react";
 
 import EbeveynPaneli from "./components/EbeveynPaneli.jsx";
@@ -13,20 +13,25 @@ import {
 } from "./lib/progress.js";
 import { anaEkranMesajiSec } from "./lib/maskotMesajlari.js";
 
-import HizliYaris from "./games/HizliYaris.jsx";
-import MatematikEslestirme from "./games/MatematikEslestirme.jsx";
-import BoslukDoldurmaMatematik from "./games/BoslukDoldurmaMatematik.jsx";
-import PratikModuMatematik from "./games/PratikModuMatematik.jsx";
-import TurkceEslestirme from "./games/TurkceEslestirme.jsx";
-import TurkceHarfTamamlama from "./games/TurkceHarfTamamlama.jsx";
-import IngilizceEslestirme from "./games/IngilizceEslestirme.jsx";
-import IngilizceHarfTamamlama from "./games/IngilizceHarfTamamlama.jsx";
-import HayatBilgisiDogaGozlem from "./games/HayatBilgisiDogaGozlem.jsx";
-import HayatBilgisiGunlerSirasi from "./games/HayatBilgisiGunlerSirasi.jsx";
-import FarkBulma from "./games/FarkBulma.jsx";
-import GizliNesneBulma from "./games/GizliNesneBulma.jsx";
-import BoyamaKitabi from "./games/BoyamaKitabi.jsx";
-import YapBoz from "./games/YapBoz.jsx";
+const HizliYaris = lazy(() => import("./games/HizliYaris.jsx"));
+const MatematikEslestirme = lazy(() => import("./games/MatematikEslestirme.jsx"));
+const BoslukDoldurmaMatematik = lazy(() => import("./games/BoslukDoldurmaMatematik.jsx"));
+const PratikModuMatematik = lazy(() => import("./games/PratikModuMatematik.jsx"));
+const TurkceEslestirme = lazy(() => import("./games/TurkceEslestirme.jsx"));
+const TurkceHarfTamamlama = lazy(() => import("./games/TurkceHarfTamamlama.jsx"));
+const TurkceKelimeYarisi = lazy(() => import("./games/TurkceKelimeYarisi.jsx"));
+const KelimeAvi = lazy(() => import("./games/KelimeAvi.jsx"));
+const TurkceCumleTamamlama = lazy(() => import("./games/TurkceCumleTamamlama.jsx"));
+const IngilizceEslestirme = lazy(() => import("./games/IngilizceEslestirme.jsx"));
+const IngilizceHarfTamamlama = lazy(() => import("./games/IngilizceHarfTamamlama.jsx"));
+const IngilizceKelimeYarisi = lazy(() => import("./games/IngilizceKelimeYarisi.jsx"));
+const HayatBilgisiDogaGozlem = lazy(() => import("./games/HayatBilgisiDogaGozlem.jsx"));
+const HayatBilgisiGunlerSirasi = lazy(() => import("./games/HayatBilgisiGunlerSirasi.jsx"));
+const HayatBilgisiKuralBilgisi = lazy(() => import("./games/HayatBilgisiKuralBilgisi.jsx"));
+const FarkBulma = lazy(() => import("./games/FarkBulma.jsx"));
+const GizliNesneBulma = lazy(() => import("./games/GizliNesneBulma.jsx"));
+const BoyamaKitabi = lazy(() => import("./games/BoyamaKitabi.jsx"));
+const YapBoz = lazy(() => import("./games/YapBoz.jsx"));
 
 // Tek yerden yönetilen oyun kayıt defteri - yeni bir oyun eklemek
 // istediğinde sadece buraya bir satır eklemen yeterli. Sınıf bazlı ayrılmış
@@ -52,6 +57,8 @@ const GAMES_SINIF1 = [
     items: [
       { id: "tr-eslestirme", ad: "Kelime Eşleştir", emoji: "🃏", Component: TurkceEslestirme },
       { id: "tr-harf", ad: "Harf Tamamla", emoji: "🔤", Component: TurkceHarfTamamlama },
+      { id: "tr-yaris", ad: "Kelime Yarışı", emoji: "🏎️", Component: TurkceKelimeYarisi },
+      { id: "tr-kelimeavi", ad: "Kelime Avı", emoji: "🔍", Component: KelimeAvi },
     ],
   },
   {
@@ -61,6 +68,7 @@ const GAMES_SINIF1 = [
     items: [
       { id: "en-eslestirme", ad: "Word Match", emoji: "🃏", Component: IngilizceEslestirme },
       { id: "en-harf", ad: "Word Fill", emoji: "🔤", Component: IngilizceHarfTamamlama },
+      { id: "en-yaris", ad: "Word Race", emoji: "🏎️", Component: IngilizceKelimeYarisi },
     ],
   },
   {
@@ -70,6 +78,7 @@ const GAMES_SINIF1 = [
     items: [
       { id: "hb-doga", ad: "Doğa Gözlemi", emoji: "🦋", Component: HayatBilgisiDogaGozlem },
       { id: "hb-gunler", ad: "Günler Sırası", emoji: "📅", Component: HayatBilgisiGunlerSirasi },
+      { id: "hb-kural", ad: "Doğru mu Yanlış mı?", emoji: "🛡️", Component: HayatBilgisiKuralBilgisi },
     ],
   },
   {
@@ -114,6 +123,9 @@ const GAMES_SINIF2 = [
     renk: "#5AB4E0",
     items: [
       { id: "pratik-matematik-2", ad: "Pratik Modu", emoji: "📚", Component: PratikModuMatematik },
+      { id: "hizli-yaris-2", ad: "Hızlı Yarış", emoji: "🏎️", Component: HizliYaris },
+      { id: "bosluk-mat-2", ad: "Boşluk Doldur", emoji: "❓", Component: BoslukDoldurmaMatematik },
+      { id: "mat-eslestirme-2", ad: "Eşleştirme", emoji: "🃏", Component: MatematikEslestirme },
     ],
   },
   {
@@ -123,6 +135,9 @@ const GAMES_SINIF2 = [
     items: [
       { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏", Component: TurkceEslestirme },
       { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤", Component: TurkceHarfTamamlama },
+      { id: "tr-yaris-2", ad: "Kelime Yarışı", emoji: "🏎️", Component: TurkceKelimeYarisi },
+      { id: "tr-kelimeavi-2", ad: "Kelime Avı", emoji: "🔍", Component: KelimeAvi },
+      { id: "tr-cumle-2", ad: "Cümle Tamamlama", emoji: "✏️", Component: TurkceCumleTamamlama },
     ],
   },
   {
@@ -132,6 +147,7 @@ const GAMES_SINIF2 = [
     items: [
       { id: "en-eslestirme-2", ad: "Word Match", emoji: "🃏", Component: IngilizceEslestirme },
       { id: "en-harf-2", ad: "Word Fill", emoji: "🔤", Component: IngilizceHarfTamamlama },
+      { id: "en-yaris-2", ad: "Word Race", emoji: "🏎️", Component: IngilizceKelimeYarisi },
     ],
   },
   {
@@ -141,6 +157,7 @@ const GAMES_SINIF2 = [
     items: [
       { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋", Component: HayatBilgisiDogaGozlem },
       { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅", Component: HayatBilgisiGunlerSirasi },
+      { id: "hb-kural-2", ad: "Doğru mu Yanlış mı?", emoji: "🛡️", Component: HayatBilgisiKuralBilgisi },
     ],
   },
   {
@@ -826,7 +843,9 @@ export default function App() {
       >
         <ArrowLeft size={16} /> Menüye Dön
       </button>
-      <ActiveComponent key={activeId} onExit={() => setActiveId(null)} onComplete={handleGameComplete} sinif={aktifSinif} />
+      <Suspense fallback={<div style={{ textAlign: "center", padding: 60, fontFamily: "'Nunito', sans-serif", color: "#5C6B85" }}>Yükleniyor...</div>}>
+        <ActiveComponent key={activeId} onExit={() => setActiveId(null)} onComplete={handleGameComplete} sinif={aktifSinif} />
+      </Suspense>
     </div>
   );
 }

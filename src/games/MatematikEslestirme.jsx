@@ -1,16 +1,29 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Star, Trophy, RotateCcw } from "lucide-react";
 
 // ---- Oyun ayarları ----
 const OBJECT_POOL = ["🍎", "⭐", "⚽", "🚗", "🎈", "🐟"];
 // Her tur: sayı aralığı, çift sayısı ve ızgara sütunu birlikte büyüyor.
 // İlk tur bilinçli olarak küçük (3 çift / 3x2) - kafa karışmasın diye.
-const ROUNDS = [
-  { min: 1, max: 5, pairs: 3, columns: 3 }, // 3x2 - basit başlangıç
-  { min: 1, max: 8, pairs: 4, columns: 4 }, // 4x2
-  { min: 1, max: 10, pairs: 6, columns: 3 }, // 3x4 - en zor tur
-];
-const TOTAL_ROUNDS = ROUNDS.length;
+// 1. sınıf: rakam ↔ somut nesne sayımı (concreteness fading'in ilk adımı).
+// 2. sınıf: rakam ↔ onluk-birlik bloğu (yarı-soyut basamak değeri temsili) -
+// 100'e kadar sayılarla nesne sayma anlamsızlaştığı için (bkz. devir-teslim
+// notu), MEB'in 2. sınıf basamak değeri kazanımına uygun bu temsile geçildi.
+const ROUNDS_BY_SINIF = {
+  1: [
+    { min: 1, max: 5, pairs: 3, columns: 3 }, // 3x2 - basit başlangıç
+    { min: 1, max: 8, pairs: 4, columns: 4 }, // 4x2
+    { min: 1, max: 10, pairs: 6, columns: 3 }, // 3x4 - en zor tur
+  ],
+  2: [
+    { min: 10, max: 29, pairs: 3, columns: 3 }, // 1-2 onluk - basit başlangıç
+    { min: 20, max: 59, pairs: 4, columns: 4 },
+    { min: 30, max: 99, pairs: 6, columns: 3 }, // en zor tur
+  ],
+};
+function roundsFor(sinif) {
+  return ROUNDS_BY_SINIF[sinif] || ROUNDS_BY_SINIF[1];
+}
 
 function shuffle(arr) {
   const a = [...arr];
@@ -27,23 +40,47 @@ function pickNumbers(count, min, max) {
   return shuffle(pool).slice(0, count);
 }
 
-function buildDeck(round) {
-  const { min, max, pairs } = ROUNDS[round];
+function buildDeck(round, sinif, rounds) {
+  const { min, max, pairs } = rounds[round];
   const numbers = pickNumbers(pairs, min, max);
-  const emojis = shuffle(OBJECT_POOL).slice(0, pairs);
   const cards = [];
-  numbers.forEach((n, idx) => {
-    const pairId = `p${idx}`;
-    const emoji = emojis[idx];
-    cards.push({ id: `${pairId}-num`, pairId, kind: "number", value: n });
-    cards.push({ id: `${pairId}-obj`, pairId, kind: "objects", value: n, emoji });
-  });
+  if (sinif === 2) {
+    // Onluk-birlik blok kartları tüm çiftlerde aynı görsel dile sahip -
+    // rastgele emoji atamaya gerek yok (nesne oyununun aksine).
+    numbers.forEach((n, idx) => {
+      const pairId = `p${idx}`;
+      cards.push({ id: `${pairId}-num`, pairId, kind: "number", value: n });
+      cards.push({ id: `${pairId}-blocks`, pairId, kind: "blocks", value: n });
+    });
+  } else {
+    const emojis = shuffle(OBJECT_POOL).slice(0, pairs);
+    numbers.forEach((n, idx) => {
+      const pairId = `p${idx}`;
+      const emoji = emojis[idx];
+      cards.push({ id: `${pairId}-num`, pairId, kind: "number", value: n });
+      cards.push({ id: `${pairId}-obj`, pairId, kind: "objects", value: n, emoji });
+    });
+  }
   return shuffle(cards);
 }
 
 function CardFace({ card }) {
   if (card.kind === "number") {
     return <span className="card-number">{card.value}</span>;
+  }
+  if (card.kind === "blocks") {
+    const tens = Math.floor(card.value / 10);
+    const ones = card.value % 10;
+    return (
+      <span className="card-blocks">
+        {Array.from({ length: tens }).map((_, i) => (
+          <span key={`t${i}`} className="block-ten" />
+        ))}
+        {Array.from({ length: ones }).map((_, i) => (
+          <span key={`o${i}`} className="block-one" />
+        ))}
+      </span>
+    );
   }
   return (
     <span className="card-objects">
@@ -79,9 +116,11 @@ function playTone(kind) {
   }
 }
 
-export default function MatchGame({ onExit, onComplete } = {}) {
+export default function MatchGame({ onExit, onComplete, sinif = 1 } = {}) {
+  const ROUNDS = useMemo(() => roundsFor(sinif), [sinif]);
+  const TOTAL_ROUNDS = ROUNDS.length;
   const [round, setRound] = useState(0);
-  const [deck, setDeck] = useState(() => buildDeck(0));
+  const [deck, setDeck] = useState(() => buildDeck(0, sinif, ROUNDS));
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState(new Set());
   const [locked, setLocked] = useState(false);
@@ -96,7 +135,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
   const [paused, setPaused] = useState(false);
 
   const startRound = useCallback((r) => {
-    setDeck(buildDeck(r));
+    setDeck(buildDeck(r, sinif, ROUNDS));
     setFlipped([]);
     setMatched(new Set());
     setLocked(false);
@@ -104,7 +143,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
     setMistakes(0);
     setPesPeseYanlis(0);
     setRoundDone(false);
-  }, []);
+  }, [sinif, ROUNDS]);
 
   useEffect(() => {
     if (matched.size > 0 && matched.size === deck.length / 2) {
@@ -348,6 +387,26 @@ export default function MatchGame({ onExit, onComplete } = {}) {
           max-width: 90%;
         }
         .card-obj-item { font-size: 18px; line-height: 1; }
+        .card-blocks {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: flex-end;
+          justify-content: center;
+          gap: 3px;
+          max-width: 92%;
+        }
+        .block-ten {
+          width: 9px;
+          height: 26px;
+          background: var(--grass-dark);
+          border-radius: 2px;
+        }
+        .block-one {
+          width: 9px;
+          height: 9px;
+          background: var(--sun);
+          border-radius: 2px;
+        }
 
         .burst {
           position: absolute;
@@ -521,7 +580,7 @@ export default function MatchGame({ onExit, onComplete } = {}) {
           <div className="tutorial-steps">
             <div className="tutorial-step">
               <span className="tutorial-step-icon">🔢</span>
-              <span>Rakamı, nesne sayısıyla eşleştir</span>
+              <span>{sinif === 2 ? "Rakamı, onluk-birlik bloklarıyla eşleştir" : "Rakamı, nesne sayısıyla eşleştir"}</span>
             </div>
             <div className="tutorial-step">
               <span className="tutorial-step-icon">👆</span>

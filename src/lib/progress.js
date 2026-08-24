@@ -64,6 +64,8 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
     items: [
       { id: "tr-eslestirme", ad: "Kelime Eşleştir", emoji: "🃏" },
       { id: "tr-harf", ad: "Harf Tamamla", emoji: "🔤" },
+      { id: "tr-yaris", ad: "Kelime Yarışı", emoji: "🏎️" },
+      { id: "tr-kelimeavi", ad: "Kelime Avı", emoji: "🔍" },
     ],
   },
   {
@@ -72,6 +74,7 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
     items: [
       { id: "en-eslestirme", ad: "Word Match", emoji: "🃏" },
       { id: "en-harf", ad: "Word Fill", emoji: "🔤" },
+      { id: "en-yaris", ad: "Word Race", emoji: "🏎️" },
     ],
   },
   {
@@ -80,6 +83,7 @@ const GUN_PLANI_KATALOGU_SINIF1 = [
     items: [
       { id: "hb-doga", ad: "Doğa Gözlemi", emoji: "🦋" },
       { id: "hb-gunler", ad: "Günler Sırası", emoji: "📅" },
+      { id: "hb-kural", ad: "Doğru mu Yanlış mı?", emoji: "🛡️" },
     ],
   },
   {
@@ -103,7 +107,12 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
   {
     ders: "Matematik",
     dersEmoji: "🔢",
-    items: [{ id: "pratik-matematik-2", ad: "Pratik Modu", emoji: "📚" }],
+    items: [
+      { id: "pratik-matematik-2", ad: "Pratik Modu", emoji: "📚" },
+      { id: "hizli-yaris-2", ad: "Hızlı Yarış", emoji: "🏎️" },
+      { id: "bosluk-mat-2", ad: "Boşluk Doldur", emoji: "❓" },
+      { id: "mat-eslestirme-2", ad: "Eşleştirme", emoji: "🃏" },
+    ],
   },
   {
     ders: "Türkçe",
@@ -111,6 +120,9 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
     items: [
       { id: "tr-eslestirme-2", ad: "Kelime Eşleştir", emoji: "🃏" },
       { id: "tr-harf-2", ad: "Harf Tamamla", emoji: "🔤" },
+      { id: "tr-yaris-2", ad: "Kelime Yarışı", emoji: "🏎️" },
+      { id: "tr-kelimeavi-2", ad: "Kelime Avı", emoji: "🔍" },
+      { id: "tr-cumle-2", ad: "Cümle Tamamlama", emoji: "✏️" },
     ],
   },
   {
@@ -119,6 +131,7 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
     items: [
       { id: "en-eslestirme-2", ad: "Word Match", emoji: "🃏" },
       { id: "en-harf-2", ad: "Word Fill", emoji: "🔤" },
+      { id: "en-yaris-2", ad: "Word Race", emoji: "🏎️" },
     ],
   },
   {
@@ -127,6 +140,7 @@ const GUN_PLANI_KATALOGU_SINIF2 = [
     items: [
       { id: "hb-doga-2", ad: "Doğa Gözlemi", emoji: "🦋" },
       { id: "hb-gunler-2", ad: "Zaman Sırası", emoji: "📅" },
+      { id: "hb-kural-2", ad: "Doğru mu Yanlış mı?", emoji: "🛡️" },
     ],
   },
   {
