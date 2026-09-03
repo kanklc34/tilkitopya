@@ -68,7 +68,18 @@ function HitAlani({ sekil, onTikla }) {
       fill="transparent"
       className="boyama-hit-alani"
       style={{ cursor: "pointer", pointerEvents: "all" }}
-      onClick={() => onTikla(sekil.id)}
+      onClick={(e) => {
+        onTikla(sekil.id);
+        // Dokunma/tıklama sonrası odağı hemen kaldır - bazı tarayıcı/webview
+        // motorlarında ":focus-visible" özel role="button" elemanlarında
+        // dokunma ile de tetiklenebiliyor, bu da boyanan şeklin etrafında
+        // kalıcı bir kutu bırakıp diğer bölgeleri görsel olarak
+        // kalabalıklaştırıyordu (kullanıcı geri bildirimi). Klavye ile
+        // Enter/Space basımı bu handler'ı DEĞİL, aşağıdaki onKeyDown'ı
+        // tetikliyor - o yüzden Tab ile gezinen klavye kullanıcıları için
+        // odak halkası hâlâ görünür kalıyor, sadece dokunma/tıklamada kayboluyor.
+        e.currentTarget.blur();
+      }}
       role="button"
       tabIndex={0}
       aria-label={`${sekil.id} bölgesini boya`}
